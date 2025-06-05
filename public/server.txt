@@ -1,0 +1,12 @@
+        To access files on Windows
+
+            1. Press 'windows' + 'R' keys
+
+            2. Write 'file://192.168.10.211/'
+
+            3. Enter your Username & Password (for the 1st time)
+
+        ............
+        Good Luck :)
+
+        PERSOL IT support

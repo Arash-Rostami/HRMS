@@ -1,0 +1,11 @@
+@import "./font-google.css";
+@import "lity/dist/lity.css";
+@import "./datepicker.css";
+@import "./myStyles.css";
+
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arash & Ata Chatbot Page</title>
+    <style>
+        /* Reset default margins and padding for all elements */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Style the body with a blended background */
+        body {
+            background-color: #101010; /* Darker gray to blend with chatbot’s dark theme */
+            font-family: sans-serif;
+            min-height: 100vh;
+            overflow: hidden; /* Prevent scrolling if not needed */
+        }
+
+        /* Center the main div with Flexbox, ensuring full viewport */
+        .main {
+            max-width: 1000px;
+            width: 100%;
+            height: 700px;
+            position: absolute;
+            top: 20%; /* Add bottom margin to lift it up */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+    </style>
+    <script src="https://cdn.botpress.cloud/webchat/v2.3/inject.js"></script>
+</head>
+<body>
+<div class="main">
+    <div id="webchat-container">
+        <div id="webchat"></div>
+    </div>
+</div>
+
+<script>
+    window.botpress.on("webchat:ready", () => {
+        window.botpress.open();
+    });
+
+    window.botpress.init({
+        "botId": "9b385fd0-347d-4627-a01f-18787f06bc8b",
+        "configuration": {
+            "botName": 'Arash & Ata Assistance',
+            "botAvatarUrl": 'https://team.persolco.com/img/logo-dark-persol.svg',
+            "showPoweredBy": false,
+            "website": {url: 'https://www.team.persolco.com'},
+            "color": "#673AB7",
+            "variant": "solid",
+            "themeMode": "dark",
+            "customFontUrl": 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap',
+            // "fontFamily": "Roboto",
+            "radius": 1
+        },
+        "clientId": "6ca59af2-0d46-4502-b3dc-54eb23e4b668",
+        "selector": "#webchat"
+    });
+</script>
+</body>
+</html>
