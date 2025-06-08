@@ -45,6 +45,8 @@
                     <x-user.FAQ :faqs="$faqs"></x-user.FAQ>
                 </div>
 
+            <x-user.anniversary></x-user.anniversary>
+
                 {{--  Other Components --}}
                 {{--  User Emails Section --}}
 {{--                <livewire:user-emails/>--}}
