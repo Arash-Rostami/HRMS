@@ -6,8 +6,8 @@ use App\Events\UpdateLastSeen;
 use App\Events\userLoggedInETS;
 use App\Events\UserLoggedOut;
 use GuzzleHttp\Client;
-use Morilog\Jalali\Jalalian;
 use GuzzleHttp\Psr7\Uri;
+use Morilog\Jalali\Jalalian;
 
 
 abstract class ETS
@@ -19,8 +19,8 @@ abstract class ETS
 
     public function __construct()
     {
-        //        78.38.248.74:8085 -- server config
-        //        192.168.10.4:8085 -- local config
+        //        78.38.248.74:8085 | 85.133.175.118:8060 -- server config
+        //        192.168.10.4:8085 |0 -- local config
         $this->ip = new Uri(config('services.my_service.api_url'));
         $this->client = new Client();
         $this->currentDate = Jalalian::now()->format('Y/m/d');
@@ -50,21 +50,23 @@ abstract class ETS
         return $this->attendanceData;
     }
 
-    public function logUserOut(mixed $profile): void
+    public function logUserOut(mixed $profile)
     {
+        if ($profile->user == null) {
+            return;
+        }
+
         // Dispatch the event to update the last seen time
-//        event(new UpdateLastSeen($profile->user));
+        event(new UpdateLastSeen($profile->user));
         // Dispatch the event to update presence status to on-leave
-//        event(new UserLoggedOut($profile->user));
+        event(new UserLoggedOut($profile->user));
     }
 
 
     public function logUserIn(mixed $profile)
     {
         if ($profile->user == null) {
-            return response()->json([
-                'message' => 'No user associated with this profile.',
-            ], 404); // You can change the status code to a suitable one (e.g., 404 Not Found)
+            return;
         }
 
         // Dispatch the event to update the last seen time

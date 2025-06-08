@@ -3,9 +3,6 @@
 namespace App\Services\api;
 
 use App\Models\Leave;
-use Carbon\Carbon;
-use GuzzleHttp\Psr7\Uri;
-use Morilog\Jalali\Jalalian;
 use GuzzleHttp\Client;
 
 
@@ -125,26 +122,70 @@ EOT;
         return '';
     }
 
+
     public function updateUsers(): void
     {
-        $existingRecords = Leave::whereIn('employee_code', array_column($this->attendanceData, 'EmployeeCode'))
-            ->whereDate('created_at', Carbon::today())
-            ->get();
+        $records = $this->attendanceData;
+        $codes = array_column($records, 'EmployeeCode');
 
-        if (!$existingRecords) {
-            foreach ($this->attendanceData as $attendance) {
-                Leave::create([
-                    'employee_code' => $attendance['EmployeeCode'],
-                    'employee_name' => $attendance['FullName'],
-                    'begin_date' => $attendance['BeginDate'] ?? null,
-                    'end_date' => $attendance['EndDate'] ?? null,
-                    'leave_type' => $attendance['VacationType'],
-                    'begin_time' => $attendance['BeginTime'] ?? null,
-                    'end_time' => $attendance['EndTime'] ?? null,
-                    'duration' => $attendance['Duration'],
-                    'note' => '',
-                ]);
+        if (empty($codes)) {
+            return;
+        }
+
+        $existingCodes = Leave::whereIn('employee_code', $codes)
+            ->whereDate('created_at', today())
+            ->pluck('employee_code')
+            ->all();
+
+        $now = now();
+        $toInsert = [];
+
+        foreach ($records as $att) {
+            if (in_array($att['EmployeeCode'], $existingCodes, true)) {
+                continue;
             }
+
+            $toInsert[] = [
+                'employee_code' => $att['EmployeeCode'],
+                'employee_name' => $att['FullName'],
+                'begin_date' => $att['BeginDate'] ?? null,
+                'end_date' => $att['EndDate'] ?? null,
+                'leave_type' => $att['VacationType'],
+                'begin_time' => $att['BeginTime'] ?? null,
+                'end_time' => $att['EndTime'] ?? null,
+                'duration' => $att['Duration'],
+                'note' => '',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        if (!empty($toInsert)) {
+            Leave::insert($toInsert);
         }
     }
+
+//Deprecated and Optimized for Production
+//    public function updateUsers(): void
+//    {
+//        $existingRecords = Leave::whereIn('employee_code', array_column($this->attendanceData, 'EmployeeCode'))
+//            ->whereDate('created_at', Carbon::today())
+//            ->get();
+//
+//        if (!$existingRecords) {
+//            foreach ($this->attendanceData as $attendance) {
+//                Leave::create([
+//                    'employee_code' => $attendance['EmployeeCode'],
+//                    'employee_name' => $attendance['FullName'],
+//                    'begin_date' => $attendance['BeginDate'] ?? null,
+//                    'end_date' => $attendance['EndDate'] ?? null,
+//                    'leave_type' => $attendance['VacationType'],
+//                    'begin_time' => $attendance['BeginTime'] ?? null,
+//                    'end_time' => $attendance['EndTime'] ?? null,
+//                    'duration' => $attendance['Duration'],
+//                    'note' => '',
+//                ]);
+//            }
+//        }
+//    }
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\UserEmailController;
 use App\Http\Controllers\UserLoginTest;
 use App\Http\Controllers\UserSmsController;
 use App\Models\Suggestion;
+use App\Services\ETSClient;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\UserPanelController;
 
@@ -36,15 +37,12 @@ Route::get('/clear-cache', function () {
 });
 
 
-//Route::get('/test-email', function () {
-//    $suggestionsByStatus = Suggestion::where('abort', 'no')
-//        ->whereIn('stage', ['pending', 'team_remarks', 'dept_remarks', 'awaiting_decision'])
-//        ->with(['user.profile', 'reviews.user.profile'])
-//        ->get()
-//        ->groupBy('stage');
-//
-//    dd($suggestionsByStatus);
-//});
+Route::get('/update-attendance', function () {
+
+    (new ETSClient())->updateAttendance();
+//    Artisan::call('data:attendance');
+//    return response()->json(['message' => 'Attendance update initiated']);
+});
 
 
 

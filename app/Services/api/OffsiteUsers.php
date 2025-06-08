@@ -3,6 +3,7 @@
 namespace App\Services\api;
 
 use App\Models\Profile;
+use App\Models\User;
 
 class OffsiteUsers extends ETS
 {
@@ -83,14 +84,40 @@ EOT;
 
     public function updateUsers(): void
     {
-        // Update on-mission profiles' presence status
-        foreach ($this->attendanceData as $attendance) {
-            $profile = Profile::findByPersonnelId($attendance['employeeCode']);
-            if ($attendance['mission'] && ($profile)) {
-                $profile->user->update([
-                    'presence' => 'off-site'
-                ]);
-            }
+        $codes = collect($this->attendanceData)
+            ->filter(fn($att) => !empty($att['mission']))
+            ->pluck('employeeCode')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        if (empty($codes)) return;
+
+        $userIds = Profile::whereIn('personnel_id', $codes)
+            ->pluck('user_id')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        if (!empty($userIds)) {
+            User::whereIn('id', $userIds)->update(['presence' => 'off-site']);
         }
     }
+
+
+//Optimized
+//    public function updateUsers(): void
+//    {
+//        // Update on-mission profiles' presence status
+//        foreach ($this->attendanceData as $attendance) {
+//            $profile = Profile::findByPersonnelId($attendance['employeeCode']);
+//            if ($attendance['mission'] && ($profile)) {
+//                $profile->user->update([
+//                    'presence' => 'off-site'
+//                ]);
+//            }
+//        }
+//    }
 }

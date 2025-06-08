@@ -5,6 +5,7 @@ namespace App\Services\api;
 use App\Models\Profile;
 use App\Models\Timesheet;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class OnsiteUsers extends ETS
 {
@@ -63,30 +64,6 @@ EOT;
         return $this->attendanceData;
     }
 
-
-    public function persistData()
-    {
-        $existingRecords = Timesheet::whereIn('employee_code', array_column($this->attendanceData, 'employeeCode'))
-            ->whereDate('created_at', Carbon::today())
-            ->get();
-
-        $newRecords = collect($this->attendanceData)->filter(function ($attendance) use ($existingRecords) {
-            return !empty($attendance['exitTime']) && !$existingRecords->contains('employee_code', $attendance['employeeCode']);
-        });
-
-        foreach ($newRecords as $record) {
-            Timesheet::create([
-                'employee_code' => $record['employeeCode'],
-                'employee_name' => $record['employeeName'],
-                'entry_time' => $record['entryTime'],
-                'exit_time' => $record['exitTime'],
-                'mission' => $record['mission'],
-                'presence' => $record['presence'],
-            ]);
-        }
-    }
-
-
     public function processAttendance(mixed $attendance): array
     {
         $employeeCode = (string)$attendance->EmployeeCode;
@@ -114,18 +91,119 @@ EOT;
         return $this->attendanceData;
     }
 
-    public function updatePresentUsers()
+// Deprecated
+//    public function persistData()
+//    {
+//        $existingRecords = Timesheet::whereIn('employee_code', array_column($this->attendanceData, 'employeeCode'))
+//            ->whereDate('created_at', Carbon::today())
+//            ->get();
+//
+//        $newRecords = collect($this->attendanceData)->filter(function ($attendance) use ($existingRecords) {
+//            return !empty($attendance['exitTime']) && !$existingRecords->contains('employee_code', $attendance['employeeCode']);
+//        });
+//
+//        foreach ($newRecords as $record) {
+//            Timesheet::create([
+//                'employee_code' => $record['employeeCode'],
+//                'employee_name' => $record['employeeName'],
+//                'entry_time' => $record['entryTime'],
+//                'exit_time' => $record['exitTime'],
+//                'mission' => $record['mission'],
+//                'presence' => $record['presence'],
+//            ]);
+//        }
+//    }
+
+    public function updatePresentUsers(): void
     {
+        $codes = collect($this->attendanceData)
+            ->pluck('employeeCode')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        if (empty($codes)) {
+            return;
+        }
+
+        $profiles = Profile::whereIn('personnel_id', $codes)
+            ->with(['user:id,presence'])
+            ->get()
+            ->keyBy('personnel_id');
+
         foreach ($this->attendanceData as $attendance) {
-            $profile = Profile::findByPersonnelId($attendance['employeeCode']);
-            if ($profile) {
-                if ($attendance['presence'] == 'onsite') {
-                    $this->logUserIn($profile);
-                };
-                if ($attendance['presence'] == 'on-leave') {
-                    $this->logUserOut($profile);
-                };
+            $code = $attendance['employeeCode'] ?? null;
+            $profile = $profiles->get($code);
+
+            if (!$profile || !$profile->user) {
+                continue;
             }
+
+            $newPresence = $attendance['presence'];
+            $oldPresence = $profile->user->presence ?? null;
+
+            if ($newPresence === $oldPresence) {
+                continue;
+            }
+
+            if ($newPresence === 'onsite') {
+                $this->logUserIn($profile);
+            }
+        }
+    }
+
+
+// Deprecated
+//    public function updatePresentUsers()
+//    {
+//        foreach ($this->attendanceData as $attendance) {
+//            $profile = Profile::findByPersonnelId($attendance['employeeCode']);
+//            if ($profile) {
+//                if ($attendance['presence'] == 'onsite') {
+//                    $this->logUserIn($profile);
+//                };
+//                if ($attendance['presence'] == 'on-leave') {
+//                    $this->logUserOut($profile);
+//                };
+//            }
+//        }
+//    }
+
+    public function persistData()
+    {
+        $employeeCodes = array_column($this->attendanceData, 'employeeCode');
+        if (empty($employeeCodes)) {
+            return;
+        }
+
+        $existingEmployeeCodes = Timesheet::whereIn('employee_code', $employeeCodes)
+            ->whereDate('created_at', Carbon::today())
+            ->pluck('employee_code')
+            ->all();
+
+        $recordsToInsert = [];
+        $now = Carbon::now();
+
+        foreach ($this->attendanceData as $record) {
+            $isNewRecord = !empty($record['exitTime']) && !in_array($record['employeeCode'], $existingEmployeeCodes);
+
+            if ($isNewRecord) {
+                $recordsToInsert[] = [
+                    'employee_code' => $record['employeeCode'],
+                    'employee_name' => $record['employeeName'],
+                    'entry_time' => $record['entryTime'],
+                    'exit_time' => $record['exitTime'],
+                    'mission' => $record['mission'],
+                    'presence' => $record['presence'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+        }
+
+        if (!empty($recordsToInsert)) {
+            DB::transaction(fn() => Timesheet::insert($recordsToInsert));
         }
     }
 
@@ -144,9 +222,7 @@ EOT;
     public function updateUsers(): void
     {
         $this->updatePresentUsers();
-
         $this->persistData();
-
         $this->updateNonPresentUsers();
     }
 }
