@@ -8,7 +8,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Morilog\Jalali\Jalalian;
 
 class UserStatistics
 {
@@ -45,16 +44,14 @@ class UserStatistics
         'SP' => 'پلتفرم فروش',
         'CX' => 'بازرگانی صادرات',
         'BD' => 'توسعه کسب‌ وکار',
-        'SO'      => 'پنل خورشیدی',
+        'SO' => 'پنل خورشیدی',
         'PERSORE' => 'پرسور',
     ];
 
 
     public static function getGenderAndMaritalStatus()
     {
-        // Attempt to retrieve the cached data
         return Cache::remember('genderAndMaritalStatus', now()->addHours(8), function () {
-            // If not cached, calculate and store the data
             $count = Profile::selectRaw(
                 "SUM(gender = 'male' AND marital_status = 'married') as marriedMale,
                  SUM(gender = 'male' AND marital_status != 'married') as singleMale,
@@ -69,11 +66,16 @@ class UserStatistics
         });
     }
 
+
     public static function getGenderAndPositions()
     {
-        // Attempt to retrieve the cached data
         return Cache::remember('genderAndPositions', now()->addHours(8), function () {
-            // If not cached, calculate and store the data
+            $counts = Profile::whereIn('position', Profile::$positions)
+                ->selectRaw('position, gender, COUNT(*) as count')
+                ->groupBy('position', 'gender')
+                ->get()
+                ->groupBy('position');
+
             $chartData = [
                 'label' => ['Male', 'Female'],
                 'positions' => Profile::$positions,
@@ -81,14 +83,12 @@ class UserStatistics
             ];
 
             foreach (Profile::$positions as $position) {
-                $counts = Profile::where('position', $position)
-                    ->selectRaw('gender, COUNT(*) as count')
-                    ->groupBy('gender')
-                    ->get()
-                    ->pluck('count', 'gender')
-                    ->toArray();
+                $positionCounts = $counts->get($position) ?? collect();
 
-                $chartData['data'][$position] = [$counts['male'] ?? 0, $counts['female'] ?? 0];
+                $chartData['data'][$position] = [
+                    $positionCounts->where('gender', 'male')->pluck('count')->first() ?? 0,
+                    $positionCounts->where('gender', 'female')->pluck('count')->first() ?? 0,
+                ];
             }
 
             return $chartData;
@@ -97,9 +97,7 @@ class UserStatistics
 
     public static function getEmploymentType()
     {
-        // Attempt to retrieve the cached data
         return Cache::remember('employmentType', now()->addHours(8), function () {
-            // If not cached, calculate and store the data
             $employmentData = Profile::selectRaw('employment_type, COUNT(*) as count')
                 ->groupBy('employment_type')
                 ->get();
@@ -121,16 +119,22 @@ class UserStatistics
 
     public static function getDepartmentDistribution()
     {
-        // Attempt to retrieve the cached data
         return Cache::remember('departmentDistribution', now()->addHours(8), function () {
-            $data = [];
+            $departmentCodes = array_keys(static::$departmentNames);
+
+            $counts = Profile::whereIn('department', $departmentCodes)
+                ->selectRaw('department, COUNT(*) as count')
+                ->groupBy('department')
+                ->pluck('count', 'department');
+
+            $chartData = [];
             foreach (static::$departmentNames as $code => $name) {
-                $data[] = Profile::where('department', $code)->count();
+                $chartData[] = $counts->get($code, 0);
             }
 
             return [
                 'label' => array_values(static::$departmentNames),
-                'chartData' => $data,
+                'chartData' => $chartData,
             ];
         });
     }
@@ -139,7 +143,6 @@ class UserStatistics
     public static function getAgeDistribution()
     {
         return Cache::remember('ageDistribution', now()->addHours(8), function () {
-
             $query = Profile::selectRaw("
                         CASE
                             WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 18 AND 25 THEN '18-25'
@@ -175,7 +178,6 @@ class UserStatistics
     public static function getEducationAndExperience()
     {
         return Cache::remember('educationAndExperience', now()->addHours(8), function () {
-
             $degrees = ['undergraduate', 'graduate', 'postgraduate'];
 
             $data = [];
@@ -197,7 +199,6 @@ class UserStatistics
 
             foreach (['0-2', '3-5', '6-10', '11-15'] as $range) {
                 foreach ($degrees as $degree) {
-                    // Initialize counts to zero
                     $data[$range][$degree] = 0;
                 }
             }
@@ -216,121 +217,143 @@ class UserStatistics
 
     public static function getAverageWorkingHoursOfDepartments()
     {
-        $usersWithTimesheets = User::with(['profile', 'timesheets' => fn($query) => $query->where('timesheets.created_at', '>=', now()->subDays(30))])
-            ->where('status', 'active')
-            ->get()
-            ->groupBy('profile.department');
+        return Cache::remember('averageWorkingHoursOfDepartments', now()->addHours(8), function () {
 
-        $departmentAverages = [];
-        $totalDepartments = [];
+            $usersWithTimesheets = User::with(['profile', 'timesheets' => fn($query) => $query->where('timesheets.created_at', '>=', now()->subDays(30))])
+                ->where('status', 'active')
+                ->get()
+                ->groupBy('profile.department');
 
-        foreach ($usersWithTimesheets as $department => $users) {
-            $timesheetCount = 0;
-            $totalWorkingHours = 0;
+            $departmentAverages = [];
+            $totalDepartments = [];
 
-            $users->each(function ($user) use (&$totalWorkingHours, &$timesheetCount) {
-                if ($user->profile && $user->timesheets->isNotEmpty()) {
-                    $user->timesheets->each(function ($timesheet) use (&$totalWorkingHours, &$timesheetCount) {
-                        if ($timesheet->exit_time) {
-                            $entryTime = Carbon::createFromFormat('H:i', $timesheet->entry_time ?? '08:00'); // if for any reason it was NOT set
-                            $exitTime = Carbon::createFromFormat('H:i', $timesheet->exit_time ?? '16:00'); // if for any reason it was NOT set
-                            $workingHours = $entryTime->floatDiffInHours($exitTime);
+            foreach ($usersWithTimesheets as $department => $users) {
+                $timesheetCount = 0;
+                $totalWorkingHours = 0;
 
-                            $totalWorkingHours += $workingHours;
-                            $timesheetCount++;
-                        }
-                    });
+                $users->each(function ($user) use (&$totalWorkingHours, &$timesheetCount) {
+                    if ($user->profile && $user->timesheets->isNotEmpty()) {
+                        $user->timesheets->each(function ($timesheet) use (&$totalWorkingHours, &$timesheetCount) {
+                            if ($timesheet->exit_time) {
+                                $entryTime = Carbon::createFromFormat('H:i', $timesheet->entry_time ?? '08:00'); // if for any reason it was NOT set
+                                $exitTime = Carbon::createFromFormat('H:i', $timesheet->exit_time ?? '16:00'); // if for any reason it was NOT set
+                                $workingHours = $entryTime->floatDiffInHours($exitTime);
+
+                                $totalWorkingHours += $workingHours;
+                                $timesheetCount++;
+                            }
+                        });
+                    }
+                });
+
+                if ($timesheetCount > 0) {
+                    $totalDepartments[] = $department;
+                    $departmentAverages[$department] = [
+                        'department' => $department,
+                        'total_hours' => $totalWorkingHours,
+                        'user_count' => $users->count(),
+                        'time_sheet_count' => $timesheetCount,
+                        'average' => number_format($totalWorkingHours / $timesheetCount, 2),
+                    ];
                 }
-            });
-
-            if ($timesheetCount > 0) {
-                $totalDepartments[] = $department;
-                $departmentAverages[$department] = [
-                    'department' => $department,
-                    'total_hours' => $totalWorkingHours,
-                    'user_count' => $users->count(),
-                    'time_sheet_count' => $timesheetCount,
-                    'average' => number_format($totalWorkingHours / $timesheetCount, 2),
-                ];
             }
-        }
 
-        return [
-            'labels' => $totalDepartments,
-            'chartData' => $departmentAverages,
-        ];
+            return [
+                'labels' => $totalDepartments,
+                'chartData' => $departmentAverages,
+            ];
+        });
     }
 
     public static function getHourlyAndDailyLeaves()
     {
-        $monthlyData = Leave::select(
-            DB::raw('MONTH(begin_date) as month'),
-            DB::raw('SUM(CASE WHEN leave_type = "روزانه" THEN 1 ELSE 0 END) as daily_leaves'),
-            DB::raw('SUM(CASE WHEN leave_type = "ساعتی" THEN 1 ELSE 0 END) as hourly_leaves'),
-            DB::raw('SUM(CASE WHEN leave_type = "روزانه" THEN duration ELSE 0 END) as daily_duration'),
-            DB::raw('SUM(CASE WHEN leave_type = "ساعتی" THEN duration ELSE 0 END) as hourly_duration')
-        )
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->get();
 
-        $labels = [];
-        $chartData = [];
+        $currentYear = Date::getFarsiYear();
 
-        foreach ($monthlyData as $data) {
-            $labels[] = $data->month;
+        return Cache::remember("hourlyDailyLeaves_{$currentYear}", now()->addHours(8), function () use ($currentYear) {
+            $monthlyData = Leave::select(
+                DB::raw('SUBSTRING(begin_date, 6, 2) as month'), // Extract MM from YYYY/MM/DD
+                DB::raw('SUM(CASE WHEN leave_type = "روزانه" THEN 1 ELSE 0 END) as daily_leaves'),
+                DB::raw('SUM(CASE WHEN leave_type = "ساعتی" THEN 1 ELSE 0 END) as hourly_leaves'),
+                DB::raw('SUM(CASE WHEN leave_type = "روزانه" THEN duration ELSE 0 END) as daily_duration'),
+                DB::raw('SUM(CASE WHEN leave_type = "ساعتی" THEN duration ELSE 0 END) as hourly_duration')
+            )
+                ->where('begin_date', 'LIKE', $currentYear . '/%') // Filter current year
+                ->groupBy('month')
+                ->orderBy('month', 'asc')
+                ->get();
 
-            $chartData['dailyLeaves'][] = $data->daily_leaves;
-            $chartData['hourlyLeaves'][] = $data->hourly_leaves;
+            $labels = [];
+            $chartData = [
+                'dailyLeaves' => [],
+                'hourlyLeaves' => [],
+                'dailyDurations' => [],
+                'hourlyDurations' => [],
+            ];
 
-            // Format daily durations as numbers
-            $chartData['dailyDurations'][] = $data->daily_duration;
+            foreach ($monthlyData as $data) {
+                $labels[] = $data->month;
 
-            // Format hourly durations as HH:mm
-            $chartData['hourlyDurations'][] = $data->hourly_duration;
-        }
+                $chartData['dailyLeaves'][] = $data->daily_leaves ?? 0;
+                $chartData['hourlyLeaves'][] = $data->hourly_leaves ?? 0;
+                $chartData['dailyDurations'][] = $data->daily_duration ?? 0;
+                $chartData['hourlyDurations'][] = $data->hourly_duration ?? '00:00';
+            }
 
-        return [
-            'labels' => $labels,
-            'chartData' => $chartData,
-        ];
+            return [
+                'labels' => $labels,
+                'chartData' => $chartData,
+            ];
+        });
     }
 
     public static function getLeaveTypeByAgeRange()
     {
-        $ageRanges = [
-            ['label' => '18-24', 'min' => 18, 'max' => 24],
-            ['label' => '25-34', 'min' => 25, 'max' => 34],
-            ['label' => '35-44', 'min' => 35, 'max' => 44],
-            ['label' => '45-54', 'min' => 45, 'max' => 54],
-            ['label' => '55-64', 'min' => 55, 'max' => 64],
-            ['label' => 'Above 65', 'min' => 65, 'max' => 200],
-        ];
+        return Cache::remember('leaveTypeByAgeRange', now()->addHours(8), function () {
+            $ageRanges = [
+                ['label' => '18-24', 'min' => 18, 'max' => 24],
+                ['label' => '25-34', 'min' => 25, 'max' => 34],
+                ['label' => '35-44', 'min' => 35, 'max' => 44],
+                ['label' => '45-54', 'min' => 45, 'max' => 54],
+                ['label' => '55-64', 'min' => 55, 'max' => 64],
+                ['label' => 'Above 65', 'min' => 65, 'max' => 200],
+            ];
 
-        $leaveTypeCounts = [];
+            $bindings = [];
+            $caseStatements = array_map(function ($range) use (&$bindings) {
+                $minDate = now()->subYears($range['max'])->format('Y-m-d');
+                $maxDate = now()->subYears($range['min'])->format('Y-m-d');
 
-        foreach (['ساعتی', 'روزانه'] as $leaveType) {
-            $leaveTypeCount = [];
+                $bindings[] = $minDate;
+                $bindings[] = $maxDate;
 
-            foreach ($ageRanges as $range) {
-                $minAge = $range['min'];
-                $maxAge = $range['max'];
+                return "SUM(CASE WHEN profiles.birthdate BETWEEN ? AND ? THEN 1 ELSE 0 END) as `{$range['label']}`";
+            }, $ageRanges);
 
-                // Calculate the number of leaves in this age range for the specified leave type.
-                $leaveCount = Leave::where('leave_type', $leaveType)
-                    ->whereHas('profile', function ($query) use ($minAge, $maxAge) {
-                        $query->whereBetween('birthdate', [now()->subYears($maxAge), now()->subYears($minAge)]);
-                    })->count();
+            $casesSql = implode(', ', $caseStatements);
 
-                $leaveTypeCount[] = [
-                    'label' => $range['label'],
-                    'count' => $leaveCount,
-                ];
+            $results = Leave::join('profiles', 'leaves.employee_code', '=', 'profiles.personnel_id')
+                ->whereIn('leave_type', ['ساعتی', 'روزانه'])
+                ->selectRaw("leave_type, $casesSql", $bindings)
+                ->groupBy('leave_type')
+                ->get();
+
+            $leaveTypeCounts = [];
+            $typeMap = ['ساعتی' => 'Hourly', 'روزانه' => 'Daily'];
+
+            foreach ($typeMap as $persian => $english) {
+                $leaveTypeCounts[$english] = array_map(function ($range) use ($results, $persian) {
+                    $count = 0;
+
+                    if ($row = $results->firstWhere('leave_type', $persian)) {
+                        $count = $row->{$range['label']} ?? 0;
+                    }
+
+                    return ['label' => $range['label'], 'count' => $count];
+                }, $ageRanges);
             }
 
-            $leaveTypeCounts[($leaveType == 'ساعتی') ? 'Hourly' : 'Daily'] = $leaveTypeCount;
-        }
-
-        return $leaveTypeCounts;
+            return $leaveTypeCounts;
+        });
     }
 }
