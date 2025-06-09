@@ -8,9 +8,6 @@ use GuzzleHttp\Client;
 
 class OnLeaveUsers extends ETS
 {
-
-    public string $dates;
-
     public function prepareSoapRequest(): string
     {
         return <<<EOT
@@ -24,7 +21,6 @@ class OnLeaveUsers extends ETS
 </soap:Envelope>
 EOT;
     }
-
 
     public function sendSoapRequest(string $soapRequest): \Psr\Http\Message\ResponseInterface
     {
@@ -42,15 +38,12 @@ EOT;
     {
         $soapBody = $this->extractBody($response);
 
-
         // Find the GetAllIoRecordsByDateResponse element within soapBody
         $getRecordsResponse = $soapBody->children('http://tempuri.org/')->GetAllVacationRegistrationsByDateResponse;
-
 
         // Find the GetAllIoRecordsByDateResult element within GetIoRecordsResponse
         return $getRecordsResponse->GetAllVacationRegistrationsByDateResult->VacationRegistrationDataModel;
     }
-
 
     public function processSoapResponse(\SimpleXMLElement|bool|null $recordsResult): array
     {
@@ -81,111 +74,82 @@ EOT;
 
     public function processAttendance(\SimpleXMLElement|bool|null|array $recordsResult): array
     {
-        $this->attendanceData = [];
-
         if ($recordsResult === null) {
-            return [];
+            return $this->attendanceData = [];
         }
 
+        $this->attendanceData = [];
+
         foreach ($recordsResult as $record) {
-            $attendanceData = [
+            $vacationType = (string)$record['VacationTypeInText'];
+            $isHourly = ($vacationType === 'ساعتی');
+
+            $attendance = [
                 'EmployeeCode' => (string)$record['EmployeeCode'],
                 'FullName' => (string)$record['FullName'],
                 'BeginDate' => (string)$record['BeginDateInText'],
                 'EndDate' => (string)$record['EndDateInText'],
-                'VacationType' => (string)$record['VacationTypeInText'],
+                'VacationType' => $vacationType,
+                'BeginTime' => $isHourly ? (string)($record['BeginTimeInText'] ?? '') : '',
+                'EndTime' => $isHourly ? (string)($record['EndTimeInText'] ?? '') : '',
             ];
 
-            if ($attendanceData['VacationType'] === 'ساعتی') {
-                $attendanceData['BeginTime'] = (string)$record['BeginTimeInText'];
-                $attendanceData['EndTime'] = (string)$record['EndTimeInText'];
-            }
-
-            $attendanceData['Duration'] = $this->calculateDuration($attendanceData);
-
-            $this->attendanceData[] = $attendanceData;
+            $attendance['Duration'] = $this->calculateDuration($attendance);
+            $this->attendanceData[] = $attendance;
         }
 
         return $this->attendanceData;
     }
 
-    private function calculateDuration(array $attendanceData)
+    private function calculateDuration(array $attendanceData): float
     {
-        if (str_contains($attendanceData['VacationType'], 'روزانه')) {
-            $duration = floor((strtotime($attendanceData['EndDate']) - strtotime($attendanceData['BeginDate'])) / 86400);
-            return $duration ?: 1.0;
-        }
-        if ($attendanceData['VacationType'] === 'ساعتی') {
-            return number_format((strtotime($attendanceData['EndTime']) - strtotime($attendanceData['BeginTime'])) / 3600, 2);
+        $type = $attendanceData['VacationType'] ?? '';
+
+        if (str_contains($type, 'روزانه')) {
+            $begin = $attendanceData['BeginDate'] ?? '';
+            $end = $attendanceData['EndDate'] ?? '';
+            if (!$begin || !$end) return 0.0;
+
+            $beginTs = strtotime($begin);
+            $endTs = strtotime($end);
+            if (!$beginTs || !$endTs || $endTs < $beginTs) return 0.0;
+
+            return max(floor(($endTs - $beginTs) / 86400), 1.0);
         }
 
-        return '';
+        if ($type === 'ساعتی') {
+            $beginTime = $attendanceData['BeginTime'] ?? '';
+            $endTime = $attendanceData['EndTime'] ?? '';
+            if (!$beginTime || !$endTime) return 0.0;
+
+            $beginTs = strtotime($beginTime);
+            $endTs = strtotime($endTime);
+            if (!$beginTs || !$endTs || $endTs <= $beginTs) return 0.0;
+
+            return round(($endTs - $beginTs) / 3600, 2);
+        }
+
+        return 0.0;
     }
-
 
     public function updateUsers(): void
     {
-        $records = $this->attendanceData;
-        $codes = array_column($records, 'EmployeeCode');
+        $rows = collect($this->attendanceData)->map(fn($att) => [
+            'employee_code' => $att['EmployeeCode'],
+            'employee_name' => $att['FullName'],
+            'begin_date' => $att['BeginDate'] ?? '',
+            'end_date' => $att['EndDate'] ?? '',
+            'leave_type' => $att['VacationType'],
+            'begin_time' => $att['BeginTime'] ?? '',
+            'end_time' => $att['EndTime'] ?? '',
+            'duration' => $att['Duration'],
+            'note' => '',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ])->all();
 
-        if (empty($codes)) {
-            return;
-        }
+        if (empty($rows)) return;
 
-        $existingCodes = Leave::whereIn('employee_code', $codes)
-            ->whereDate('created_at', today())
-            ->pluck('employee_code')
-            ->all();
-
-        $now = now();
-        $toInsert = [];
-
-        foreach ($records as $att) {
-            if (in_array($att['EmployeeCode'], $existingCodes, true)) {
-                continue;
-            }
-
-            $toInsert[] = [
-                'employee_code' => $att['EmployeeCode'],
-                'employee_name' => $att['FullName'],
-                'begin_date' => $att['BeginDate'] ?? null,
-                'end_date' => $att['EndDate'] ?? null,
-                'leave_type' => $att['VacationType'],
-                'begin_time' => $att['BeginTime'] ?? null,
-                'end_time' => $att['EndTime'] ?? null,
-                'duration' => $att['Duration'],
-                'note' => '',
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
-        }
-
-        if (!empty($toInsert)) {
-            Leave::insert($toInsert);
-        }
+        Leave::insertOrIgnore($rows);
     }
-
-//Deprecated and Optimized for Production
-//    public function updateUsers(): void
-//    {
-//        $existingRecords = Leave::whereIn('employee_code', array_column($this->attendanceData, 'EmployeeCode'))
-//            ->whereDate('created_at', Carbon::today())
-//            ->get();
-//
-//        if (!$existingRecords) {
-//            foreach ($this->attendanceData as $attendance) {
-//                Leave::create([
-//                    'employee_code' => $attendance['EmployeeCode'],
-//                    'employee_name' => $attendance['FullName'],
-//                    'begin_date' => $attendance['BeginDate'] ?? null,
-//                    'end_date' => $attendance['EndDate'] ?? null,
-//                    'leave_type' => $attendance['VacationType'],
-//                    'begin_time' => $attendance['BeginTime'] ?? null,
-//                    'end_time' => $attendance['EndTime'] ?? null,
-//                    'duration' => $attendance['Duration'],
-//                    'note' => '',
-//                ]);
-//            }
-//        }
-//    }
 }

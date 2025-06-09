@@ -105,19 +105,4 @@ EOT;
             User::whereIn('id', $userIds)->update(['presence' => 'off-site']);
         }
     }
-
-
-//Optimized
-//    public function updateUsers(): void
-//    {
-//        // Update on-mission profiles' presence status
-//        foreach ($this->attendanceData as $attendance) {
-//            $profile = Profile::findByPersonnelId($attendance['employeeCode']);
-//            if ($attendance['mission'] && ($profile)) {
-//                $profile->user->update([
-//                    'presence' => 'off-site'
-//                ]);
-//            }
-//        }
-//    }
 }

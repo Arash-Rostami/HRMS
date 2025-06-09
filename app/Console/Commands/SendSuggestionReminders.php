@@ -41,27 +41,31 @@ class SendSuggestionReminders extends Command
     {
         $this->info('Sending suggestion reminders...');
 
-        $suggestionsByStatus = Suggestion::where('abort', 'no')
+        $grouped = Suggestion::where('abort', 'no')
             ->whereIn('stage', ['pending', 'team_remarks', 'dept_remarks', 'awaiting_decision'])
             ->with(['user.profile', 'reviews.user.profile'])
             ->get()
             ->groupBy('stage');
 
-
-        foreach ($suggestionsByStatus as $status => $suggestions) {
+        foreach ($grouped as $status => $suggestions) {
             $this->info("Processing status: {$status}");
 
             if ($status === 'awaiting_decision') {
                 $suggestionNotification->notifyCEOForAwaitingDecision($suggestions);
-            } else {
-                $suggestions->each(function ($suggestion) use ($suggestionNotification) {
-                    $stats = $suggestionNotification->getSuggestionStatsData($suggestion);
-                    $pendingReviewers = $stats['pending_reviewers'];
-                    $suggester = $stats['suggester'];
-                    $suggestionNotification->sendNotifications($pendingReviewers, $suggestion, $suggester);
-                });
+                continue;
             }
+
+            $suggestions->each(function ($suggestion) use ($suggestionNotification) {
+                $stats = $suggestionNotification->getSuggestionStatsData($suggestion);
+                $suggestionNotification->sendNotifications(
+                    $stats['pending_reviewers'],
+                    $suggestion,
+                    $stats['suggester']
+                );
+                usleep(1000000);
+            });
         }
+
         $this->info('Suggestion reminders sent.');
     }
 }

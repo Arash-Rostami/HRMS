@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\api\OffsiteUsers;
 use App\Services\api\OnLeaveUsers;
 use App\Services\api\OnsiteUsers;
+use Illuminate\Support\Facades\Log;
 use Morilog\Jalali\Jalalian;
 
 
@@ -51,12 +52,6 @@ class ETSClient
         // Create an instance of OnLeaveUsers class
         $leaveUsersService = new OnLeaveUsers();
 
-        /* *** Uncomment the following line just to increase the timespan of update instead of daily to specific numbers of days
-                   $allLeaveData = [];
-                   for ($daysAgo = 90; $daysAgo < 180; $daysAgo++) {
-                // Calculate the date for which to fetch leave data
-                   $leaveUsersService->dates = Jalalian::now()->subDays($daysAgo)->format('Y/m/d');
-        */
         // Prepare SOAP request for leave data
         $soapRequest = $leaveUsersService->prepareSoapRequest();
 
@@ -66,15 +61,12 @@ class ETSClient
         // Extract and process SOAP response for leave data
         $leaveData = $leaveUsersService->receiveSoapResponse($soapResponse);
 
-        /* *** Uncomment the following line just to increase the timespan of update instead of daily to specific numbers of days
-                $allLeaveData = array_merge($allLeaveData, $leaveUsersService->processSoapResponse($leaveData));
-        */
         // Combine or update all leave data
         $allLeaveData = $leaveUsersService->processSoapResponse($leaveData);
 
         // Process leave data
         $processedLeaveData = $leaveUsersService->processAttendance($allLeaveData);
-//        }
+
         // Persist data into DB - leaves table | Leave model
         $leaveUsersService->updateUsers();
 
@@ -82,6 +74,55 @@ class ETSClient
             'message' => 'Attendance data on leaves processed successfully',
             'data' => [
                 !empty($processedLeaveData) ? $processedLeaveData : 'There were no leave record to be persisted :(',
+            ]
+        ]);
+    }
+
+    public function updateLeaveForDateRange(int $fromDays = 1, int $toDays = 90)
+    {
+        $original = ini_get('max_execution_time');
+        ini_set('max_execution_time', 600);
+
+        $leaveUsersService = new OnLeaveUsers();
+        $allRawLeaveData = [];
+        $delayInSeconds = 0.3;
+        $totalDays = $toDays - $fromDays + 1;
+        $processedDays = 0;
+
+        for ($i = $fromDays; $i <= $toDays; $i++) {
+            $dateToFetch = Jalalian::now()->subDays($i)->format('Y/m/d');
+            $leaveUsersService->currentDate = $dateToFetch;
+
+            try {
+                $soapRequest = $leaveUsersService->prepareSoapRequest();
+                $soapResponse = $leaveUsersService->sendSoapRequest($soapRequest);
+                $dailyLeaveData = $leaveUsersService->receiveSoapResponse($soapResponse);
+
+                if ($dailyLeaveData) {
+                    $allRawLeaveData = array_merge($allRawLeaveData, $leaveUsersService->processSoapResponse($dailyLeaveData));
+                }
+
+                $processedDays++;
+                Log::info("Successfully fetched leave data for {$dateToFetch} ({$processedDays}/{$totalDays})");
+
+            } catch (\Exception $e) {
+                Log::error("API Error fetching leave data for {$dateToFetch}: {$e->getMessage()}");
+            }
+
+            if ($i < $toDays) sleep($delayInSeconds);
+        }
+
+        $processedLeaveData = $leaveUsersService->processAttendance($allRawLeaveData);
+        $leaveUsersService->updateUsers();
+        ini_set('max_execution_time', $original);
+
+        return response()->json([
+            'message' => "Leave data processed successfully for days {$fromDays} to {$toDays}",
+            'data' => [
+                'records_processed' => count($processedLeaveData),
+                'days_fetched' => $totalDays,
+                'from_days_ago' => $fromDays,
+                'to_days_ago' => $toDays
             ]
         ]);
     }

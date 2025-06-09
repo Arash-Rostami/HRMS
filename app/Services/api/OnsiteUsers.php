@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class OnsiteUsers extends ETS
 {
-
     public function prepareSoapRequest(): string
     {
         return <<<EOT
@@ -39,8 +38,10 @@ EOT;
     {
         $soapBody = $this->extractBody($response);
 
+
         // Find the GetAllIoRecordsByDateResponse element within soapBody
         $getRecordsResponse = $soapBody->children('http://tempuri.org/')->GetAllIoRecordsByDateResponse;
+
 
         // Find the GetAllIoRecordsByDateResult element within GetIoRecordsResponse
         return $getRecordsResponse->GetAllIoRecordsByDateResult->IoRecordDataModel;
@@ -54,7 +55,6 @@ EOT;
             }
             // Update presence status based on entry and exit times for mission records
             foreach ($this->attendanceData as $employeeCode => $data) {
-
                 $this->attendanceData = $this->changePresence($employeeCode);
             }
 
@@ -91,30 +91,13 @@ EOT;
         return $this->attendanceData;
     }
 
-// Deprecated
-//    public function persistData()
-//    {
-//        $existingRecords = Timesheet::whereIn('employee_code', array_column($this->attendanceData, 'employeeCode'))
-//            ->whereDate('created_at', Carbon::today())
-//            ->get();
-//
-//        $newRecords = collect($this->attendanceData)->filter(function ($attendance) use ($existingRecords) {
-//            return !empty($attendance['exitTime']) && !$existingRecords->contains('employee_code', $attendance['employeeCode']);
-//        });
-//
-//        foreach ($newRecords as $record) {
-//            Timesheet::create([
-//                'employee_code' => $record['employeeCode'],
-//                'employee_name' => $record['employeeName'],
-//                'entry_time' => $record['entryTime'],
-//                'exit_time' => $record['exitTime'],
-//                'mission' => $record['mission'],
-//                'presence' => $record['presence'],
-//            ]);
-//        }
-//    }
+    public function updateUsers(): void
+    {
+        $this->updateUserStatus();
+        $this->persistData();
+    }
 
-    public function updatePresentUsers(): void
+    public function updateUserStatus(): void
     {
         $codes = collect($this->attendanceData)
             ->pluck('employeeCode')
@@ -150,25 +133,12 @@ EOT;
             if ($newPresence === 'onsite') {
                 $this->logUserIn($profile);
             }
+
+            if ($newPresence === 'on-leave') {
+                $this->logUserOut($profile);
+            }
         }
     }
-
-
-// Deprecated
-//    public function updatePresentUsers()
-//    {
-//        foreach ($this->attendanceData as $attendance) {
-//            $profile = Profile::findByPersonnelId($attendance['employeeCode']);
-//            if ($profile) {
-//                if ($attendance['presence'] == 'onsite') {
-//                    $this->logUserIn($profile);
-//                };
-//                if ($attendance['presence'] == 'on-leave') {
-//                    $this->logUserOut($profile);
-//                };
-//            }
-//        }
-//    }
 
     public function persistData()
     {
@@ -182,9 +152,8 @@ EOT;
             ->pluck('employee_code')
             ->all();
 
-        $recordsToInsert = [];
-        $now = Carbon::now();
 
+        $recordsToInsert = [];
         foreach ($this->attendanceData as $record) {
             $isNewRecord = !empty($record['exitTime']) && !in_array($record['employeeCode'], $existingEmployeeCodes);
 
@@ -196,8 +165,8 @@ EOT;
                     'exit_time' => $record['exitTime'],
                     'mission' => $record['mission'],
                     'presence' => $record['presence'],
-                    'created_at' => $now,
-                    'updated_at' => $now,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
         }
@@ -205,25 +174,6 @@ EOT;
         if (!empty($recordsToInsert)) {
             DB::transaction(fn() => Timesheet::insert($recordsToInsert));
         }
-    }
-
-    public function updateNonPresentUsers(): void
-    {
-        $nonPresentProfiles = Profile::findNonPresentProfiles($this->attendanceData);
-
-        // Update non-present profiles' presence status
-        foreach ($nonPresentProfiles as $profile) {
-            if (optional($profile->user)->presence !== 'on-leave') {
-                $this->logUserOut($profile);
-            }
-        }
-    }
-
-    public function updateUsers(): void
-    {
-        $this->updatePresentUsers();
-        $this->persistData();
-        $this->updateNonPresentUsers();
     }
 }
 

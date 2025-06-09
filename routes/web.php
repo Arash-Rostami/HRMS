@@ -1,27 +1,17 @@
 <?php
 
 //use App\Http\Controllers\ISPController;
-use App\Http\Controllers\Cr24Controller;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\LoginController;
-
-//use \App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ReservationController;
-
-//use App\Http\Controllers\SalesDashController;
 use App\Http\Controllers\SarvCRMController;
 use App\Http\Controllers\ShopHomePageController;
 use App\Http\Controllers\UserEmailController;
-use App\Http\Controllers\UserLoginTest;
+use App\Http\Controllers\UserPanelController;
 use App\Http\Controllers\UserSmsController;
-use App\Models\Suggestion;
-use App\Services\ETSClient;
-use Illuminate\Support\Facades\Route;
-use \App\Http\Controllers\UserPanelController;
-
-//use App\Http\Controllers\WeatherController;
-
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Route;
+
 
 //for the test purpose
 //Route::view('htmx','/test');
@@ -35,15 +25,6 @@ Route::get('/clear-cache', function () {
 
     return 'Cache cleared successfully.';
 });
-
-
-Route::get('/update-attendance', function () {
-
-    (new ETSClient())->updateAttendance();
-//    Artisan::call('data:attendance');
-//    return response()->json(['message' => 'Attendance update initiated']);
-});
-
 
 
 // Parking daily live view/report +

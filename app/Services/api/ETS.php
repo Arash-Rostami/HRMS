@@ -19,8 +19,7 @@ abstract class ETS
 
     public function __construct()
     {
-        //        78.38.248.74:8085 | 85.133.175.118:8060 -- server config
-        //        192.168.10.4:8085 |0 -- local config
+        //  78.38.248.74:8085 -- server config |  192.168.10.4:8085 -- local config
         $this->ip = new Uri(config('services.my_service.api_url'));
         $this->client = new Client();
         $this->currentDate = Jalalian::now()->format('Y/m/d');
@@ -36,25 +35,20 @@ abstract class ETS
 
     public function changePresence(string $employeeCode): array
     {
-        $entryTime = $this->attendanceData[$employeeCode]['entryTime'];
-        $exitTime = $this->attendanceData[$employeeCode]['exitTime'];
-
-
-        if (!is_null($entryTime) && is_null($exitTime)) {
-            $this->attendanceData[$employeeCode]['presence'] = 'onsite';
-        } elseif (!is_null($entryTime) && !is_null($exitTime)) {
-            $this->attendanceData[$employeeCode]['presence'] = 'on-leave';
-        } else {
-            $this->attendanceData[$employeeCode]['presence'] = 'off-site';
-        }
+        $this->attendanceData[$employeeCode]['presence'] = match (
+            (int)(isset($this->attendanceData[$employeeCode]['entryTime'])) << 1 |
+            (int)(isset($this->attendanceData[$employeeCode]['exitTime']))
+        ) {
+            2 => 'onsite',
+            3 => 'on-leave',
+            default => 'off-site',
+        };
         return $this->attendanceData;
     }
 
     public function logUserOut(mixed $profile)
     {
-        if ($profile->user == null) {
-            return;
-        }
+        if ($profile->user == null) return;
 
         // Dispatch the event to update the last seen time
         event(new UpdateLastSeen($profile->user));
@@ -62,19 +56,15 @@ abstract class ETS
         event(new UserLoggedOut($profile->user));
     }
 
-
     public function logUserIn(mixed $profile)
     {
-        if ($profile->user == null) {
-            return;
-        }
+        if ($profile->user == null) return;
 
         // Dispatch the event to update the last seen time
         event(new UpdateLastSeen($profile->user));
         // Dispatch the event to update presence status to onsite
         event(new UserLoggedInETS($profile->user));
     }
-
 
     abstract public function prepareSoapRequest(): string;
 
