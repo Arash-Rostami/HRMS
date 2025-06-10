@@ -3,6 +3,7 @@
     <div class="w-full md:w-1/2 text-center p-1" style="height: 125%;">
         @foreach($pins as $pin)
             <div class="card-link rounded links-thumbnails links-thumbnails-color h-auto p-0">
+                <span class="relative top-2 left-1/2 bg-main-mode text-white text-xs px-1 py-0 md:px-2 md:py-1 rounded cursor-help" title="pinned post">📌</span>
                 <img id="postImage" class="mx-auto" src="{{ $pin->image }}" alt="post"
                      onload=" (this.naturalWidth > this.naturalHeight) ? this.classList.add('w-full'): this.style.maxHeight = '500px'">
                 {{--post--}}
