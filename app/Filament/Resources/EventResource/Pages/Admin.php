@@ -103,5 +103,4 @@ class Admin
             ->toggleable()
             ->searchable();
     }
-
 }

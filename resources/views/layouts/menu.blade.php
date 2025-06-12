@@ -92,7 +92,7 @@
                     <div
                         class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex cursor-pointer">
                         <x-nav-link>
-                            <x-weather/>
+{{--                            <x-weather/>--}}
                         </x-nav-link>
                     </div>
 

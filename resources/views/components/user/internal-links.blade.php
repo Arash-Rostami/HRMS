@@ -15,7 +15,7 @@
                             @click="showModals=true;showReservation=false; showPost=false; showProduct = true; "
                         @endif
                         title="{{ $chunk->url_description }}">
-                    <div class="card-link rounded links-thumbnails links-thumbnails-color">
+                    <div class="card-link rounded links-thumbnails links-thumbnails-color bg-weekend">
                         <img class="border-solid border-b-2 border-gray-600" src="{{ $chunk->image }}"
                              alt="{{ $chunk->image_description }}">
                         <div class="card-link-text tracking-wider">
@@ -29,12 +29,3 @@
         @endforeach
     </div>
 @endforeach
-
-
-
-
-
-
-
-
-

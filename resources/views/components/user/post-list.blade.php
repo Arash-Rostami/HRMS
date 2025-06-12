@@ -1,7 +1,7 @@
 @foreach($posts as $post)
     <div class="w-1/2 text-center h-auto mt-1 p-1">
         <div
-            class="card-link rounded links-thumbnails links-thumbnails-color h-full p-0 min-h-[470px] md:min-h-[450px] flex flex-col justify-between">
+            class="card-link rounded links-thumbnails links-thumbnails-color h-full p-0 min-h-[470px] md:min-h-[450px] flex flex-col justify-between bg-weekend">
             <div>
                 <img class="mx-auto max-h-44 w-auto" src="{{$post->image}}" alt="post">
                 {{-- post --}}
@@ -22,7 +22,7 @@
             </div>
             <div class="text-center mb-2">
                 {{-- desktop or tablet --}}
-                <a class="user-panel-modal post-link md:px-4 md:py-2 md:mt-4 hidden md:block rounded mx-auto cursor-pointer"
+                <a class="user-panel-modal post-link md:mt-4 hidden md:block mx-auto cursor-pointer bg-main-mode p-2 md:px-2 md:py-1 shadow-lg rounded text-white hover:opacity-75"
                    x-on:click="
                    showModals=true;showPost=true;
                        postTitle = '{{ $post->title }}';
@@ -33,7 +33,7 @@
                 </a>
                 <br>
                 {{-- cellphone --}}
-                <a class="user-panel-modal post-link text-sm md:hidden px-4 py-1 relative bottom-4 rounded cursor-pointer"
+                <a class="user-panel-modal post-link text-sm md:hidden px-4 py-1 relative bottom-4 cursor-pointer bg-main-mode p-2 md:px-2 md:py-1 shadow-lg rounded text-white hover:opacity-75"
                    x-on:click="
                    showModals=true;showPost=true;
                        postTitle = '{{ $post->title }}';

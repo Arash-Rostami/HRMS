@@ -46,7 +46,7 @@
                 this.openSMSModal = false;}
         }">
     @foreach($presences as $presenceType => $details)
-        <div class="w-full card-job links-thumbnails my-1">
+        <div class="w-full card-job links-thumbnails my-1 {{ $presenceType == 'onsite' ? 'bg-weekend' : '' }}">
             <div class="flex clear-both cursor-help" title="working {{ $presenceType }}: {{ $details['count'] }}">
                 <i class="fa {{ $details['icon'] }} {{ $details['color'] }} m-2"></i>
             </div>

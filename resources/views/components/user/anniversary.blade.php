@@ -9,7 +9,8 @@
     x-cloak
 >
     <div
-        class="futuristic-card relative flex flex-col w-[360px] mx-auto @if(isDarkMode()) bg-gradient-to-br from-gray-800 via-slate-900 to-blue-900 @else bg-gradient-to-br from-[#1E2630] via-[#2B3340] to-[#79889E] @endif rounded-xl shadow-2xl text-white overflow-hidden">
+        class="futuristic-card relative flex flex-col w-[360px] mx-auto rounded-xl shadow-2xl text-white overflow-hidden
+        @if(isDarkMode()) bg-gradient-to-br from-[#79889E] via-slate-900 to-gray-800 @else bg-gradient-to-br from-[#1E2630] via-[#2B3340] to-[#79889E] @endif ">
         <canvas
             x-ref="confettiCanvas"
             class="absolute top-0 left-0 w-full h-full pointer-events-none z-10"

@@ -2,7 +2,7 @@
     x-data="{openToast: false, toastMessage:'SMS sent successfully :)',openModal: @entangle('isConfirmModalOpen'), receptor: @entangle('receptor'),event: @entangle('selectedEventType')}">
     <div class="flex flex-col-reverse md:flex-row mx-auto text-sm md:text-base">
         {{--    Events chart--}}
-        <div id="events" class="flex flex-col mt-5 md:mt-0 md:w-[30%] md:mr-2 events-scrollable shadow-2xl"
+        <div id="events" class="flex flex-col mt-5 md:mt-0 md:w-[30%] md:mr-2 max-h-[350px] overflow-y-scroll shadow-2xl h-2/3 p-[10px] rounded-[5px]"
              wire:init="loadEvents()">
             <div class="force-overflow text-center">
                 @if($selectedDayEvents)
@@ -21,7 +21,7 @@
                         ]);
                     @endphp
                     @if($totalEvents == 0)
-                        <div class="py-2 px-4 mb-2 rounded-lg border">
+                        <div class="py-2 px-4 mb-2 rounded-lg  links-thumbnails links-thumbnails-color">
                             <span>📭 No events for this day :(</span>
                         </div>
                     @else
@@ -55,45 +55,59 @@
         </div>
 
         {{-- Calender chart--}}
-        <div class="flex flex-col md:w-[65%] md:ml-2">
+        <div class="flex flex-col md:w-[65%] md:ml-2 mb-2">
             <div id="calendar-container">
-                <div id="calendar" class="iranian-calendar">
+                <div id="calendar" class="grid grid-cols-7">
+                    {{-- Weekday Headers --}}
                     @foreach($persianWeekdayNames as $day)
-                        <div
-                            class="day bg-main-mode @if($loop->first) rounded-l-lg or @elseif($loop->last) rounded-r-lg @endif">{{ $day }}</div>
+                        <div class="text-center text-white p-2 bg-main-mode rounded mx-1 mb-2  links-thumbnails links-thumbnails-color">
+                            {{ $day }}
+                        </div>
                     @endforeach
+                    {{-- Empty Day Cells (for month start alignment) --}}
                     @foreach($emptyDays as $emptyDay)
                         <div class="day empty"></div>
                     @endforeach
+
+                    {{-- Calendar Day Cells --}}
                     @foreach($calendarData as $dayData)
-                        <div class="day rounded
-                         @if(isWeekend($currentYear, $currentMonth, $dayData['day'])) bg-weekend  @endif
-                         @if($dayData['isCurrentDay']) bg-main-mode flash-calendar @endif">
-                            <span wire:click="loadEvents('{{ $dayData['day'] }}')">
-                                {{ $dayData['day'] }}
-                                @foreach(['startDates' => 'anniversary', 'birthDates' => 'birthday', 'otherEvents' => 'events'] as $eventType => $iconType)
-                                    @if(count($dayData[$eventType]) > 0)
-                                        <span title="{{ ucfirst($iconType) }} Events">
-                                       {{ $eventIcons[$iconType] }}</span>
-                                    @endif
-                                @endforeach
-                            </span>
+                        <div class="day h-14 rounded-lg flex items-center justify-center
+                        links-thumbnails links-thumbnails-color transition-all duration-200 ease-in-out
+                        @if(isWeekend($currentYear, $currentMonth, $dayData['day'])) bg-weekend @endif
+                        @if($dayData['isCurrentDay']) bg-main-mode flash-calendar @endif">
+
+                <span class="w-full h-full flex flex-col items-center justify-center cursor-pointer"
+                      wire:click="loadEvents('{{ $dayData['day'] }}')">
+                    <span>{{ $dayData['day'] }}</span>
+                    {{-- Event Icons --}}
+                    <div class="flex space-x-1 mt-1 shadow-lg">
+                        @foreach(['startDates' => 'anniversary', 'birthDates' => 'birthday', 'otherEvents' => 'events'] as $eventType => $iconType)
+                            @if(count($dayData[$eventType]) > 0)
+                                <span title="{{ ucfirst($iconType) }} Events">
+                                    {{ $eventIcons[$iconType] }}
+                                </span>
+                            @endif
+                        @endforeach
+                    </div>
+                </span>
                         </div>
                     @endforeach
                 </div>
             </div>
             {{--        buttons --}}
-            <div class="buttons flex justify-around md:justify-between items-center" x-ignore>
+            <div class="buttons flex justify-around md:justify-between items-center mt-2"
+                 x-ignore>
                 <button wire:click="navigateToPreviousMonth"
-                        class="float-left bg-main-mode p-2 md:p-3 shadow-lg rounded">
-                    <span>🡰</span>
+                        class="float-left bg-main-mode px-3 py-1 shadow-lg rounded text-white hover:opacity-75">
+                    <span> « </span>
                 </button>
                 <div id="currentMonth">{{ $persianMonthIcons[$currentMonth-1] }} {{ makeDoubleDigit($currentMonth) }}
                     <span class="text-main">|</span>
                     {{$currentYear}}
                 </div>
-                <button wire:click="navigateToNextMonth" class="float-right bg-main-mode p-2 md:p-3 shadow-lg rounded">
-                    <span>🡲</span>
+                <button wire:click="navigateToNextMonth"
+                        class="float-right bg-main-mode px-3 py-1 shadow-lg rounded text-white hover:opacity-75">
+                    <span> » </span>
                 </button>
             </div>
         </div>

@@ -44,12 +44,11 @@
                     {{--                 FAQs Section --}}
                     <x-user.FAQ :faqs="$faqs"></x-user.FAQ>
                 </div>
-
-            <x-user.anniversary></x-user.anniversary>
+                <x-user.anniversary></x-user.anniversary>
 
                 {{--  Other Components --}}
                 {{--  User Emails Section --}}
-{{--                <livewire:user-emails/>--}}
+                {{--                <livewire:user-emails/>--}}
 
                 {{--  Main Layout for Modals --}}
                 <x-user.modal></x-user.modal>
@@ -70,7 +69,7 @@
 
             {{-- Onboarding Component Section --}}
             @if ( hasChosenOnboarding() )
-                <x-user.onboarding></x-user.onboarding>
+                <x-user.onboarding.main></x-user.onboarding.main>
             @endif
 
             {{-- Analytics Component Section --}}
@@ -117,7 +116,7 @@
         </div>
 
         <x-user.scroll-button/>
-{{--        @include('components.user.targrade')--}}
+        {{--        @include('components.user.targrade')--}}
     </div>
 @endsection
 

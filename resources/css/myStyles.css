@@ -963,39 +963,95 @@ select:focus, select option:hover {
 }
 
 .welcome-bg {
-    background: transparent url('/img/user/welcome.svg') no-repeat top right;
-    background-size: contain;
+    background: transparent url('/img/user/welcome.svg') no-repeat bottom left;
     background-blend-mode: multiply;
+    background-size: 45%;
 }
 
 .schedule-bg {
-    background: transparent url('/img/user/schedule.svg') no-repeat top right;
+    background: transparent url('/img/user/schedule.svg') no-repeat top left;
     background-size: contain;
     background-blend-mode: multiply;
 }
 
 .info-bg {
-    background: transparent url('/img/user/info.svg') no-repeat bottom right;
+    background: transparent url('/img/user/info.svg') no-repeat bottom left;
     background-size: 60%;
     background-blend-mode: multiply;
 }
 
 .charts-bg {
-    background: transparent url('/img/user/charts.svg') no-repeat top right;
+    background: transparent url('/img/user/charts.svg') no-repeat top left;
     background-size: contain;
     background-blend-mode: multiply;
 }
 
 .files-bg {
-    background: transparent url('/img/user/files.svg') no-repeat bottom right;
+    background: transparent url('/img/user/files.svg') no-repeat bottom left;
     background-size: contain;
     background-blend-mode: multiply;
 }
 
 .onboarding-bg {
-    background: transparent url('/img/user/questionaire.svg') no-repeat bottom right;
+    background: transparent url('/img/user/questionaire.svg') no-repeat bottom left;
     background-size: contain;
     background-blend-mode: multiply;
+}
+
+.video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+}
+.video-modal-content {
+    position: relative;
+    width: 95%;
+    height: 95%;
+    max-width: 1200px;
+    max-height: 80vh;
+    background-color: rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.video-modal-content video {
+    border-radius: 18px;
+}
+
+.video-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 2.5rem;
+    color: #fff;
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+    z-index: 10000;
+}
+
+.welcome-thumbnails {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
 .animatedModal {

@@ -7,20 +7,16 @@
                     <div class="w-full md:w-[15%] md:pl-12 mb-4 md:mb-0">
                         <template x-if="!isReport{{$report->id}}Open">
                             <button @click="isReport{{$report->id}}Open = true" title="click to view report"
-                                    class="bg-green-800 text-white px-4 py-2 rounded hover:opacity-50 mx-auto">
+                                    class="bg-main-mode p-2 md:px-2 md:py-1 shadow-lg rounded text-white px-4 py-2 hover:opacity-50 mx-auto">
                                 <i class="fas fa-eye"></i>
-                                <span class="hidden md:inline-block ml-1">
-                            <i class="fas fa-file-pdf mr-2"></i>
-                        </span>
+                                <span class="hidden md:inline-block ml-1"><i class="fas fa-file-pdf mr-2"></i></span>
                             </button>
                         </template>
                         <template x-if="isReport{{$report->id}}Open">
                             <button @click="isReport{{$report->id}}Open = false" title="click to close report"
                                     class="bg-red-800 text-white px-4 py-2 rounded hover:opacity-50">
                                 <i class="fas fa-times"></i>
-                                <span class="hidden md:inline-block ml-1">
-                            <i class="fas fa-file-pdf mr-2"></i>
-                        </span>
+                                <span class="hidden md:inline-block ml-1"><i class="fas fa-file-pdf mr-2"></i></span>
                             </button>
                         </template>
                     </div>
