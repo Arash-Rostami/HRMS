@@ -73,7 +73,7 @@ class SuggestionProcess extends Component
     {
         $suggestionWithReview = $this->suggestionData->fetch();
 
-        return view('livewire.suggestion-process', compact('suggestionWithReview'));
+        return view('components.user.suggestion.process', compact('suggestionWithReview'));
     }
 
     public function resetForm()

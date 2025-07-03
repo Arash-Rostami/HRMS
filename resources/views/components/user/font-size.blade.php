@@ -1,5 +1,5 @@
 @props([
-    'returnUrl' => route('user.panel.onboarding'),
+    'returnUrl',
 ])
 @php
     $buttons = [
@@ -27,7 +27,7 @@
         <button
             @click="{{ $btn['action'] }}"
             @isset($btn['disabledExpression']) :disabled="{{ $btn['disabledExpression'] }}" @endisset
-            class="bg-main-mode hover:opacity-50 py-1 px-2 rounded transition-opacity {{ isset($btn['disabledExpression']) ? 'disabled:opacity-50 disabled:cursor-not-allowed' : '' }}" {{-- Added disabled styles here --}}
+            class="bg-main-mode hover:opacity-50 py-1 px-2 rounded transition-opacity {{ isset($btn['disabledExpression']) ? 'disabled:opacity-50 disabled:cursor-not-allowed' : '' }}"
             title="{{ $btn['title'] }}"
         >
             <i class="fas fa-{{ $btn['icon'] }} text-white"></i>

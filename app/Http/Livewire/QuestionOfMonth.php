@@ -10,10 +10,8 @@ use Livewire\Component;
 
 class QuestionOfMonth extends Component
 {
-
     public $questions;
     public string $response = '';
-
 
     public function mount()
     {
@@ -45,6 +43,6 @@ class QuestionOfMonth extends Component
 
     public function render()
     {
-        return view('livewire.question-of-month');
+        return view('components.user.question.topic');
     }
 }

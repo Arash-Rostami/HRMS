@@ -10,61 +10,56 @@
          postContent: '',
          postImage: '',
          postDate: ''
-         }" x-cloak>
+         }"
+         x-cloak>
         <div>
             {{-- Main Dashboard Components --}}
             @if ( showMainDashboardComponents() )
                 {{--   Icon and Slogan Positioned on the Right Corner --}}
-                <x-user.stickyNav></x-user.stickyNav>
+                <x-user.navbar.nav></x-user.navbar.nav>
                 {{--                 CEO Monthly Question Section --}}
-                <x-user.QoM :questions="$questions"></x-user.QoM>
+                <x-user.question.main :questions="$questions"></x-user.question.main>
 
                 <div id="sortMe">
                     {{--                Calendar Section--}}
-                    <x-user.timetable></x-user.timetable>
+                    <x-user.calendar.main></x-user.calendar.main>
 
                     {{--                 Posts Section --}}
-                    <x-user.post :posts="$posts" :pins="$pins"></x-user.post>
+                    <x-user.posts.main :posts="$posts" :pins="$pins"></x-user.posts.main>
 
                     {{--                 User Status Section --}}
-                    <x-user.status :users="$users"></x-user.status>
+                    <x-user.status.main :users="$users"></x-user.status.main>
 
                     {{--                 Job Ads Section --}}
-                    <x-user.ad :jobs="$jobs"></x-user.ad>
-
+                    <x-user.job.main :jobs="$jobs"></x-user.job.main>
 
                     {{--                 Reports Section --}}
-                    <x-user.reports :reports="$reports"></x-user.reports>
-
+                    <x-user.report.main :reports="$reports"></x-user.report.main>
 
                     {{--                 Corporate and Persol Links Sections --}}
-                    <x-user.corporate-links :links="$links"></x-user.corporate-links>
-                    <x-user.persol-links :links="$links"></x-user.persol-links>
+                    <x-user.link.external.main :links="$links"></x-user.link.external.main>
+                    <x-user.link.internal.main :links="$links"></x-user.link.internal.main>
 
                     {{--                 FAQs Section --}}
-                    <x-user.FAQ :faqs="$faqs"></x-user.FAQ>
+                    <x-user.faq.main :faqs="$faqs"></x-user.faq.main>
                 </div>
                 <x-user.anniversary></x-user.anniversary>
-
-                {{--  Other Components --}}
-                {{--  User Emails Section --}}
-                {{--                <livewire:user-emails/>--}}
 
                 {{--  Main Layout for Modals --}}
                 <x-user.modal></x-user.modal>
 
                 {{--   Icon of handy items Positioned on the Left Corner --}}
-                <x-user.toolbox/>
+                <x-user.navbar.toolbox/>
             @else
                 @if ( showProfile() )
                     {{-- User Profile Section --}}
-                    <x-user.profile :users="$users"></x-user.profile>
+                    <x-user.profile.main :users="$users"></x-user.profile.main>
                 @endif
             @endif
 
             {{-- Music Component Section --}}
             @if ( hasChosenMusic() )
-                <x-user.music></x-user.music>
+                <x-user.music.main></x-user.music.main>
             @endif
 
             {{-- Onboarding Component Section --}}
@@ -74,49 +69,47 @@
 
             {{-- Analytics Component Section --}}
             @if ( hasChosenAnalytics() )
-                <x-user.statistics></x-user.statistics>
+                <x-user.analytics.main></x-user.analytics.main>
             @endif
 
             {{-- Surveys component Section --}}
             @if( showSurvey())
-                <x-user.surveys></x-user.surveys>
+                <x-user.survey.surveys></x-user.survey.surveys>
             @endif
 
             {{-- Suggestion component Section --}}
             @if( hasChosenSuggestion() )
-                <x-user.suggestion></x-user.suggestion>
+                <x-user.suggestion.main></x-user.suggestion.main>
             @endif
 
             {{-- Delegation component Section --}}
             @if( hasChosenDelegation())
-                <x-user.delegation :delegations="$delegations"></x-user.delegation>
+                <x-user.authorities.main :delegations="$delegations"></x-user.authorities.main>
             @endif
 
             {{-- DMS component Section --}}
             @if( hasChosenDMS())
-                <x-user.dms></x-user.dms>
+                <x-user.dms.main></x-user.dms.main>
             @endif
 
+            {{-- THS component Section --}}
             @if ( hasChosenTHS() )
-                <x-user.ths></x-user.ths>
+                <x-user.ths.main></x-user.ths.main>
             @endif
-
 
             {{--Progress bar component Section--}}
             {{--        <x-user.progressModal/>--}}
 
             {{--This is the main footer with additional feature for translation based on user's choice--}}
             <x-dashboard.footer>
-                <x-user.occasion/>
+                <x-user.occasion.main/>
                 <x-dashboard.toggle-google :translatePage="$translatePage"/>
             </x-dashboard.footer>
 
             {{--             Top Head Alert Message --}}
             <x-dashboard.notification></x-dashboard.notification>
         </div>
-
-        <x-user.scroll-button/>
-        {{--        @include('components.user.targrade')--}}
+        <x-user.navbar.scroll/>
     </div>
 @endsection
 

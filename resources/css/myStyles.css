@@ -969,8 +969,8 @@ select:focus, select option:hover {
 }
 
 .schedule-bg {
-    background: transparent url('/img/user/schedule.svg') no-repeat top left;
-    background-size: contain;
+    background: transparent url('/img/user/schedule.svg') no-repeat 15px 15px;
+    background-size: 300px;
     background-blend-mode: multiply;
 }
 
@@ -980,15 +980,15 @@ select:focus, select option:hover {
     background-blend-mode: multiply;
 }
 
-.charts-bg {
-    background: transparent url('/img/user/charts.svg') no-repeat top left;
-    background-size: contain;
+.accounts-bg {
+    background: transparent url('/img/user/charts.svg') no-repeat bottom left;
+    background-size: 25%;
     background-blend-mode: multiply;
 }
 
 .files-bg {
     background: transparent url('/img/user/files.svg') no-repeat bottom left;
-    background-size: contain;
+    background-size: 45%;
     background-blend-mode: multiply;
 }
 
@@ -1049,6 +1049,7 @@ select:focus, select option:hover {
     z-index: 10000;
 }
 
+
 .welcome-thumbnails {
     cursor: pointer;
     transition: all 0.2s ease-in-out;
@@ -1075,6 +1076,63 @@ select:focus, select option:hover {
     -o-transition: all 0.2s;
     transition: all 0.2s;
     cursor: pointer;
+}
+
+.section-divider {
+    border-top: 1px dashed #cbd5e1;
+    margin: 2rem 0;
+}
+
+.highlight-card {
+    border-left: 4px solid #3b82f6;
+    transition: all 0.3s ease;
+}
+
+.highlight-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.benefit-icon {
+    background-color: #dbeafe;
+    color: #3b82f6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 12px;
+}
+
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    border: 4px solid #3b82f6;
+}
+
+.step-badge {
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 20px;
+    padding: 2px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.benefit-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .close-button:hover {

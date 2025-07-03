@@ -141,7 +141,7 @@ class THS extends Component
 
     public function render()
     {
-        return view('livewire.t-h-s', [
+        return view('components.user.ths.table', [
             'requestAreas' => $this->requestAreas,
             'tickets' => $this->loadTickets(),
             'ticketToRate' => $this->ticketToRate,

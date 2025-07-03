@@ -502,7 +502,7 @@ class Admin
             ->image()
             ->disk('filament')
             ->directory('/img/user/profiles/')
-            ->maxSize(1024 / 4)
+            ->maxSize(1024 )
             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'])
             ->enableOpen()
             ->enableDownload()
@@ -521,12 +521,23 @@ class Admin
             ->multiple()
             ->disk('filament')
             ->directory('/docs/profile/')
-            ->maxSize(1024)
+            ->maxSize(5120)
             ->enableOpen()
             ->enableDownload()
             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                $uniqueName = 'HR-profile-doc-' . time() . '-' . Str::random(8);
-                return (string)Str::of($file->getClientOriginalName())->prepend($uniqueName);
+                $profile = auth()->user()?->profile;
+                $profileId = $profile->id;
+                $extension = $file->getClientOriginalExtension();
+                $timestamp = time();
+
+                $sameTsCount = collect($profile->attachments ?? [])
+                    ->map(fn($path) => basename($path))
+                    ->filter(fn($name) => Str::contains($name, "-{$timestamp}."))
+                    ->count();
+
+                $keySegment = $sameTsCount > 0 ? "other" . ($sameTsCount + 1) : "other";
+
+                return "HR-profile-doc-{$profileId}-{$keySegment}-{$timestamp}.{$extension}";
             });
     }
 

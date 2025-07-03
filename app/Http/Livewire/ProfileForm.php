@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Profile;
+use App\Services\DepartmentDetails;
 use App\Services\StepChecker;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -33,6 +34,7 @@ class ProfileForm extends Component
     public $idBookletNumber;
     public $degree;
     public $field;
+    public $thisYear;
     public $birthdate;
     public $birthYear;
     public $birthMonth;
@@ -58,6 +60,7 @@ class ProfileForm extends Component
     public $profile;
 
     public $showDeleteConfirmation;
+    public $departmentsList;
 
 
     protected $rules = [
@@ -106,6 +109,9 @@ class ProfileForm extends Component
             // If the profile exists, populate the form fields with the data
             $this->mountProfileData($this->profile);
         }
+
+        $this->departmentsList = DepartmentDetails::getDepartmentsArray();
+        $this->thisYear = Jalalian::now()->getYear();
 
         $this->checkStepCompletionStatus();
     }
@@ -183,7 +189,7 @@ class ProfileForm extends Component
 
     public function render()
     {
-        return view('livewire.profile-form');
+        return view('components.user.profile.form');
     }
 
 

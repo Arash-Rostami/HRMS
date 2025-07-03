@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Services\CancellationList;
 use App\Services\Date;
 use App\Services\DB;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB as Laravel;
@@ -34,6 +33,21 @@ class Desk extends Model
         return $query->count();
     }
 
+    private static function filterResult(mixed $filter, $query): void
+    {
+        match ($filter) {
+            null => true,
+            'today' => $query->whereDate('created_at', today()),
+            'week' => $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]),
+            'month' => $query->whereBetween('created_at', [Date::getStartOfMonth(), Date::getEndOfMonth()]),
+            'year' => $query->whereBetween('created_at', [
+                Date::makeDate(Date::getStartOfPersianYear()),
+                Date::makeDate(Date::getStartOfPersianYear(1) - 1)
+            ]),
+            default => false,
+        };
+    }
+
     public static function countDeleted($filter = null)
     {
         $query = self::where('soft_delete', 'true');
@@ -59,21 +73,6 @@ class Desk extends Model
             ->join('users', 'desks.user_id', '=', 'users.id')
             ->where('type', $type)
             ->count();
-    }
-
-    private static function filterResult(mixed $filter, $query): void
-    {
-        match ($filter) {
-            null => true,
-            'today' => $query->whereDate('created_at', today()),
-            'week' => $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]),
-            'month' => $query->whereBetween('created_at', [Date::getStartOfMonth(), Date::getEndOfMonth()]),
-            'year' => $query->whereBetween('created_at', [
-                Date::makeDate(Date::getStartOfPersianYear()),
-                Date::makeDate(Date::getStartOfPersianYear(1) - 1)
-            ]),
-            default => false,
-        };
     }
 
     public function getEnd()
@@ -146,7 +145,7 @@ class Desk extends Model
     {
         return $this->isNotCancelled()
             ->isNotDeactivated()
-            ->where('end_date', '>=', Carbon::now()->timestamp)
+            ->where('end_date', '>=', now()->timestamp)
             ->where('desks.user_id', '=', $user)
             ->join('seats', 'desks.seat_id', '=', 'seats.id')
             ->select('seats.*')
@@ -158,7 +157,7 @@ class Desk extends Model
         $users = $this
             ->isNotCancelled()
             ->isNotDeactivated()
-            ->where('end_date', '>=', Carbon::now()->timestamp)
+            ->where('end_date', '>=', now()->timestamp)
             ->join('users', 'desks.user_id', '=', 'users.id')
             ->select("users.id", "desks.number", "desks.start_date", "desks.end_date",
                 Laravel::raw("CONCAT(users.surname,', ',users.forename) AS fullName"))

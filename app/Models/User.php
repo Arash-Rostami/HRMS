@@ -8,9 +8,7 @@ use Filament\Models\Contracts\HasName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Builder;
 
 
 class User extends Authenticatable implements FilamentUser, HasName
@@ -53,27 +51,6 @@ class User extends Authenticatable implements FilamentUser, HasName
         'last_seen' => 'datetime',
     ];
 
-    public function canAccessFilament(): bool
-    {
-        return ($this->role == 'admin') or ($this->role == 'developer') or $this->hasVerifiedEmail();
-    }
-
-    public function desks()
-    {
-        return $this->hasMany(Desk::class);
-    }
-
-    public function profile()
-    {
-        return $this->hasOne(Profile::class);
-    }
-
-    public function suggestions(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Suggestion::class);
-    }
-
-
     /**
      * @param $name
      * @return mixed
@@ -84,23 +61,6 @@ class User extends Authenticatable implements FilamentUser, HasName
             ->orWhere('surname', 'LIKE', '%' . $name . '%')->get();
     }
 
-    public function getFilamentName(): string
-    {
-        return "{$this->forename}";
-    }
-
-    public function getFilamentAvatarUrl(): ?string
-    {
-        return $this->profile && $this->profile->image
-            ? public_path($this->profile->image)
-            : '';
-    }
-
-//    public function getLastSeenAttribute($value)
-//    {
-//        return Carbon::parse($value);
-//    }
-
     /**
      * @param $user
      * @return bool
@@ -108,16 +68,6 @@ class User extends Authenticatable implements FilamentUser, HasName
     public static function isUserActive($user): bool
     {
         return $user->status == 'active';
-    }
-
-    public function parks()
-    {
-        return $this->hasMany(Park::class);
-    }
-
-    public function cancellations()
-    {
-        return $this->hasMany(Cancellation::class);
     }
 
     /**
@@ -147,7 +97,6 @@ class User extends Authenticatable implements FilamentUser, HasName
             ->where('status', 'active')->count();
     }
 
-
     /**
      * @return int
      */
@@ -172,6 +121,11 @@ class User extends Authenticatable implements FilamentUser, HasName
         return self::where('status', 'inactive')->count();
     }
 
+//    public function getLastSeenAttribute($value)
+//    {
+//        return Carbon::parse($value);
+//    }
+
     /**
      * @return int
      */
@@ -187,22 +141,6 @@ class User extends Authenticatable implements FilamentUser, HasName
     public static function countType($var): int
     {
         return self::where('type', "$var")->count();
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasOffice(): bool
-    {
-        return $this->booking == 'office' || $this->booking == 'all';
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasParking(): bool
-    {
-        return $this->booking == 'parking' || $this->booking == 'all';
     }
 
     /**
@@ -224,15 +162,6 @@ class User extends Authenticatable implements FilamentUser, HasName
         return self::whereIn('booking', ['all', 'office'])
             ->where('status', 'active')
             ->count();
-    }
-
-
-    public function scopeFilter($query, array $filters)
-    {
-        $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('forename', 'like', '%' . $search . '%')
-                ->orWhere('surname', 'like', '%' . $search . '%');
-        });
     }
 
     public static function showInMonth()
@@ -266,57 +195,12 @@ class User extends Authenticatable implements FilamentUser, HasName
             ->get();
     }
 
-
-    public function getTodaysDeskExtension()
-    {
-        $todaysDesk = $this->desks()
-            ->where('start_date', '<=', now()->timestamp)
-            ->where('end_date', '>=', now()->timestamp)
-            ->where('state', 'active')
-            ->latest()
-            ->first();
-
-        return ($todaysDesk)
-            ? $todaysDesk->seat->extension
-            : (($this->profile) ? tel($this->profile->cellphone) : 'N/A');
-    }
-
-
-    public function getFullNameAttribute($value)
-    {
-        return "{$this->forename} {$this->surname}";
-    }
-
-    public function getInitialsAttribute($value)
-    {
-        return $this->forename . ' ' . initializeString($this->surname) . '.';
-    }
-
-    public function getForenameInitialsAttribute($value)
-    {
-        return initializeString($this->forename) . '. ' . $this->surname;
-    }
-
     public static function getPresentUsers()
     {
         return self::where('status', '=', 'active')
             ->where('forename', 'not like', '%Guest%')
             ->pluck('email')
             ->toArray();
-    }
-
-    public function permissions()
-    {
-        if ($this->role === 'admin' or $this->role === 'developer') {
-            return $this->hasMany(Permission::class);
-        }
-        return null;
-    }
-
-    public function timesheets()
-    {
-        return $this->hasManyThrough(Timesheet::class, Profile::class,
-            'user_id', 'employee_code', 'id', 'personnel_id');
     }
 
     public static function getActiveNonGuestUsers()
@@ -342,5 +226,119 @@ class User extends Authenticatable implements FilamentUser, HasName
                 $query->where('department', 'PS');
             })
             ->get();
+    }
+
+    public function appCredentials()
+    {
+        return $this->hasMany(App::class);
+    }
+
+    public function canAccessFilament(): bool
+    {
+        return ($this->role == 'admin') or ($this->role == 'developer') or $this->hasVerifiedEmail();
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+    public function suggestions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Suggestion::class);
+    }
+
+    public function getFilamentName(): string
+    {
+        return "{$this->forename}";
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->profile && $this->profile->image
+            ? public_path($this->profile->image)
+            : '';
+    }
+
+    public function parks()
+    {
+        return $this->hasMany(Park::class);
+    }
+
+    public function cancellations()
+    {
+        return $this->hasMany(Cancellation::class);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasOffice(): bool
+    {
+        return $this->booking == 'office' || $this->booking == 'all';
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasParking(): bool
+    {
+        return $this->booking == 'parking' || $this->booking == 'all';
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where('forename', 'like', '%' . $search . '%')
+                ->orWhere('surname', 'like', '%' . $search . '%');
+        });
+    }
+
+    public function getTodaysDeskExtension()
+    {
+        $todaysDesk = $this->desks()
+            ->where('start_date', '<=', now()->timestamp)
+            ->where('end_date', '>=', now()->timestamp)
+            ->where('state', 'active')
+            ->latest()
+            ->first();
+
+        return ($todaysDesk)
+            ? $todaysDesk->seat->extension
+            : (($this->profile) ? tel($this->profile->cellphone) : 'N/A');
+    }
+
+    public function desks()
+    {
+        return $this->hasMany(Desk::class);
+    }
+
+    public function getFullNameAttribute($value)
+    {
+        return "{$this->forename} {$this->surname}";
+    }
+
+    public function getInitialsAttribute($value)
+    {
+        return $this->forename . ' ' . initializeString($this->surname) . '.';
+    }
+
+    public function getForenameInitialsAttribute($value)
+    {
+        return initializeString($this->forename) . '. ' . $this->surname;
+    }
+
+    public function permissions()
+    {
+        if ($this->role === 'admin' or $this->role === 'developer') {
+            return $this->hasMany(Permission::class);
+        }
+        return null;
+    }
+
+    public function timesheets()
+    {
+        return $this->hasManyThrough(Timesheet::class, Profile::class,
+            'user_id', 'employee_code', 'id', 'personnel_id');
     }
 }

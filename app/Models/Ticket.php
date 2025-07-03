@@ -56,7 +56,7 @@ class Ticket extends Model
 
     public static $requestAreaOptions = [
         'support' => [
-            '' => 'Select an option',
+            '' => 'انتخاب نمایید',
             'windows_office' => 'Windows & Software',
             'vpn' => 'Internet, Wifi & VPN',
             'voip_telephone' => 'Telephone, VoIP & SIM Card',
@@ -69,7 +69,7 @@ class Ticket extends Model
             'other' => 'Other'
         ],
         'access' => [
-            '' => 'Select an option',
+            '' => 'انتخاب نمایید',
             'bi' => 'BI',
             'rahkaran' => 'Rahkaran',
             'file_server' => 'File Server',

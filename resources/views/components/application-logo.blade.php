@@ -1,4 +1,3 @@
-<img class="inline-block p-2" src="/img/persol-sms-logo-admin.png" width="50" alt="persol-logo" >
 <div class="inline-block my-auto" title="{{ config('app.name') }}">
     <img class="relative right-2 top-2"  width="25" alt="new-logo"
          @if(isAdminPage() or isDarkMode())
@@ -8,4 +7,6 @@
          @endif
         >
 </div>
+<img class="inline-block p-2 " src="/img/persol-sms-logo-admin.png" width="50" alt="persol-logo" >
+
 

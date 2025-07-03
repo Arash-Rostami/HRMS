@@ -7,7 +7,7 @@
             «
             </span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" title="<< previous"
+            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" title="<< "
                class="relative inline-flex items-center px-3 py-1 text-white bg-main-mode p-2 md:px-2 md:py-1 shadow-lg rounded persol-font hover:opacity-75">
                 «
             </a>
@@ -15,7 +15,7 @@
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" rel="next" title="next >>"
+            <a href="{{ $paginator->nextPageUrl() }}" rel="next" title=" >>"
                class="relative inline-flex items-center px-3 py-1 text-white bg-main-mode p-2 shadow-lg rounded persol-font hover:opacity-75">
                 »
             </a>

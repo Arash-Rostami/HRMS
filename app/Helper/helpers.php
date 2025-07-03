@@ -2,12 +2,10 @@
 
 use App\Http\Livewire\suggestion\ReviewSubmission;
 use App\Http\Livewire\suggestion\SuggestionData;
-use App\Http\Livewire\suggestion\SuggestionNotifier;
 use App\Http\Livewire\suggestion\SuggestionSubmission;
 use App\Models\DMS;
 use App\Models\Park;
 use App\Models\Profile;
-use App\Models\Review;
 use App\Models\Survey;
 use App\Models\Ticket;
 use App\Models\User;
@@ -22,7 +20,6 @@ use App\Services\UserStatistics;
 use App\Services\Utility;
 use App\Services\WeatherAPI;
 use Illuminate\Support\Facades\Cache;
-use Morilog\Jalali\Jalalian;
 
 
 function canCancelSuggestion($record)
@@ -149,13 +146,9 @@ function getFarsiNameOfDepartment($department)
     return DepartmentDetails::getDescription($department);
 }
 
-function getPersonnelCode($users)
+function getPersonnelCode()
 {
-    foreach ($users as $user) {
-        if ($user->id == auth()->user()->id && optional($user->profile)->personnel_id) {
-            return $user->profile->personnel_id;
-        }
-    }
+    return auth()->user()?->profile?->personnel_id ?: '';
 }
 
 function getOpenTicketCount()

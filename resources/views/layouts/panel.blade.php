@@ -2,14 +2,14 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <x-meta/>
-    <x-user.css/>
+    <x-user.assets.css/>
 </head>
 {{--<body class="user-panel antialiased container-scrollbar custom-scrollbar">--}}
 <body class="antialiased container-scrollbar custom-scrollbar">
 <div class="loading-line"></div>
 
 <!--customized menu of user panel -->
-@include('layouts.menu')
+<x-user.navbar.main />
 <!-- Page Content -->
 <main>
     @yield('content')
@@ -19,6 +19,6 @@
 @livewireScripts
 
 <!-- Scripts -->
-<x-user.js :translatePage="$translatePage" :jobs="$jobs"/>
+<x-user.assets.js :translatePage="$translatePage" :jobs="$jobs"/>
 </body>
 </html>

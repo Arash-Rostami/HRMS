@@ -2,20 +2,20 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\DMS as DMSModel;
 use App\Models\Read;
 use Livewire\Component;
-use App\Models\DMS as DMSModel;
 use Livewire\WithPagination;
 
 class DMS extends Component
 {
     use WithPagination;
 
-    protected $docs;
-    protected $types;
     public $confirmedDocs = [];
     public $readDocs = [];
     public $searchTerm = '';
+    protected $docs;
+    protected $types;
 
     public function mount()
     {
@@ -31,11 +31,6 @@ class DMS extends Component
     public function confirmRead($docId)
     {
         $this->confirmOrIncrementRead($docId);
-    }
-
-    public function incrementRead($docId)
-    {
-        $this->confirmOrIncrementRead($docId, true);
     }
 
     public function confirmOrIncrementRead($docId, $increment = false)
@@ -58,6 +53,10 @@ class DMS extends Component
         }
     }
 
+    public function incrementRead($docId)
+    {
+        $this->confirmOrIncrementRead($docId, true);
+    }
 
     public function updatedSearchTerm()
     {
@@ -89,7 +88,7 @@ class DMS extends Component
             ->unique()
             ->values();
 
-        return view('livewire.d-m-s', [
+        return view('components.user.dms.table', [
             'docs' => $this->docs,
             'types' => $this->types,
         ]);

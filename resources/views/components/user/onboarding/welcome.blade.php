@@ -1,16 +1,38 @@
-<div class="block opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block
- p-2 pr-4 persol-farsi-font animate-[fade-in_1s_ease-in-out]" dir="rtl"
-     id="pills-stageOne"
-     role="tabpanel" data-te-tab-active
-     aria-labelledby="pills-stageOne">
-    <div class="welcome-bg" x-data="{ openVideoModal: false, videoSrc: '' }">
+<div class="hidden block opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block
+ p-2 pr-4 persol-farsi-font animate-[fade-in_1s_ease-in-out]"
+     dir="rtl"
+     id="pills-welcome"
+     role="tabpanel"
+     data-te-tab-active
+     aria-labelledby="pills-welcome">
+    <div class="welcome-bg"
+         x-data="{
+             openVideoModal: false,
+             videoSrc: '',
+             handleVideoClose() {
+                 const player = this.$refs.videoPlayer || document.querySelector('.video-modal video');
+                 if (player) {
+                     player.pause();
+                     player.currentTime = 0;
+                 }
+                 this.openVideoModal = false;
+             }
+         }">
         <div class="flex flex-wrap">
-            <p class="p-2 mb-2 text-main"><strong>به پرسال تیم ما خوش آمدید!</strong></p>
+            <div class="flex items-center mb-6">
+                <div>
+                    <h2 class="font-bold text-main">به پرسال تیم ما خوش آمدید!</h2>
+                </div>
+            </div>
             <p class="p-2 text-justify">
-                از اینکه به جمع ما پیوستید بسیار خوشحالیم! این بخش شامل تمام اطلاعاتی است که به عنوان یک عضو جدید ممکن
-                است به آن نیاز داشته باشید. این قسمت به شکلی دوستانه و تعاملی طراحی شده، پس لطفاً آن را با دقت مطالعه
-                کنید. در اینجا خواهید دید که چه چیزی <strong>پرسال</strong> را منحصر به فرد می‌کند و چه منابعی در دسترس
-                شماست. همچنین، پاسخ برخی از سوالات متداول را نیز پیدا خواهید کرد.
+                از اینکه تصمیم گرفتید بخشی از تیم ما باشید، ما بسیار خرسندیم.
+                ما باور داریم که شروعی قوی، پایه‌گذار مسیری موفق در سازمان است. به همین دلیل، فرآیند آنبوردینگ در شرکت
+                ما به‌گونه‌ای طراحی شده که ضمن انتقال اطلاعات مهم، حس تعلق و آشنایی عمیق با فرهنگ سازمانی را برای شما
+                ایجاد کند.
+                در این بخش، شما با ساختار شرکت، ارزش‌های کلیدی، مزایا، پاسخ به سوالات رایج و منابعی که به‌عنوان عضو جدید
+                در اختیارتان است آشنا خواهید شد. این مسیر تعاملی و جذاب است، پس با دقت مرحله به مرحله (با کلیک بر نوار
+                کناری) آن را دنبال کنید☺️
+
             </p>
         </div>
         <div class="flex text-center py-8 mt-5">
@@ -34,7 +56,7 @@
                         'title' => 'پیام خوش آمدگویی از پدرام سلطانی (رئیس هیئت مدیره)'
                     ],
                     [
-                        'src' => '/video/persol-tour.mp4',
+                        'src' => '/video/persol.mp4',
                         'img' => '/img/user/welcome-card',
                         'alt' => 'welcome-card',
                         'title' => 'تور پرسال'
@@ -70,12 +92,12 @@
                  x-transition:leave="transition ease-in duration-200"
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
-                 @click.away="openVideoModal = false; $refs.videoPlayer.pause(); $refs.videoPlayer.currentTime = 0;"
+                 @click.away="handleVideoClose()"
                  style="display: none;"
             >
                 <div class="video-modal-content">
                     <button class="video-modal-close"
-                            @click="openVideoModal = false; $refs.videoPlayer.pause(); $refs.videoPlayer.currentTime = 0;">
+                            @click="handleVideoClose()">
                         &times;
                     </button>
                     <video x-ref="videoPlayer" :src="videoSrc" controls autoplay controlsList="nodownload"

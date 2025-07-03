@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Filament\Resources\AppResource;
 use App\Filament\Resources\CancellationResource;
 use App\Filament\Resources\DelegationResource;
 use App\Filament\Resources\DeskResource;
@@ -81,6 +82,7 @@ class AppServiceProvider extends ServiceProvider
                     ]),
                 NavigationGroup::make('User Panel')
                     ->items([
+                        ...AppResource::getNavigationItems(),
                         ...DelegationResource::getNavigationItems(),
                         ...DMSResource::getNavigationItems(),
                         ...QuestionResource::getNavigationItems(),

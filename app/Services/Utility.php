@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
 use LanguageDetection\Language;
-use Morilog\Jalali\Jalalian;
 
 /**
  * Class Utility
@@ -30,23 +29,18 @@ class Utility
     public static function generatePresenceCircle()
     {
         $user = auth()->user();
-        $presence = $user->presence;
+        if (!$user) return '<div class="w-2 h-2 rounded-full inline-block"></div>';
 
-        $circleClass = '';
-        $circleTitle = '';
+        $statusMap = [
+            'idle' => ['bg-red-500', 'مشغول'],
+            'onsite' => ['bg-green-500', 'در دفتر'],
+            'off-site' => ['bg-yellow-500', 'دورکار'],
+        ];
 
-        if (Cache::has('idle_' . $user->id)) {
-            $circleClass = 'bg-red-500';
-            $circleTitle = 'busy';
-        } elseif ($presence === 'onsite') {
-            $circleClass = 'bg-green-500';
-            $circleTitle = 'onsite';
-        } elseif ($presence === 'off-site') {
-            $circleClass = 'bg-yellow-500';
-            $circleTitle = 'off-site';
-        }
+        $state = Cache::has('idle_' . $user->id) ? 'idle' : $user->presence;
+        [$color, $title] = $statusMap[$state] ?? ['', ''];
 
-        echo '<div class="w-2 h-2 rounded-full inline-block ' . $circleClass . '" title="' . $circleTitle . '"></div>';
+        return '<div class="w-2 h-2 mx-2 rounded-full inline-block ' . $color . '" title="' . $title . '"></div>';
     }
 
     public static function hasOffice(): array
@@ -139,43 +133,6 @@ class Utility
         return parse_url(url()->previous(), PHP_URL_QUERY) == '';
     }
 
-
-    public static function isCalenderSet($input, $request)
-    {
-        return isset(json_decode($request->$input, true)['year']);
-    }
-
-    /**
-     * @param $input
-     * @param $request
-     * @return bool
-     */
-    public static function isHourNotSet($input, $request): bool
-    {
-        return makeDoubleDigit(json_decode($request->$input, true)['hour']) == '12';
-    }
-
-
-    /**
-     * @param $day
-     * @return bool
-     */
-    public static function isInitialDaysOfMonth($day): bool
-    {
-        $currentDay = Date::getFarsiDay();
-        return ($currentDay >= 27 and $currentDay <= 31) and ($day >= 1 and $day <= 4);
-    }
-
-    /**
-     * @param $input
-     * @param $request
-     * @return bool
-     */
-    public static function isMinuteNotSet($input, $request): bool
-    {
-        return makeDoubleDigit(json_decode($request->$input, true)['minute']) == '00';
-    }
-
     /**
      * @param $url
      * @return bool
@@ -184,7 +141,6 @@ class Utility
     {
         return (strpos($url, "parking") !== false);
     }
-
 
     /**
      * @param $content
@@ -238,18 +194,65 @@ class Utility
         return basename(request()->path()) == 'main';
     }
 
-
     public static function isWeekend(string $dateString): bool
     {
         return Date::convertIntoCarbon($dateString)->dayOfWeek === 5;
     }
-
 
     public static function makeDate($input, $request)
     {
         return Carbon::createFromFormat('Y-m-d H:i:s',
             Date::convertIntoLatin(self::makeString($input, $request)) . ' ' . self::makeHour($input, $request)
         )->timestamp;
+    }
+
+    public static function makeString($input, $request)
+    {
+        if (!self::isCalenderSet($input, $request)) abort(500, 'Date was not properly selected or given; please try again :(');
+
+        $date = json_decode($request->$input, true);
+        return sprintf('%s-%s-%s', $date['year'], makeDoubleDigit($date['month']), makeDoubleDigit($date['date']));
+    }
+
+    public static function isCalenderSet($input, $request)
+    {
+        return isset(json_decode($request->$input, true)['year']);
+    }
+
+    /**
+     * @param $input
+     * @param $request
+     * @return string
+     * prepare the format of hour for DB
+     */
+    public static function makeHour($input, $request): string
+    {
+        if (self::isHourNotSet($input, $request) && self::isMinuteNotSet($input, $request)) {
+            return '00:00:00';
+        }
+
+        $date = json_decode($request->$input, true);
+        return sprintf('%s:%s:00', makeDoubleDigit($date['hour']), makeDoubleDigit($date['minute']));
+    }
+
+    /**
+     * @param $input
+     * @param $request
+     * @return bool
+     */
+    public static function isHourNotSet($input, $request): bool
+    {
+        return makeDoubleDigit(json_decode($request->$input, true)['hour']) == '12';
+    }
+
+    /**
+     * @param $input
+     * @param $request
+     * @return bool
+     */
+    public static function isMinuteNotSet($input, $request): bool
+    {
+        return makeDoubleDigit(json_decode($request->$input, true)['minute']) == '00';
     }
 
     public static function makePreciseDate($input, $request, $isEndDate = false)
@@ -265,14 +268,6 @@ class Utility
         return $carbonDate->timestamp;
     }
 
-    public static function makeString($input, $request)
-    {
-        if (!self::isCalenderSet($input, $request)) abort(500, 'Date was not properly selected or given; please try again :(');
-
-        $date = json_decode($request->$input, true);
-        return sprintf('%s-%s-%s', $date['year'], makeDoubleDigit($date['month']), makeDoubleDigit($date['date']));
-    }
-
     /**
      * @param $input
      * @param $request
@@ -283,6 +278,17 @@ class Utility
         return self::makeDoubleDigit(json_decode($request->$input, true)['date']);
     }
 
+    /**
+     * @param $day
+     * @return string
+     */
+    public static function makeDoubleDigit($day): string
+    {
+        if (strlen((string)$day) == 1) {
+            $day = '0' . $day;
+        }
+        return $day;
+    }
 
     /**
      * @param $input
@@ -314,18 +320,6 @@ class Utility
         return json_decode($request->$input, true)['hour'];
     }
 
-    /**
-     * @param $day
-     * @return string
-     */
-    public static function makeDoubleDigit($day): string
-    {
-        if (strlen((string)$day) == 1) {
-            $day = '0' . $day;
-        }
-        return $day;
-    }
-
     public static function makePreciseHour($input, $request, $isEndHour = false): string
     {
         if (self::isHourNotSet($input, $request) && self::isMinuteNotSet($input, $request)) {
@@ -342,23 +336,6 @@ class Utility
         }
 
         return sprintf('%s:%s:00', $hour, $minute);
-    }
-
-
-    /**
-     * @param $input
-     * @param $request
-     * @return string
-     * prepare the format of hour for DB
-     */
-    public static function makeHour($input, $request): string
-    {
-        if (self::isHourNotSet($input, $request) && self::isMinuteNotSet($input, $request)) {
-            return '00:00:00';
-        }
-
-        $date = json_decode($request->$input, true);
-        return sprintf('%s:%s:00', makeDoubleDigit($date['hour']), makeDoubleDigit($date['minute']));
     }
 
     /**
@@ -386,6 +363,15 @@ class Utility
         return compact('startOfDay', 'endOfDay');
     }
 
+    /**
+     * @param $day
+     * @return bool
+     */
+    public static function isInitialDaysOfMonth($day): bool
+    {
+        $currentDay = Date::getFarsiDay();
+        return ($currentDay >= 27 and $currentDay <= 31) and ($day >= 1 and $day <= 4);
+    }
 
     public static function showOtherDashboard()
     {
