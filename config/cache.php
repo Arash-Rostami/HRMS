@@ -52,38 +52,6 @@ return [
             'driver' => 'file',
             'path' => storage_path('framework/cache/data'),
         ],
-        'user_cache' => [
-            'driver' => 'file',
-            'path' => storage_path('framework/cache/data/users'),
-        ],
-        'report_cache' => [
-            'driver' => 'file',
-            'path' => storage_path('framework/cache/data/reports'),
-        ],
-        'post_cache' => [
-            'driver' => 'file',
-            'path' => storage_path('framework/cache/data/posts'),
-        ],
-        'pin_cache' => [
-            'driver' => 'file',
-            'path' => storage_path('framework/cache/data/pins'),
-        ],
-        'delegation_cache' => [
-            'driver' => 'file',
-            'path' => storage_path('framework/cache/data/delegations'),
-        ],
-        'faq_cache' => [
-            'driver' => 'file',
-            'path' => storage_path('framework/cache/data/faqs'),
-        ],
-        'job_cache' => [
-            'driver' => 'file',
-            'path' => storage_path('framework/cache/data/jobs'),
-        ],
-        'link_cache' => [
-            'driver' => 'file',
-            'path' => storage_path('framework/cache/data/links'),
-        ],
         'memcached' => [
             'driver' => 'memcached',
             'persistent_id' => env('MEMCACHED_PERSISTENT_ID'),

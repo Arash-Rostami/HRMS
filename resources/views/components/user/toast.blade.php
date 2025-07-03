@@ -1,6 +1,6 @@
 @if (session()->has('message'))
     <div x-data="{ show: {{ session()->has('message') ? 'true' : 'false' }}}">
-        <div class="fixed bottom-0 inset-x-0 pb-2 sm:pb-5" x-show="show"
+        <div class="fixed bottom-0 inset-x-0 pb-2 sm:pb-5 persol-farsi-font" x-show="show"
              x-transition:enter="ease-out duration-600"
              x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-1000" x-transition:leave-start="opacity-100"
@@ -15,7 +15,9 @@
                             </svg>
                         </div>
                         <div class="ml-3 w-0 flex-1 pt-0.5">
-                            <p class="text-sm leading-5 font-medium text-white">{{ session()->get('message') }}</p>
+                            <p class="text-sm leading-5 font-medium text-white persol-farsi-font rtl-direction">
+                                {{ session()->get('message') }}
+                            </p>
                         </div>
                         <div class="ml-4 flex-shrink-0 flex">
                             <button x-ref="toast" @click="show = false"
@@ -37,7 +39,7 @@
 
 @if (session()->has('error'))
     <div x-data="{ show: {{ session()->has('error') ? 'true' : 'false' }}}">
-        <div class="fixed bottom-0 inset-x-0 pb-2 sm:pb-5" x-show="show"
+        <div class="fixed bottom-0 inset-x-0 pb-2 sm:pb-5 persol-farsi-font" x-show="show"
              x-transition:enter="ease-out duration-600"
              x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-1000" x-transition:leave-start="opacity-100"
@@ -50,7 +52,9 @@
 
                         </div>
                         <div class="ml-3 w-0 flex-1 pt-0.5">
-                            <p class="text-sm leading-5 font-medium text-white">{{ session()->get('error') }}</p>
+                            <p class="text-sm leading-5 font-medium text-white persol-farsi-font rtl-direction">
+                                {{ session()->get('error') }}
+                            </p>
                         </div>
                         <div class="ml-4 flex-shrink-0 flex">
                             <button x-ref="toast" @click="show = false"

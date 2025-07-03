@@ -39,7 +39,7 @@ class UserPanelController extends Controller
         if ($status == 'busy' && !Cache::has($cacheKey)) {
             // Cache the idle status for 8 hours (480 minutes)
             Cache::put($cacheKey, true, 28800);
-            return redirect()->back()->with('success', 'Status updated successfully :)');
+            return redirect()->back()->with('success', 'وضعیت با موفقیت به‌روزرسانی شد 🙂');
         }
 
         if ($status != 'busy' && Cache::has($cacheKey)) {
@@ -51,7 +51,7 @@ class UserPanelController extends Controller
         $user->presence = $status;
         $user->save();
         // Redirect or return a response as needed
-        return back()->with('success', 'Status updated successfully :)');
+        return back()->with('success', 'وضعیت با موفقیت به‌روزرسانی شد 🙂');
     }
 
 

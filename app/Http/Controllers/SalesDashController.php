@@ -18,7 +18,7 @@ class SalesDashController extends Controller
 
             sleep(15);
             // Dash application started successfully
-            return redirect()->away('http://127.0.0.1:8050/'); // Assuming you have a named route for the sales dashboard
+            return redirect()->away('http://127.0.0.1:8050/');
 
         } else {
             return "Python script does not exist.";

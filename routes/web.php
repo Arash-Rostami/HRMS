@@ -5,7 +5,6 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\SarvCRMController;
-use App\Http\Controllers\ShopHomePageController;
 use App\Http\Controllers\UserEmailController;
 use App\Http\Controllers\UserPanelController;
 use App\Http\Controllers\UserSmsController;
@@ -22,6 +21,7 @@ Route::get('/clear-cache', function () {
     Artisan::call('config:clear');
     Artisan::call('route:clear');
     Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
 
     return 'Cache cleared successfully.';
 });
@@ -127,15 +127,6 @@ Route::prefix('crm')->group(function () {
     Route::post('/login', [SarvCRMController::class, 'loginCrm'])->name('crm-login');
     Route::post('/logout', [SarvCRMController::class, 'logoutCrm'])->name('crm-logout');
     Route::get('/contacts', [SarvCRMController::class, 'getModules'])->name('crm-contacts');
-});
-
-
-// PERSOL's Shop
-Route::prefix('shop')->middleware(['auth'])->group(function () {
-    // landing page of shop +
-    Route::get('/', [ShopHomePageController::class, 'index'])->name('shop');
-    Route::view('/weather', 'components.weather');
-
 });
 
 

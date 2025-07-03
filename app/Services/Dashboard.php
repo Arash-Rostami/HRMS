@@ -173,5 +173,4 @@ class Dashboard
     {
         return Dashboard::showReserved($number);
     }
-
 }

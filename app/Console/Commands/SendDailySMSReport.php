@@ -26,7 +26,7 @@ class SendDailySMSReport extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->receptors = ['09124337839', '09134214234']; // Mina & Fariba Phone numbers
+        $this->receptors = ['09134214234']; // Mina & Fariba Phone numbers
         $persianDate = Jalalian::now()->format('%A %d %B %Y');
         $this->message = "PERSOL HRMS\n\nسلام، برای مشاهده لیست رزروهای پرسـال در تاریخ $persianDate لطفاً به لینک ارسال شده مراجعه فرمایید.\n\nلغو 11";
     }

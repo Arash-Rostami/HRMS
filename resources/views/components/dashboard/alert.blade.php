@@ -15,7 +15,7 @@
     ][$position]
 @endphp
 
-<div class="{{$positionClasses}} fixed hideAfter5Seconds ignore-elements"
+<div class="{{$positionClasses}} fixed hideAfter5Seconds ignore-elements rtl-direction persol-farsi-font"
      x-data="{show:true}"
      x-show="show"
      @click="show=false">
