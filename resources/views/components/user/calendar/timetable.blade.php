@@ -9,7 +9,7 @@
     <div class="flex flex-col-reverse md:flex-row mx-auto text-sm md:text-base">
         {{--    Events chart --}}
         <div id="events"
-             class="flex flex-col mt-5 md:mt-0 md:w-[30%] md:mr-2 max-h-[350px] overflow-y-scroll shadow-2xl h-2/3 p-[10px] rounded-[5px]"
+             class="flex flex-col mt-5 md:mt-0 md:w-[30%] md:mr-2 max-h-[350px] overflow-y-scroll shadow-2xl h-2/3 p-[10px] rounded-[5px] rtl-direction"
              wire:init="loadEvents()"
         >
             <div class="force-overflow text-center">
@@ -50,7 +50,7 @@
                                                     ? "{$event['title']}: {$event['description']}"
                                                     : "{$event['user']['forename']} {$event['user']['surname']}";
                                     @endphp
-                                    <div class="py-2 px-4 mb-2 rounded-lg bg-main-mode text-left">
+                                    <div class="py-2 px-4 mb-2 rounded-lg bg-main-mode text-right">
                                         <span>{{ $label }}</span>
                                         @unless($eventType == 'otherEvents')
                                             @if($messageAbility && !$smsSentStatus[$event['cellphone']] )
@@ -76,8 +76,7 @@
                 <div id="calendar" class="grid grid-cols-7">
                     {{-- Weekday Headers --}}
                     @foreach($persianWeekdayNames as $day)
-                        <div
-                            class="text-center text-white p-2 bg-main-mode rounded mx-1 mb-2 links-thumbnails links-thumbnails-color">
+                        <div class="flex items-center justify-center text-white p-2 bg-main-mode rounded mx-[1px] md:mx-1 mb-2 links-thumbnails links-thumbnails-color text-[11px] md:text-base tracking-wider">
                             {{ $day }}
                         </div>
                     @endforeach
@@ -87,7 +86,7 @@
                     @endforeach
                     {{-- Calendar Day Cells --}}
                     @foreach($calendarData as $dayData)
-                        <div class="day h-14 rounded-lg flex items-center justify-center
+                        <div class="day h-14 rounded flex items-center justify-center m-1 mx-[2px] md:mx-1
                         links-thumbnails links-thumbnails-color transition-all duration-200 ease-in-out
                         @if(isWeekend($currentYear, $currentMonth, $dayData['day'])) bg-weekend @endif
                         @if($dayData['isCurrentDay']) bg-main-mode flash-calendar @endif">

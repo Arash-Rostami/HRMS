@@ -1,12 +1,17 @@
-<div class="inline-block my-auto" title="{{ config('app.name') }}">
-    <img class="relative right-2 top-2"  width="25" alt="new-logo"
-         @if(isAdminPage() or isDarkMode())
-             src="/img/logo-light-persol.svg"
-         @else
-             src="/img/logo-dark-persol.svg"
-         @endif
-        >
+<div class="my-auto flex items-center"
+     title="{{ config('app.name') }}">
+    <img
+        width="25"
+        alt="{{ config('app.name') }} logo"
+        class="-ml-1"
+        src="{{ asset(isAdminPage()
+            ? 'img/logo-light-persol.svg'
+            : 'img/logo-dark-persol.svg') }}"
+    >
+    <img
+        width="45"
+        alt="PERSOL logo"
+        class="p-2 -mr-1"
+        src="{{ asset('img/persol-sms-logo-admin.png') }}"
+    >
 </div>
-<img class="inline-block p-2 " src="/img/persol-sms-logo-admin.png" width="50" alt="persol-logo" >
-
-

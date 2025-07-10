@@ -40,7 +40,7 @@ class Utility
         $state = Cache::has('idle_' . $user->id) ? 'idle' : $user->presence;
         [$color, $title] = $statusMap[$state] ?? ['', ''];
 
-        return '<div class="w-2 h-2 mx-2 rounded-full inline-block ' . $color . '" title="' . $title . '"></div>';
+        return '<div class="w-2 h-2 rounded-full m-auto  ' . $color . '" title="' . $title . '"></div>';
     }
 
     public static function hasOffice(): array

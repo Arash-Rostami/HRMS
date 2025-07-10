@@ -8,8 +8,8 @@
         x-data="{
             open: false,
             play: false,
-             version:false,
-             presence:false,
+            version:false,
+            presence:false,
             toggleFullScreen() {
              (!document.fullscreenElement)
                  ? document.documentElement.requestFullscreen() : document.exitFullscreen();
@@ -27,193 +27,267 @@
             $watch('version', () => handleNavVisibility());
             $watch('presence', () => handleNavVisibility());
     ">
-
-
-        {{--      <x-time-of-day/>--}}
-
-
-        {{--    <!-- Music -->--}}
-        {{--    <div class="hidden md:block">--}}
-        {{--        <x-music></x-music>--}}
-        {{--    </div>--}}
-
         <!-- Primary Navigation Menu -->
-        <div class="mx-10 md:mx-20 fade-in-fwd" x-cloak>
-            <div class="flex justify-between md:justify-content-evenly h-16">
+        <div class="mx-2 sm:mx-6 md:mx-10 lg:mx-16 xl:mx-20 fade-in-fwd" x-cloak>
+            <div class="flex  items-center h-16">
                 <!-- Logo -->
-                <div class="shrink-0 flex items-center md:relative md:right-5">
-                    <a href="{{ route('landing.page') }}">
-                        <x-application-logo class="block h-10 w-auto fill-current"/>
+                <div class="flex items-center m-auto">
+                    <a href="{{ route('landing.page') }}"
+                       class="inline-block focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-lg transition-all duration-200 hover:scale-105">
+                        <x-application-logo class="inline-block h-10 w-auto fill-current right-3"/>
                     </a>
                 </div>
 
-                <div class="flex justify-between w-auto">
-                    <!-- Navigation Links -->
-                    <div class="mx-auto w-auto flex flex-row content-center">
-
-                        <!--   Display refresh -->
-                        <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex cursor-pointer">
-                            <x-nav-link>
-                                {{--                            :href="route('user.panel',['type'=>request()->get('type')])"--}}
-                                {{--                            :active="request()->routeIs('user.panel')">--}}
-                                <span class="text-xl text-main border px-2 border-main"
-                                      @click="toggleFullScreen()"
-                                      title="تغییر حالت نمایش در صفحه"> ⤢ </span>
-                            </x-nav-link>
-                        </div>
-
-                        <!--   Display birthday and working days -->
-                        <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                            <x-nav-link>
-                            <span class="@if ( isDarkMode()) text-gray-300 @endif">
-                              <span class="mr-1 @if( isFinalCountDown()) ml-2 @endif cursor-help"
-                                    title="تعداد روزهای باقی مانده به تولد">
-                                  <i class="fas fa-birthday-cake text-gray-500"></i>
-                                 <span class="@if( isFinalCountDown()) text-red-600  @endif">
-                                     {{ countNumberOfDaysToBirthday() }}
-                                 </span>
-                              </span>
-                                <span class="mr-1 cursor-help"
-                                      title="تعداد روزهای سپری شده از آغاز کار در پرسال">
-                                    <i class="fas fa-calendar-check ml-1 text-gray-500"></i> {{ countNumberOfDaysPassed() }}
-                                </span>
+                <!-- Center Navigation -->
+                <div class="flex w-full items-center justify-evenly">
+                    <!-- Fullscreen Toggle -->
+                    <div @class([
+                                'hidden sm:flex mx-auto rounded-lg min-w-0 bold',
+                                'bg-gray-800/50 text-gray-400' => isDarkMode(),
+                                'bg-gray-200/30 text-gray-600' => !isDarkMode(),
+                            ])>
+                            <span
+                                class="border-2 border-main rounded-md px-3 py-1.5 cursor-pointer transition-all duration-200 hover:bg-main hover:text-blue-500 hover:shadow-lg transform hover:scale-105 active:scale-95"
+                                @click="toggleFullScreen()"
+                                title="تغییر حالت نمایش در صفحه">⤢
                             </span>
-                            </x-nav-link>
-                        </div>
+                    </div>
 
-                        <!--   Display office & park shortcuts -->
-                        <div class="space-x-8 sm:-my-px sm:ml-10 sm:flex my-auto">
-                            <x-nav-link>
-                                <i class="fas fa-desktop mx-2 cursor-pointer"
-                                   title="رزرو میز کار: {{ showOfficeTitle() }}"
-                                   @click="event.preventDefault();window.open('{{ route('dashboard',['type'=>'office']) }}','_blank')"
-                                ></i>
-                                <i class="fas fa-car mx-2 text-lg cursor-pointer"
-                                   title="رزرو جای پارک: {{ showParkingTitle() }}"
-                                   @click="event.preventDefault();window.open('{{ route('dashboard',['type'=>'parking']) }}','_blank')"
-                                ></i>
-                            </x-nav-link>
-                        </div>
-
-                        <!--   Display timer -->
-                        <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                            <x-nav-link>
-                                <x-dashboard.timer/>
-                            </x-nav-link>
-                        </div>
-
-                        <!--   Display weather forecast -->
-                        <div
-                            class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex cursor-pointer">
-                            <x-nav-link>
-                                {{--                            <x-weather/>--}}
-                            </x-nav-link>
-                        </div>
-
-                        <!--   Display light & dark mode -->
-                        <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex cursor-pointer">
-                            <x-nav-link>
-                                |
-                                @if ( isDarkMode())
-                                    <i class="fa fa-sun-o text-white" title="حالت روز"
-                                       onclick="window.location='{{route('landing-page', 'light-mode')}}'"></i>
-                                @else
-                                    <i class="fa fa-moon-o text-gray-500" title="حالت شب"
-                                       onclick="window.location='{{route('landing-page', 'dark-mode')}}'"></i>
-                                @endif
-                                |
-                            </x-nav-link>
-                        </div>
-
-                        <!--   Display change status -->
-                        <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex cursor-pointer">
-                            <x-nav-link>
-                                |
-                                <span class="  @if ( isDarkMode())  text-white @else text-gray-500  @endif"
-                                      title="تغییر وضعیت">
-                                <i class="fas fa-exchange-alt" @click="$refs.myNav.style.height ='100%';
-                                version = false; presence=true; "></i>
+                    <!-- Stats Section -->
+                    <div @class([
+                                'hidden lg:flex items-center text-center justify-center mx-auto px-5 py-2.5 rounded-lg min-w-0',
+                                'bg-gray-800/50' => isDarkMode(),
+                                'bg-gray-200/30' => !isDarkMode(),
+                            ])>
+                        <!-- Birthday Counter -->
+                        <div class="flex items-center justify-center cursor-help group min-w-0 ml-1"
+                             title="تعداد روزهای باقی مانده به تولد">
+                            <i @class([
+                                    'fas fa-birthday-cake text-lg mx-1 transition-colors duration-200 flex-shrink-0',
+                                    'text-gray-400 group-hover:text-pink-400' => isDarkMode(),
+                                    'text-gray-600 group-hover:text-pink-500' => !isDarkMode(),
+                                ])></i>
+                            <span @class([
+                                    'text-sm font-medium ml-1 whitespace-nowrap',
+                                    'text-red-500' => isFinalCountDown(),
+                                    'text-gray-300' => (isDarkMode() && !isFinalCountDown()),
+                                    'text-gray-700' => (!isDarkMode() && !isFinalCountDown()),
+                                ])> {{ countNumberOfDaysToBirthday() }}
                             </span>
-                                |
-                            </x-nav-link>
+                        </div>
+                        <!-- Work Days Counter -->
+                        <div class="flex items-center justify-center space-x-2 cursor-help group min-w-0 mr-1"
+                             title="تعداد روزهای سپری شده از آغاز کار در پرسال">
+                            <i @class([
+                                'fas fa-calendar-check text-lg mx-1 transition-colors duration-200 flex-shrink-0',
+                                'text-gray-400 group-hover:text-green-400' => isDarkMode(),
+                                'text-gray-600 group-hover:text-green-500' => !isDarkMode(),
+                                        ])></i>
+                            <span @class([
+                                'text-sm font-medium whitespace-nowrap',
+                                'text-gray-300' => isDarkMode(),
+                                'text-gray-700' => !isDarkMode(),
+                            ])>{{ countNumberOfDaysPassed() }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Reservation Section -->
+                    <div @class([
+                                'flex items-center justify-center py-2.5 px-5 rounded-lg mx-auto min-w-0',
+                                'bg-gray-800/50' => isDarkMode(),
+                                'bg-gray-200/30' => !isDarkMode(),
+                            ])>
+                        <!-- Office Reservation -->
+                        <div class="flex cursor-pointer group min-w-0 ml-2"
+                             title="رزرو میز کار: {{ showOfficeTitle() }}"
+                             @click="event.preventDefault();window.open('{{ route('dashboard',['type'=>'office']) }}','_blank')">
+                            <i @class([
+                                'fas fa-desktop text-lg transition-all duration-200 transform group-hover:scale-110 flex-shrink-0',
+                                'text-gray-400 group-hover:text-blue-400' => isDarkMode(),
+                                'text-gray-600 group-hover:text-blue-500' => !isDarkMode(),
+                            ])"></i>
+                        </div>
+                        <!-- Parking Reservation -->
+                        <div class="flex cursor-pointer group min-w-0 mr-2"
+                             title="رزرو جای پارک: {{ showParkingTitle() }}"
+                             @click="event.preventDefault();window.open('{{ route('dashboard',['type'=>'parking']) }}','_blank')">
+                            <i @class([
+                                'fas fa-car text-lg transition-all duration-200 transform group-hover:scale-110 flex-shrink-0',
+                                'text-gray-400 group-hover:text-blue-400' => isDarkMode(),
+                                'text-gray-600 group-hover:text-blue-500' => !isDarkMode(),
+                            ])"></i>
+                        </div>
+                    </div>
+
+                    <!-- Timer Section -->
+                    <div @class([
+                                'hidden xl:flex items-center mx-auto text-sm font-bold py-3.5 px-5 rounded-lg',
+                                'bg-gray-800/50' => isDarkMode(),
+                                'bg-gray-200/30' => !isDarkMode(),
+                            ])>
+                        <x-dashboard.timer/>
+                    </div>
+
+                    <!-- Controls Section -->
+                    <div @class([
+                           'hidden sm:flex items-center justify-center px-5 py-2.5 rounded-lg mx-auto min-w-0',
+                           'bg-gray-800/50' => isDarkMode(),
+                           'bg-gray-200/30' => !isDarkMode(),
+                       ])>
+                        <!-- Light/Dark Mode Toggle -->
+                        <div class="flex items-center justify-center cursor-pointer group min-w-0 mr-auto">
+                            @if (isDarkMode())
+                                <i @class([
+                                    'fa fa-sun-o text-lg transition-all duration-200 transform group-hover:scale-110 flex-shrink-0',
+                                    'text-gray-400 group-hover:text-yellow-400' => isDarkMode(),
+                                    'text-gray-600 group-hover:text-yellow-500' => !isDarkMode(),
+                                        ])
+                                   title="حالت روز"
+                                   onclick="window.location='{{route('landing-page', 'light-mode')}}'"></i>
+                            @else
+                                <i @class([
+                                    'fa fa-moon-o text-lg transition-all duration-200 transform group-hover:scale-110 flex-shrink-0',
+                                    'text-gray-400 group-hover:text-indigo-400' => isDarkMode(),
+                                    'text-gray-600 group-hover:text-indigo-500' => !isDarkMode(),
+                                        ])
+                                   title="حالت شب"
+                                   onclick="window.location='{{route('landing-page', 'dark-mode')}}'"></i>
+                            @endif
                         </div>
 
-                        <!--   Display app versions -->
-                        <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex cursor-pointer">
-                            <x-nav-link>
-                                |
-                                <span class="  @if ( isDarkMode())  text-white @else text-gray-500  @endif"
-                                      title="نسخه اپلیکیشن">
-                            <i class="fa fa-arrow-circle-up"
+
+                        <!-- Presence Toggle -->
+                        <div class="flex items-center justify-center cursor-pointer group min-w-0 mx-3">
+                            <i @class([
+                                    'fas fa-exchange-alt text-lg transition-all duration-200 transform group-hover:scale-110 flex-shrink-0',
+                                    'text-gray-400 group-hover:text-purple-400' => isDarkMode(),
+                                    'text-gray-600 group-hover:text-purple-500' => !isDarkMode(),
+                                ])
+                               title="تغییر وضعیت"
+                               @click="$refs.myNav.style.height ='100%'; version = false; presence=true;"></i>
+                        </div>
+
+                        <!-- Version Toggle -->
+                        <div class="flex items-center justify-center cursor-pointer group min-w-0 ml-auto">
+                            <i @class([
+                                    'fa fa-arrow-circle-up text-lg transition-all duration-200 transform group-hover:scale-110 flex-shrink-0',
+                                    'text-gray-400 group-hover:text-emerald-400' => isDarkMode(),
+                                    'text-gray-600 group-hover:text-emerald-500' => !isDarkMode(),
+                                ])
+                               title="نسخه اپلیکیشن"
                                @click="$refs.myNav.style.height ='100%'; presence=false; version = true"></i>
-                            </span>
-                                |
-                            </x-nav-link>
                         </div>
+                    </div>
+
+
+                    <!-- Weather Section -->
+                    <div @class([
+                               'hidden xl:flex items-center mx-auto text-sm mx-auto min-w-0',
+                               'text-gray-400' => isDarkMode(),
+                               'text-gray-600' => !isDarkMode(),
+                           ])>
+                        <x-user.navbar.weather/>
                     </div>
                 </div>
 
-                <!-- Users Dropdown -->
-                <div class="hidden sm:flex sm:items-center sm:ml-6">
+                <!-- User Dropdown -->
+                <div class="hidden sm:flex items-center">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button
-                                class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                <div
-                                    class="font-medium text-sm text-gray-500 italic main-color">
-                                <span class="  @if ( isDarkMode())  text-gray-300 @endif"
-                                      title="کد پرسنلی:&nbsp; {{ getPersonnelCode()  }}">
-                                   {{ Auth::user()->fullName}} {!! showPresence() !!}
-                                </span>
-                                    <x-dashboard.badge/>
-                                </div>
+                                @class([
+                                    'flex items-center text-sm font-medium px-2 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200',
+                                    'text-gray-400 hover:bg-gray-800' => isDarkMode(),
+                                    'text-gray-600 hover:bg-gray-100' => !isDarkMode(),
+                                ])
+                                type="button"
+                            >
+                                <div class="flex items-center space-x-4">
+                                    <!-- User Info -->
+                                    <div @class([
+                                                'flex flex-row',
+                                                'text-gray-400' => isDarkMode(),
+                                                'text-gray-600' => !isDarkMode(),
+                                                ])
+                                         title="کد پرسنلی: {{ getPersonnelCode() }}"
+                                    >
+                                        <span class="ml-1 w-full text-left text-sm whitespace-nowrap">
+                                            {{ Auth::user()->fullName }}
+                                        </span>
+                                        {!! showPresence() !!}
+                                        <x-dashboard.badge/>
+                                    </div>
 
-                                <div class="ml-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                         viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                              clip-rule="evenodd"/>
-                                    </svg>
+                                    <!-- Dropdown Arrow Icon -->
+                                    <div class="transform transition-transform duration-200 group-hover:rotate-180">
+                                        <svg
+                                            @class([
+                                                'w-4 h-4',
+                                                'text-gray-400' => isDarkMode(),
+                                                'text-gray-600' => !isDarkMode(),
+                                            ])
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                clip-rule="evenodd"
+                                            ></path>
+                                        </svg>
+                                    </div>
                                 </div>
                             </button>
                         </x-slot>
 
-                        <x-slot name="content">
-                            <!-- Authentication -->
+                        <x-slot name="content" class="hover:border-none focus:border-none">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <x-dropdown-link :href="route('logout')"
-                                                 onclick="event.preventDefault();this.closest('form').submit();">
-                                    خروج
+                                <x-dropdown-link
+                                    :href="route('logout')"
+                                    onclick="event.preventDefault();this.closest('form').submit();"
+                                    class="flex items-center space-x-2 text-gray-500 transition-colors duration-200 focus:border-none"
+                                >
+                                    <span>خروج</span>
+                                    <i class="fas fa-sign-out-alt"></i>
                                 </x-dropdown-link>
                             </form>
                         </x-slot>
                     </x-dropdown>
                 </div>
 
-                <!-- LOG OUT -->
-                <div class="-mr-2 flex items-center sm:hidden">
-                    <form method="POST" action="{{ route('logout') }}">
+                <!-- Mobile Logout -->
+                <div class="flex items-center sm:hidden">
+                    <form method="POST"
+                          action="{{ route('logout') }}">
                         @csrf
-                        <button @click="this.closest('form').submit();" title="خروج"
-                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-
-                            <i class="fas fa-sign-out-alt fa-circle"></i>
+                        <button
+                            @click="this.closest('form').submit();"
+                            title="خروج"
+                            @class([
+                                'p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-105',
+                                'text-gray-400 hover:text-red-400 hover:bg-gray-800' => isDarkMode(),
+                                'text-gray-500 hover:text-red-500 hover:bg-gray-100' => !isDarkMode()
+                            ])>
+                            <i class="fas fa-sign-out-alt text-lg"></i>
                         </button>
                     </form>
                 </div>
-
             </div>
         </div>
 
-
-        {{--    overlay of presence change--}}
-        <div x-ref="myNav" class="overlay container-scrollbar custom-scrollbar @if ( isDarkMode()) bg-[#1F2937] @endif">
+        <!-- Overlay -->
+        <div x-ref="myNav"
+            @class([
+                   'overlay container-scrollbar custom-scrollbar',
+                   'bg-[#1F2937]' => isDarkMode(),
+               ])>
             <!-- Button to close the overlay navigation -->
             <div class="close-animatedModal absolute right-8"
                  @click="$refs.myNav.style.height ='0%';presence=false; version=false">
-                <img class="close-button my-10" src="/img/user/closebt.svg" alt="close-button">
+                <img class="close-button my-10"
+                     src="/img/user/closebt.svg"
+                     alt="close-button">
             </div>
 
             <!-- status shifter -->
@@ -221,6 +295,8 @@
             <!-- status shifter -->
             <x-user.navbar.update/>
         </div>
+        <!-- BG -->
+        {{--        <x-user.time-of-day/>--}}
     </div>
 </nav>
 

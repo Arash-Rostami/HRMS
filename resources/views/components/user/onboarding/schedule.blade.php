@@ -138,7 +138,7 @@
         </div>
         <!--Survey Link -->
         <div class="my-7 text-center animate-bounce">
-            <a href="https://survey.porsline.ir/s/gRW1AqJ"
+            <a href="https://persolco.porsline.ir/s/4by92CV"
                target="_blank"
                title="شروع"
                 @class([

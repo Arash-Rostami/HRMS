@@ -1,10 +1,10 @@
 @php $weather = showWeather(); $temperature = showTemperature(); $hasDecimal = is_float($temperature); @endphp
 
-<div class="scale-50">
+<div class="scale-50 rtl-direction persol-farsi-font">
     {{--    sun and showers--}}
     @switch($weather)
         @case('Drizzle')
-            <div class="icon sun-shower" title="Today is sunny & showery">
+            <div class="icon sun-shower" title="امروز آفتابی و رگبارگونه است">
                 <div class="cloud"></div>
                 <div class="sun">
                     <div class="rays"></div>
@@ -14,7 +14,7 @@
             @break
             {{--    thunder and storms--}}
         @case('Thunderstorm')
-            <div class="icon thunder-storm" title="Today is (thunder)stormy">
+            <div class="icon thunder-storm" title="امروز طوفانی همراه با رعد و برق است">
                 <div class="cloud"></div>
                 <div class="lightning">
                     <div class="bolt"></div>
@@ -24,7 +24,7 @@
             @break
             {{--    clouds--}}
         @case('Clouds')
-            <div class="icon cloudy mx-0" title="Today is cloudy">
+            <div class="icon cloudy mx-0" title="امروز ابری است">
                 <div class="cloud"></div>
                 <div class="cloud"></div>
             </div>
@@ -41,7 +41,7 @@
             @break
             {{--    sun--}}
         @case('Clear')
-            <div class="icon sunny" title="Today is sunny">
+            <div class="icon sunny" title="امروز آفتابی است">
                 <div class="sun">
                     <div class="rays"></div>
                 </div>
@@ -49,21 +49,20 @@
             @break
             {{--    rain--}}
         @case('Rain')
-            <div class="icon rainy" title="Today is rainy">
+            <div class="icon rainy" title="امروز بارانی است">
                 <div class="cloud"></div>
                 <div class="rain"></div>
             </div>
     @endswitch
 </div>
-<span class="relative  @if($hasDecimal) right-10 @endif"> {{ $temperature }}
+
+
+<span class="relative ltr-direction @if($hasDecimal) left-10 @endif">
+    {{ $temperature }}
     @if($hasDecimal)
-        <sup>
-       <small>
-        &#8451;
-    </small>
-   </sup>
+        <sup><small>℃</small></sup>
+    @else
+        <small>℃</small>
     @endif
 </span>
-
-
 

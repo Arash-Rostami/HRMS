@@ -17,6 +17,18 @@
                     this.visible = false;
                     this.text = '';
                 },
+                swipeLeft() {
+                    const container = document.getElementById('navContainer');
+                    if (container) {
+                        container.scrollBy({ left: -200, behavior: 'smooth' });
+                    }
+                },
+                swipeRight() {
+                    const container = document.getElementById('navContainer');
+                    if (container) {
+                        container.scrollBy({ left: 200, behavior: 'smooth' });
+                    }
+                },
                 easeInOutCubic(t) {
                     return t < 0.5
                         ? 4 * t * t * t
@@ -52,10 +64,43 @@
                 }
             }"
      x-show="!version"
-     @class([
-        'persol-farsi-font bg-gray-200 shadow-md py-2 px-4 sticky top-0 z-50 transition duration-300 scrollbar-hide animate-[fade-in-left_1s_ease-in-out]',
-        'text-gray-800' => isDarkMode(),
-           ])>
+    @class([
+       'persol-farsi-font bg-gray-200 shadow-md py-2 px-4 sticky top-0 z-50 transition duration-300 scrollbar-hide animate-[fade-in-left_1s_ease-in-out]',
+       'text-gray-800 bg-gray-400' => isDarkMode(),
+          ])>
+    <!-- Left Arrow -->
+    <div x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="absolute left-0 top-0 h-full flex items-center z-10 bg-gradient-to-r from-gray-200/90 to-transparent pl-1 pr-2 md:pl-2 md:pr-3"
+         :class="{ 'from-gray-400/90': {{isDarkMode()}} }">
+        <button @click="swipeLeft()"
+                @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده آیتم های قبلی', $event)"
+                @mouseleave="hideTooltip()"
+                class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-main-mode/80 text-white shadow-xl transition-all duration-200 flex items-center justify-center backdrop-blur-sm hover:bg-gray-500">
+            <i class="fas fa-chevron-left text-xs md:text-sm"></i>
+        </button>
+    </div>
+    <!-- Right Arrow -->
+    <div x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="absolute right-0 top-0 h-full flex items-center z-10 bg-gradient-to-l from-gray-200/90 to-transparent pr-1 pl-2 md:pr-2 md:pl-3"
+         :class="{ 'from-gray-400/90': {{isDarkMode()}} }">
+        <button @click="swipeRight()"
+                @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده آیتم های بعدی', $event)"
+                @mouseleave="hideTooltip()"
+                class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-main-mode/80 text-white shadow-xl transition-all duration-200 flex items-center justify-center backdrop-blur-sm hover:bg-gray-500">
+            <i class="fas fa-chevron-right text-xs md:text-sm"></i>
+        </button>
+    </div>
+
     <div id="navContainer"
          class="w-full md:container md:mx-auto flex items-center justify-start space-x-6 overflow-x-auto overflow-y-hidden scrollbar-hide px-4 relative">
         {{-- Admin Panel Icon --}}
