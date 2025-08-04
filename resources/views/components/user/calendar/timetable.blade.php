@@ -49,8 +49,15 @@
                                         $label = $eventType === 'otherEvents'
                                                     ? "{$event['title']}: {$event['description']}"
                                                     : "{$event['user']['forename']} {$event['user']['surname']}";
+                                        $rtl =  $eventType === 'otherEvents' && isRtl($label);
                                     @endphp
-                                    <div class="py-2 px-4 mb-2 rounded-lg bg-main-mode text-right">
+                                    <div @class([
+                                                'py-2 px-4 mb-2 rounded-lg bg-main-mode',
+                                                'text-right' => $rtl,
+                                                'text-left'  => ! $rtl,
+                                            ])
+                                        {{ $rtl ? 'dir="rtl"' : 'dir="ltr"' }}
+                                    >
                                         <span>{{ $label }}</span>
                                         @unless($eventType == 'otherEvents')
                                             @if($messageAbility && !$smsSentStatus[$event['cellphone']] )
@@ -76,7 +83,8 @@
                 <div id="calendar" class="grid grid-cols-7">
                     {{-- Weekday Headers --}}
                     @foreach($persianWeekdayNames as $day)
-                        <div class="flex items-center justify-center text-white p-2 bg-main-mode rounded mx-[1px] md:mx-1 mb-2 links-thumbnails links-thumbnails-color text-[11px] md:text-base tracking-wider">
+                        <div
+                            class="flex items-center justify-center text-white p-2 bg-main-mode rounded mx-[1px] md:mx-1 mb-2 links-thumbnails links-thumbnails-color text-[11px] md:text-base tracking-wider">
                             {{ $day }}
                         </div>
                     @endforeach

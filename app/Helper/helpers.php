@@ -384,6 +384,10 @@ function isSuggestionResponded($record)
     return ($record->stage == 'awaiting_decision' or $record->reviews->contains('department', 'مدیریت'));
 }
 
+function isRtl(string $text): bool
+{
+    return (bool)preg_match('/\p{Arabic}/u', $text);
+}
 
 function isThemeOrModeActivated($color)
 {

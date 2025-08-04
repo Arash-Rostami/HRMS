@@ -2,70 +2,235 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\CRM\SARV;
+use App\Services\CRM\SarvCrmService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Response;
+use Illuminate\View\View;
 
 class SarvCRMController extends Controller
 {
-    protected $sarv;
+    /**
+     * The SarvCrmService instance.
+     */
+    protected SarvCrmService $sarvCrmService;
 
-    public function __construct(SARV $sarv)
+    /**
+     * Inject the service dependency.
+     */
+    public function __construct(SarvCrmService $sarvCrmService)
     {
-        $this->sarv = $sarv;
+        $this->sarvCrmService = $sarvCrmService;
     }
 
-    public function loginCrm(Request $request)
+    /**
+     * Handle user login to the CRM.
+     */
+    public function login(Request $request): RedirectResponse
     {
-        $username = $request->input('username');
-        $password = $request->input('password');
+        $credentials = $request->validate([
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
 
-        if ($username && $password) {
-            return $this->sarv->login($request);
+        try {
+            $token = $this->sarvCrmService->login(
+                $credentials['username'],
+                $credentials['password']
+            );
+            $request->session()->put('crm_token', $token);
+
+            return redirect()
+                ->route('crm-login')
+                ->with('success', 'ورود با موفقیت انجام شد.');
+        } catch (\Exception $e) {
+            $code = $e->getCode();
+            $msg = $code === 401
+                ? 'نام کاربری یا رمز عبور اشتباه است.'
+                : 'مشکل در اتصال به سرویس؛ لطفاً بعداً دوباره تلاش کنید.';
+
+            return back()
+                ->withInput($request->only('username'))
+                ->withErrors(['credentials' => $msg]);
         }
-
-        return response()->json(['error' => 'Username and password are required'], 400);
     }
 
-    public function logoutCrm(Request $request)
+
+    /**
+     * Handle user logout from the CRM.
+     */
+    public function logout(Request $request): Response
     {
         $request->session()->forget('crm_token');
 
-        unset($this->sarv->data);
+        $request->session()->flash('success', 'خروج با موفقیت انجام شد.');
 
-//        gc_collect_cycles();
-
-        return redirect()->route('user.panel');
+        return response()
+            ->noContent()
+            ->withHeaders([
+                'HX-Redirect' => route('user.panel')
+            ]);
     }
 
-    public function getModules(Request $request)
+    /**
+     * Fetch and display data for a specific module.
+     */
+    public function index(Request $request): View|RedirectResponse
     {
         if (!$request->session()->has('crm_token')) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            abort(403, 'Unauthorized Access.');
         }
 
-        $module = $request->input('module');
-        if ($module) {
-            $response = $this->sarv->getModuleData($request); // Assuming this returns an HTTP response
+        $token = $request->session()->get('crm_token');
+        $module = $request->get('module');
+        $moduleName = $module ?: $request->query('module');
 
-            if ($response->isOk()) {
-                $data = $response->getData(true);
-                $keysToShow = [];
+        if (empty($moduleName)) {
+            abort(400, 'Module name is required.');
+        }
 
-                foreach ($data as $item) {
-                    foreach ($item as $key => $value) {
-                        if (!empty($value) && !isset($keysToShow[$key])) {
-                            $keysToShow[$key] = true;
-                        }
-                    }
-                }
+        $limit = $request->get('limit', 10);
+        $offset = $request->get('offset', 0);
 
-                return view('api.modules', compact('data', 'keysToShow'));
-            } else {
-                $error = "Failed to fetch data: " . $response->status();
-                return back()->withErrors(['msg' => $error]);
+
+        $data = collect($this->sarvCrmService->getModuleData(
+            $token,
+            $module,
+            $limit,
+            $offset
+        ))->map(fn($item) => (array)$item);
+
+        $displayableKeys = $this->getDisplayableKeys($data);
+
+        return view('api.modules', compact('data', 'limit', 'moduleName', 'displayableKeys'));
+    }
+
+
+    /**
+     * Add another row to table prior to storing
+     */
+    public function create(Request $request): Response
+    {
+        if (!$request->session()->has('crm_token')) {
+            abort(403, 'Unauthorized Access.');
+        }
+
+        try {
+            $token = $request->session()->get('crm_token');
+            $module = $request->get('module') ?: $request->query('module');
+            $limit = $request->get('limit', 10);
+            $offset = $request->get('offset', 0);
+
+            $data = collect(
+                $this->sarvCrmService
+                    ->getModuleData($token, $module, $limit, $offset)
+            )->map(fn($item) => (array)$item);
+
+            $keys = $data->isEmpty()
+                ? collect()
+                : collect(array_keys($data->first()))
+                    ->filter(fn($k) => $data->pluck($k)->filter()->isNotEmpty())
+                    ->values();
+
+            return response(
+                $this->generateNewRecordRow($keys->all(), $module)
+            );
+        } catch (\Exception $e) {
+            return response(
+                '<p>Error: ' . e($e->getMessage()) . '</p>',
+                500
+            );
+        }
+    }
+
+    /**
+     * Generate new record row HTML
+     */
+    private function generateNewRecordRow(array $fields, string $moduleName): string
+    {
+        $cells = [];
+        foreach ($fields as $field) {
+            if ($field === 'id') {
+                continue;
             }
+
+            $placeholder = ucfirst(str_replace('_', ' ', $field));
+            $cells[] = sprintf(
+                '<td><input type="text" name="%s" placeholder="%s" class="editable-cell-input new-record-input" data-field-name="%s"></td>',
+                htmlspecialchars($field, ENT_QUOTES),
+                htmlspecialchars($placeholder, ENT_QUOTES),
+                htmlspecialchars($field, ENT_QUOTES)
+            );
         }
-        return response()->json(['error' => 'Module is required'], 400);
+
+        return sprintf(
+            '<tr id="new-record-row" class="new-record-row" style="display: table-row;"><td></td>%s</tr>',
+            implode('', $cells)
+        );
+    }
+
+    protected function getDisplayableKeys($data): array
+    {
+        if ($data->isEmpty()) return [];
+
+        $processedData = $data->map(fn($item) => (array)$item);
+
+        $firstItemKeys = array_keys($processedData->first());
+
+        return collect($firstItemKeys)->filter(function ($key) use ($processedData) {
+            return $processedData->pluck($key)->filter()->isNotEmpty();
+        })->values()->all();
+    }
+
+    public function update(Request $request)
+    {
+
+        return $request;
+
+
+//        if (!$request->session()->has('crm_token')) {
+//            // Abort if no CRM token is present
+//            abort(403, 'Unauthorized Access.');
+//        }
+
+        // Validate the incoming request for a single field update
+//        $validator = Validator::make($request->all(), [
+//            'module' => ['required', 'string'],
+//            'record_id' => ['required', 'string'], // The ID of the record being updated
+//            'field_name' => ['required', 'string'], // The specific field being updated
+//            'field_value' => ['nullable', 'string'], // The new value for that field
+//        ]);
+
+
+//        if ($validator->fails()) {
+//            // Return with errors if validation fails
+//            return back()->withErrors($validator)->withInput()->with('error', 'Validation failed for update.');
+//        }
+//
+//
+//
+//        $validated = $validator->validated();
+//        $token = $request->session()->get('crm_token');
+//
+//        try {
+        // Construct the 'fields' array as expected by the SarvCrmService
+        // The Sarv CRM API's 'Save' method expects an associative array of fields to update
+//            $fieldsToUpdate = [
+//                $validated['field_name'] => $validated['field_value']
+//            ];
+
+//            $this->sarvCrmService->updateModuleRecord(
+//                $token,
+//                $validated['module'],
+//                $validated['record_id'],
+//                $fieldsToUpdate // Pass the constructed fields array
+//            );
+
+        // Return success message. HTMX can swap this into a message area.
+//            return back()->with('success', 'Record updated successfully!');
+//        } catch (\Exception $e) {
+//            // Return error message. HTMX can swap this into a message area.
+//            return back()->with('error', 'Failed to update record: ' . $e->getMessage());
+//        }
     }
 }

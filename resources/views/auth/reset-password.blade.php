@@ -2,7 +2,7 @@
     <x-auth-card>
         <x-slot name="logo">
             <a href="/">
-                <x-signup-logo class="w-20 h-20 fill-current" />
+                <x-entry.signup-logo class="w-20 h-20 fill-current" />
             </a>
         </x-slot>
 

@@ -1,0 +1,3 @@
+<div id="loading" class="htmx-indicator">
+    ⏳  Loading...
+</div>

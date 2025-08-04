@@ -120,14 +120,18 @@ Route::prefix('sms')->group(function () {
 
 
 // CRM API
-Route::prefix('crm')->group(function () {
-    // fetching crm api +
-    Route::view('/login', 'api/sarvLogin')->name('crm');
-//
-    Route::post('/login', [SarvCRMController::class, 'loginCrm'])->name('crm-login');
-    Route::post('/logout', [SarvCRMController::class, 'logoutCrm'])->name('crm-logout');
-    Route::get('/contacts', [SarvCRMController::class, 'getModules'])->name('crm-contacts');
-});
+Route::prefix('crm')
+    ->controller(SarvCRMController::class)->group(function () {
+
+        Route::view('/login', 'api/main')->name('crm');
+        Route::post('/login', 'login')->name('crm.login');
+        Route::post('/logout', 'logout')->name('crm.logout');
+
+        Route::get('/modules', 'index')->name('crm.index');
+        Route::get('/modules/create', 'create')->name('crm.create');
+        Route::post('/modules', 'store')->name('crm.store');
+        Route::patch('/modules/{id}', 'update')->name('crm.update');
+    });
 
 
 // import login/signup/...

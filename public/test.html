@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persol HRMS - A New Experience</title>
+    <style>
+        /* --- DESIGN TOKENS & THEME SETUP --- */
+        :root {
+            /* Light Theme */
+            --bg-light: linear-gradient(135deg, #d4e0f7 0%, #a8c8ec 50%, #fde7e9 100%);
+            --card-bg-light: rgba(255, 255, 255, 0.25);
+            --card-border-light: rgba(255, 255, 255, 0.4);
+            --text-primary-light: #283140;
+            --text-secondary-light: #4a5568;
+            --brand-gradient-light: linear-gradient(135deg, #283140, #91AFE3);
+            --orb-glow-light: rgba(255, 255, 255, 0.7);
+
+            /* Dark Theme */
+            --bg-dark: linear-gradient(135deg, #0f1218 0%, #1a202c 50%, #3f324b 100%);
+            --card-bg-dark: rgba(26, 32, 44, 0.25);
+            --card-border-dark: rgba(145, 175, 227, 0.2);
+            --text-primary-dark: #edf2f7;
+            --text-secondary-dark: #a0aec0;
+            --brand-gradient-dark: linear-gradient(135deg, #91AFE3, #ffffff);
+            --orb-glow-dark: rgba(145, 175, 227, 0.3);
+
+            /* Transitions */
+            --transition-slow: 2s;
+            --transition-fast: 0.5s;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--bg-light);
+            transition: background var(--transition-slow) ease-in-out;
+            color: var(--text-primary-light);
+        }
+
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-primary-dark);
+        }
+
+        /* --- INTERACTIVE CARD --- */
+        .welcome-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            perspective: 1500px;
+        }
+
+        .welcome-card {
+            position: relative;
+            width: 90%;
+            max-width: 550px;
+            padding: 40px 50px;
+            text-align: center;
+            background: var(--card-bg-light);
+            backdrop-filter: blur(25px) saturate(150%);
+            border: 1px solid var(--card-border-light);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 1.5s 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+            transition:
+                background var(--transition-fast) ease,
+                border-color var(--transition-fast) ease,
+                transform 0.1s ease-out;
+        }
+
+        body.dark-mode .welcome-card {
+            background: var(--card-bg-dark);
+            border-color: var(--card-border-dark);
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- SHIMMER BORDER EFFECT --- */
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+            background: radial-gradient(
+                350px circle at var(--x) var(--y),
+                rgba(255, 255, 255, 0.4),
+                transparent 40%
+            );
+            opacity: 0;
+            transition: opacity var(--transition-fast) ease;
+        }
+        body.dark-mode .welcome-card::before {
+            background: radial-gradient(
+                350px circle at var(--x) var(--y),
+                rgba(145, 175, 227, 0.2),
+                transparent 40%
+            );
+        }
+        .welcome-card:hover::before { opacity: 1; }
+
+        /* --- CONTENT STYLING --- */
+        .card-content {
+            transform: translateZ(50px);
+        }
+
+        .brand-name {
+            font-size: 36px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            background: var(--brand-gradient-light);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: background var(--transition-fast) ease;
+        }
+        body.dark-mode .brand-name { background: var(--brand-gradient-dark); }
+
+        .welcome-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            transition: color var(--transition-fast) ease;
+        }
+
+        /* --- CELESTIAL ORB (REPLACES INDICATORS) --- */
+        .celestial-orb {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, #a8c8ec);
+            box-shadow: 0 0 20px 5px rgba(145, 175, 227, 0.3);
+            transition: all var(--transition-slow) ease-in-out;
+            animation: orbFloat 8s ease-in-out infinite;
+        }
+        .celestial-orb::after { /* Outer Glow */
+            content: '';
+            position: absolute;
+            top: -10px; left: -10px;
+            width: 110px; height: 110px;
+            background: var(--orb-glow-light);
+            border-radius: 50%;
+            filter: blur(20px);
+            z-index: -1;
+            transition: background var(--transition-slow) ease-in-out;
+            animation: orbGlowPulse 4s ease-in-out infinite;
+        }
+
+        body.dark-mode .celestial-orb::after { background: var(--orb-glow-dark); }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes orbGlowPulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* --- CTA BUTTON --- */
+        .cta-button {
+            background: var(--brand-gradient-light);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px -5px rgba(145, 175, 227, 0.4);
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        body.dark-mode .cta-button {
+            background: var(--brand-gradient-dark);
+            color: #1a202c;
+            box-shadow: 0 8px 25px -5px rgba(145, 175, 227, 0.2);
+        }
+        .cta-button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 35px -5px rgba(145, 175, 227, 0.5);
+        }
+
+        /* --- THEME TOGGLE SWITCH --- */
+        .theme-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 40px;
+            height: 40px;
+            background: var(--card-bg-light);
+            border: 1px solid var(--card-border-light);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            transition: all var(--transition-fast) ease;
+        }
+        .theme-toggle:hover { transform: scale(1.1) rotate(15deg); }
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-primary-light);
+            transition: stroke var(--transition-fast) ease;
+        }
+        .icon-sun, .icon-moon { transition: opacity 0.3s ease; }
+        .icon-moon { opacity: 0; position: absolute; }
+
+        body.dark-mode .theme-toggle {
+            background: var(--card-bg-dark);
+            border-color: var(--card-border-dark);
+        }
+        body.dark-mode .theme-toggle svg { stroke: var(--text-primary-dark); }
+        body.dark-mode .icon-sun { opacity: 0; }
+        body.dark-mode .icon-moon { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+<div class="theme-toggle" id="theme-toggle">
+    <svg class="icon-sun" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"><path d="M12 3v1m0 16v1m8.66-15.66l-.7.7M4.04 19.96l-.7.7M21 12h-1M4 12H3m15.66 8.66l-.7-.7M4.04 4.04l-.7-.7"></path><circle cx="12" cy="12" r="5"></circle></svg>
+    <svg class="icon-moon" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+</div>
+
+<div class="welcome-container">
+    <div class="welcome-card" id="welcome-card">
+        <div class="card-content">
+            <div class="celestial-orb" id="celestial-orb"></div>
+            <h1 class="brand-name">PERSOL</h1>
+            <h2 class="welcome-title" id="welcome-title">Human Resource Management Excellence</h2>
+            <button class="cta-button">Access Dashboard</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    class ProfessionalWelcome {
+        constructor() {
+            this.card = document.getElementById('welcome-card');
+            this.orb = document.getElementById('celestial-orb');
+            this.welcomeTitle = document.getElementById('welcome-title');
+            this.themeToggle = document.getElementById('theme-toggle');
+
+            this._setupTheme();
+            this._setupInteractivity();
+            this._updateDynamicElements();
+            setInterval(() => this._updateDynamicElements(), 60000); // Update every minute
+        }
+
+        _setupTheme() {
+            this.themeToggle.addEventListener('click', () => {
+                const isDarkMode = document.body.classList.toggle('dark-mode');
+                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            });
+
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const hour = new Date().getHours();
+
+            if (savedTheme === 'dark' || (!savedTheme && (prefersDark || hour < 6 || hour >= 19))) {
+                document.body.classList.add('dark-mode');
+            }
+        }
+
+        _setupInteractivity() {
+            document.addEventListener('mousemove', e => {
+                const { clientX, clientY } = e;
+                const { innerWidth, innerHeight } = window;
+
+                // Card 3D Tilt & Magnetic Follow
+                const rect = this.card.getBoundingClientRect();
+                const x = clientX - rect.left;
+                const y = clientY - rect.top;
+                const rotateX = (y - rect.height / 2) / 25;
+                const rotateY = (x - rect.width / 2) / -25;
+                const magX = (clientX / innerWidth - 0.5) * 20;
+                const magY = (clientY / innerHeight - 0.5) * 20;
+
+                this.card.style.transform = `translate(${magX}px, ${magY}px) perspective(1500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+                // Shimmering border effect
+                this.card.style.setProperty('--x', `${x}px`);
+                this.card.style.setProperty('--y', `${y}px`);
+            });
+        }
+
+        _updateDynamicElements() {
+            const now = new Date();
+            const hour = now.getHours();
+            const month = now.getMonth();
+
+            // Orb Color & Greeting Logic
+            let orbStyle, greeting;
+            if (hour >= 5 && hour < 8) { // Dawn
+                orbStyle = 'radial-gradient(circle at 30% 30%, #ffdeaf, #fca5a5)';
+                greeting = 'A New Day Awaits';
+            } else if (hour >= 8 && hour < 17) { // Day
+                orbStyle = 'radial-gradient(circle at 30% 30%, #ffffff, #a8c8ec)';
+                greeting = 'Unlock Your Potential';
+            } else if (hour >= 17 && hour < 20) { // Dusk
+                orbStyle = 'radial-gradient(circle at 30% 30%, #f9a8d4, #7e22ce)';
+                greeting = 'Reflect on Your Success';
+            } else { // Night
+                orbStyle = 'radial-gradient(circle at 30% 30%, #e0e7ff, #6366f1)';
+                greeting = 'Excellence Never Sleeps';
+            }
+            this.orb.style.background = orbStyle;
+            this.welcomeTitle.textContent = greeting;
+
+            // Seasonal nuances (subtle box-shadow color changes)
+            let orbShadowColor;
+            if (month >= 2 && month <= 4) { // Spring (Green tint)
+                orbShadowColor = 'rgba(74, 222, 128, 0.3)';
+            } else if (month >= 5 && month <= 7) { // Summer (Golden tint)
+                orbShadowColor = 'rgba(251, 191, 36, 0.3)';
+            } else if (month >= 8 && month <= 10) { // Autumn (Orange tint)
+                orbShadowColor = 'rgba(249, 115, 22, 0.3)';
+            } else { // Winter (Blue tint)
+                orbShadowColor = 'rgba(96, 165, 250, 0.3)';
+            }
+            this.orb.style.boxShadow = `0 0 20px 5px ${orbShadowColor}`;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        new ProfessionalWelcome();
+    });
+</script>
+
+</body>
+</html>

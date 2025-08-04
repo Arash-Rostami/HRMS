@@ -238,6 +238,11 @@ class User extends Authenticatable implements FilamentUser, HasName
         return ($this->role == 'admin') or ($this->role == 'developer') or $this->hasVerifiedEmail();
     }
 
+    public function latestEnergyTest()
+    {
+        return $this->hasOne(EnergyTest::class)->latestOfMany('completed_at');
+    }
+
     public function profile()
     {
         return $this->hasOne(Profile::class);

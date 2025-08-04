@@ -9,6 +9,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\HtmlString;
 
 class Admin
 {
@@ -33,6 +34,7 @@ class Admin
                     ->orderBy('forename')
                     ->orderBy('surname');
             })
+            ->searchable(['forename', 'surname'])
             ->getOptionLabelFromRecordUsing(fn($record) => $record->full_name)
             ->required();
     }
@@ -79,9 +81,11 @@ class Admin
     {
         return TextInput::make('password')
             ->label('Password')
+            ->required()
             ->password()
-            ->required();
+            ->suffix(fn() => new HtmlString('<span class="whitespace-nowrap text-gray-400"><button type="button" onclick="(function(b){const i=b.closest(\'.filament-forms-text-input-component\').querySelector(\'input\');const p=i.type===\'password\';i.type=p?\'text\':\'password\';b.textContent=p?\'Hide\':\'Show\'})(this)">Show</button></span>'));
     }
+
 
     /**
      * @return TextColumn

@@ -11,16 +11,16 @@
 {{-- Background effects --}}
 @switch($season)
     @case('winter')
-        <x-snowflakes/>
+        <x-entry.snowflakes/>
         @break
     @case('spring')
-        <x-spring-flower/>
+        <x-entry.spring-flower/>
         @break
     @case('summer')
-        <x-summer-sun/>
+        <x-entry.summer-sun/>
         @break
     @case('fall')
-        <x-fall-leaves/>
+        <x-entry.fall-leaves/>
         @break
     @default
         <div class="bg-login-page opacity-10"></div>

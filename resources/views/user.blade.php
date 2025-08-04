@@ -21,29 +21,31 @@
                 <x-user.question.main :questions="$questions"></x-user.question.main>
 
                 <div id="sortMe">
+                    <x-user.energy.main ></x-user.energy.main>
+
                     {{--                Calendar Section--}}
-                    <x-user.calendar.main></x-user.calendar.main>
+{{--                    <x-user.calendar.main></x-user.calendar.main>--}}
 
                     {{--                 Posts Section --}}
-                    <x-user.posts.main :posts="$posts" :pins="$pins"></x-user.posts.main>
+{{--                    <x-user.posts.main :posts="$posts" :pins="$pins"></x-user.posts.main>--}}
 
                     {{--                 User Status Section --}}
-                    <x-user.status.main :users="$users"></x-user.status.main>
+{{--                    <x-user.status.main :users="$users"></x-user.status.main>--}}
 
                     {{--                 Job Ads Section --}}
-                    <x-user.job.main :jobs="$jobs"></x-user.job.main>
+{{--                    <x-user.job.main :jobs="$jobs"></x-user.job.main>--}}
 
                     {{--                 Reports Section --}}
-                    <x-user.report.main :reports="$reports"></x-user.report.main>
+{{--                    <x-user.report.main :reports="$reports"></x-user.report.main>--}}
 
                     {{--                 Corporate and Persol Links Sections --}}
-                    <x-user.link.external.main :links="$links"></x-user.link.external.main>
-                    <x-user.link.internal.main :links="$links"></x-user.link.internal.main>
+{{--                    <x-user.link.external.main :links="$links"></x-user.link.external.main>--}}
+{{--                    <x-user.link.internal.main :links="$links"></x-user.link.internal.main>--}}
 
                     {{--                 FAQs Section --}}
-                    <x-user.faq.main :faqs="$faqs"></x-user.faq.main>
+{{--                    <x-user.faq.main :faqs="$faqs"></x-user.faq.main>--}}
                 </div>
-                <x-user.anniversary></x-user.anniversary>
+{{--                <x-user.anniversary></x-user.anniversary>--}}
 
                 {{--  Main Layout for Modals --}}
                 <x-user.modal></x-user.modal>

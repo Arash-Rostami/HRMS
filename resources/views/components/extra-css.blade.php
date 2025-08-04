@@ -3,12 +3,12 @@
         --main: #718096;
         --bg-main: #1B232E;
         @if((Cookie::get('theme')))
-                     --main: {{Cookie::get('theme')}};
+                      --main: {{Cookie::get('theme')}};
         @endif
         @if((Cookie::get('mode')))
-                    --bg-main: {{Cookie::get('mode')}};
+                     --bg-main: {{Cookie::get('mode')}};
         @endif
-                  --red: #C82348;
+                   --red: #C82348;
         --blue: #1785FF;
         --purple: #673AB7;
         --green: #acf9a7;
@@ -126,6 +126,8 @@
 
     @endif
 
+
+
     }
 
     /*to be edited in the css file*/
@@ -148,5 +150,29 @@
     .links-thumbnails-color:hover,
     .product-thumbnails-color:hover {
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); /* More pronounced shadow on hover */
+    }
+
+    .load-effect {
+        opacity: 0;
+        transform: scale(0.9);
+        animation: pulseGlowIn 1.5s ease-out forwards;
+    }
+
+    @keyframes pulseGlowIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.9);
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(145, 175, 227, 0.5);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+        }
     }
 </style>
