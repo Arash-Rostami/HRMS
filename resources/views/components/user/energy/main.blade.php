@@ -56,7 +56,7 @@
          data-te-collapse-show
          aria-labelledby="flush-headingOne"
          data-te-parent="#accordionFlushExample">
-        <x-user.font-size :return-url="route('user.panel.dms') "/>
+        <x-user.font-size :return-url="route('user.panel.energy') "/>
         <div :class="currentFontSizeClass">
             @livewire('energy-test')
         </div>

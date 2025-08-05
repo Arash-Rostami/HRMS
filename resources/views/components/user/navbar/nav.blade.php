@@ -319,6 +319,19 @@
                    'text-gray-300 ' => isDarkMode(),
                  ])>پروفایل</span>
         </div>
+        {{-- Energy Panel Icon --}}
+        <div class="flex flex-col items-center text-center">
+            <a href="{{ route('user.panel.energy') }}"
+               @mouseenter="window.innerWidth > 768 && showTooltip('پرسشنامه(آمار) انرژی فردی/سازمانی', $event)"
+               @mouseleave="hideTooltip()"
+               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
+                <i class="fas fa-battery-full"></i>
+            </a>
+            <span @class([
+                   'mt-1 text-sm text-gray-700',
+                   'text-gray-300 ' => isDarkMode(),
+                 ])>انرژی</span>
+        </div>
         {{-- Delegation Panel Icon --}}
         <div class="flex flex-col items-center text-center">
             <a href="{{ route('user.panel.delegation') }}"

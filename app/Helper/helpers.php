@@ -186,6 +186,11 @@ function hasChosenMusic()
     return Cache::has('profile_load_music_' . auth()->user()->id);
 }
 
+function hasChosenEnergy()
+{
+    return Cache::has('profile_initiate_energy_' . auth()->user()->id);
+}
+
 function hasChosenDMS()
 {
     return Cache::has('profile_initiate_dms_' . auth()->user()->id);
@@ -536,7 +541,7 @@ function showMainDashboardComponents()
 {
     return isNotInEditingMode() && hasNoEmptyFields() && !hasChosenMusic() && !hasChosenSuggestion() &&
         !hasChosenOnboarding() && !hasChosenAnalytics() && !hasChosenSurveys() && !hasChosenDelegation()
-        && !hasChosenDMS() && !hasChosenTHS();
+        && !hasChosenDMS() && !hasChosenTHS() && !hasChosenEnergy();
     //        && !showToOnboardedUser()
 }
 
@@ -598,7 +603,8 @@ function showPresence()
 function showProfile()
 {
     return !hasChosenMusic() && !hasChosenOnboarding() && !hasChosenAnalytics() && !hasChosenTHS() &&
-        !hasChosenSurveys() && !hasChosenSuggestion() && !hasChosenDelegation() && !hasChosenDMS();
+        !hasChosenSurveys() && !hasChosenSuggestion() && !hasChosenDelegation() && !hasChosenDMS() &&
+        !hasChosenEnergy();
     //        && !showToOnboardedUser()
 }
 

@@ -64,8 +64,11 @@ Route::middleware(['auth'])->prefix('main')->group(function () {
     Route::get('/suggestion', [UserPanelController::class, 'loadSuggestion'])->name('user.panel.suggestion');
     // panel analytics +
     Route::get('/analytics', [UserPanelController::class, 'viewAnalytics'])->name('user.panel.analytics');
+    // panel energy +
+    Route::get('/energy', [UserPanelController::class, 'loadEnergy'])->name('user.panel.energy');
     // presence +
     Route::get('/presence/{status}', [UserPanelController::class, 'changePresence'])->name('user.presence');
+
 
     Route::get('/send-email', [UserEmailController::class, 'show']);
     // email dispatch #

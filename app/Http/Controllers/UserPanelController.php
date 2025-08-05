@@ -172,6 +172,19 @@ class UserPanelController extends Controller
         return back();
     }
 
+    public function loadEnergy()
+    {
+        $cacheKey = 'profile_initiate_energy_' . auth()->user()->id;
+
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        } else {
+            // Cache for one hour (60 minutes)
+            Cache::put($cacheKey, true, now()->addMinutes(60));
+        }
+        return back();
+    }
+
     public function loadOnboarding()
     {
         $cacheKey = 'profile_initiate_onboarding_' . auth()->user()->id;

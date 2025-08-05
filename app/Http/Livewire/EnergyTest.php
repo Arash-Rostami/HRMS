@@ -77,10 +77,9 @@ class EnergyTest extends Component
         }
     }
 
-    public function submitTest(): void
+    public function submitTest()
     {
         $scores = $this->calculateScores();
-
 
         EnergyModel::create([
             'user_id' => auth()->id(),
@@ -93,8 +92,8 @@ class EnergyTest extends Component
             'completed_at' => now(),
         ]);
 
-        session()->forget('show_energy_test');
-        $this->emit('testCompleted');
+        session()->flash('success', 'پاسخ شما با موفقیت ثبت شد. از مشارکت شما سپاسگزاریم.');
+        return redirect()->route('user.panel');
     }
 
     private function calculateScores(): array
@@ -116,6 +115,6 @@ class EnergyTest extends Component
 
     public function render()
     {
-        return view('components.user.energy.wizard', ['categoryKeys' => array_keys($this->questions)]);
+        return view('components.user.energy.test', ['categoryKeys' => array_keys($this->questions)]);
     }
 }
