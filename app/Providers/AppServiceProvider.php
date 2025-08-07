@@ -7,6 +7,7 @@ use App\Filament\Resources\CancellationResource;
 use App\Filament\Resources\DelegationResource;
 use App\Filament\Resources\DeskResource;
 use App\Filament\Resources\DMSResource;
+use App\Filament\Resources\EnergyTestResource;
 use App\Filament\Resources\EventResource;
 use App\Filament\Resources\FAQResource;
 use App\Filament\Resources\FeedbackResource;
@@ -83,6 +84,7 @@ class AppServiceProvider extends ServiceProvider
                 NavigationGroup::make('User Panel')
                     ->items([
                         ...AppResource::getNavigationItems(),
+                        ...EnergyTestResource::getNavigationItems(),
                         ...DelegationResource::getNavigationItems(),
                         ...DMSResource::getNavigationItems(),
                         ...QuestionResource::getNavigationItems(),

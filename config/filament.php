@@ -1,7 +1,9 @@
 <?php
 
 use App\Filament\Resources\DashboardResource\Widgets\AgeChart;
+use App\Filament\Resources\DashboardResource\Widgets\DepartmentEnergyChart;
 use App\Filament\Resources\DashboardResource\Widgets\DeskPercentageChart;
+use App\Filament\Resources\DashboardResource\Widgets\EnergyDistributionChart;
 use App\Filament\Resources\DashboardResource\Widgets\ExperienceChart;
 use App\Filament\Resources\DashboardResource\Widgets\LeaveAgeChart;
 use App\Filament\Resources\DashboardResource\Widgets\LeaveNumberChart;
@@ -160,10 +162,12 @@ return [
             AgeChart::class,
             LeaveAgeChart::class,
             ExperienceChart::class,
+            EnergyDistributionChart::class,
             GenderChart::class,
-            WorkingHoursChart::class,
+            DepartmentEnergyChart::class,
             LeaveNumberChart::class,
             LeaveVolumeChart::class,
+            WorkingHoursChart::class,
         ],
     ],
 

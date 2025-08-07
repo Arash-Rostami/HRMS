@@ -10,6 +10,7 @@ class UserSignUpChart extends LineChartWidget
 {
     protected static ?string $heading = 'Signups';
 
+    protected static ?string $pollingInterval = '30s';
 
     private function fetchStatistics(): array
     {
@@ -19,10 +20,10 @@ class UserSignUpChart extends LineChartWidget
 
         return array($months, $totalUsers);
     }
-
     protected function getData(): array
     {
         list($months, $totalUsers) = $this->fetchStatistics();
+        $d = Date::getFarsiDay();
         return [
             'datasets' => [
                 [
@@ -36,7 +37,7 @@ class UserSignUpChart extends LineChartWidget
                 ],
             ],
             // to convert latin month to persian one
-            'labels' => array_map(fn($v) => ($v >= 3 && $v <= 12) ? $v - 2 : $v + 10, $months),
+            'labels' => array_map(fn($m) => ($m >= 3 ? $m - 2 : $m + 10) - ($d > 9), $months)
         ];
     }
 }

@@ -9,6 +9,8 @@ class WorkingHoursChart extends PolarAreaChartWidget
 {
     protected static ?string $heading = 'Total & Average Working Hours';
 
+    protected static ?string $pollingInterval = '30s';
+
 
     private function fetchStatistics(): array
     {

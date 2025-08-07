@@ -55,7 +55,7 @@
          data-te-collapse-show
          aria-labelledby="flush-collapseDMS"
          data-te-parent="#accordionFlushExample">
-        <x-user.font-size :return-url="route('user.panel.dms') "/>
+        <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'dms']) "/>
         <div :class="currentFontSizeClass">
             @livewire('d-m-s')
         </div>

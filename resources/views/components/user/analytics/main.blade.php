@@ -53,7 +53,7 @@
          data-te-collapse-show
          data-te-parent="#accordionFlushExample"
          aria-labelledby="flush-headingStatistics">
-        <x-user.font-size :return-url="route('user.panel.analytics') "/>
+        <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'analytics']) "/>
         <div :class="currentFontSizeClass">
             <x-user.analytics.charts/>
         </div>

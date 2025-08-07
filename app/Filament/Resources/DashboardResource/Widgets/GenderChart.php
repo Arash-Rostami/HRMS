@@ -9,6 +9,9 @@ class GenderChart extends DoughnutChartWidget
 {
     protected static ?string $heading = 'Gender & Marital Status';
 
+    protected static ?string $pollingInterval = '30s';
+
+
     protected function getData(): array
     {
         $data = UserStatistics::getGenderAndMaritalStatus();

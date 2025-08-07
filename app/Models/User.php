@@ -172,8 +172,8 @@ class User extends Authenticatable implements FilamentUser, HasName
             ? $currentGregorianYear - 1
             : $currentGregorianYear;
 
-        $startOfYear = Carbon::create($iranianYear - 1, 3, 21, 0, 0, 0);
-        $endOfYear = Carbon::create($iranianYear, 3, 20, 23, 59, 59);
+        $startOfYear = Carbon::create($iranianYear , 3, 21, 0, 0, 0);
+        $endOfYear = Carbon::create($iranianYear +1, 3, 20, 23, 59, 59);
 
 
         return self::whereBetween('created_at', [$startOfYear, $endOfYear])

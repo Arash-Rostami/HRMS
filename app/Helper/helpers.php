@@ -20,6 +20,7 @@ use App\Services\UserStatistics;
 use App\Services\Utility;
 use App\Services\WeatherAPI;
 use Illuminate\Support\Facades\Cache;
+use Morilog\Jalali\Jalalian;
 
 
 function canCancelSuggestion($record)
@@ -178,12 +179,12 @@ function hasCancelledMore($user)
 
 function hasChosenAnalytics()
 {
-    return Cache::has('profile_view_analytics_' . auth()->user()->id);
+    return Cache::has('profile_initiate_analytics_' . auth()->user()->id);
 }
 
 function hasChosenMusic()
 {
-    return Cache::has('profile_load_music_' . auth()->user()->id);
+    return Cache::has('profile_initiate_music_' . auth()->user()->id);
 }
 
 function hasChosenEnergy()
@@ -276,6 +277,38 @@ function isAwaitingManager($id)
 function isDarkMode(): bool
 {
     return Utility::isDarkMode();
+}
+
+function isOptionalQuestionnairePeriod($user = null): bool
+{
+    $user = $user ?? auth()->user();
+
+    if (!$user) return false;
+
+    $hasCompleted = $user->latestEnergyTest && $user->latestEnergyTest->completed_at->isCurrentMonth();
+
+    if ($hasCompleted) return false;
+
+    $dayOfMonth = Jalalian::fromCarbon(now())->getDay();
+
+    if ($dayOfMonth >= 20 && $dayOfMonth < 25) return true;
+
+    return false;
+}
+
+function isForcedQuestionnairePeriod($user = null): bool
+{
+    $user = $user ?? auth()->user();
+
+    if (!$user) return false;
+
+    $dayOfMonth = Jalalian::fromCarbon(now())->getDay();
+
+    $isWithinForcedDateRange = ($dayOfMonth >= 25 && $dayOfMonth <= 30);
+
+    if (!$isWithinForcedDateRange) return false;
+
+    return !($user->latestEnergyTest && $user->latestEnergyTest->completed_at->isCurrentMonth());
 }
 
 function isLightMode(): bool
@@ -720,6 +753,11 @@ function showWeather()
 {
     $api = WeatherAPI::getWeather();
     return $api['weather'];
+}
+
+function toJalali($date, string $format = 'Y, m, d')
+{
+    return Date::toJalali($date, $format);
 }
 
 function tel($num)

@@ -56,7 +56,7 @@
          data-te-collapse-show
          aria-labelledby="flush-headingWorkOut"
          data-te-parent="#accordionFlushExample">
-        <x-user.font-size :return-url="route('user.panel.music') "/>
+        <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'music']) "/>
         <x-user.music.tunes></x-user.music.tunes>
         <!-- Background Shapes -->
         <x-user.bg-shapes/>

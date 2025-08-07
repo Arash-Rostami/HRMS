@@ -20,16 +20,6 @@ class Date
         self::$farsiDate = Jalalian::now();
     }
 
-
-    /**
-     * @param $currentUnix
-     * @return false|string
-     */
-    public static function addOneToDay($currentUnix)
-    {
-        return date('Y-m-d', ($currentUnix + (86400)));
-    }
-
     /**
      * @param $latinDate
      * @return string
@@ -38,7 +28,6 @@ class Date
     {
         return Jalalian::fromCarbon($latinDate);
     }
-
 
     /**
      * @param $latinDate
@@ -79,7 +68,6 @@ class Date
         return Jalalian::fromFormat('Y-m-d', $date)->toCarbon();
     }
 
-
     /**
      * @param $farsiDate
      * @return string
@@ -104,17 +92,6 @@ class Date
         return \Morilog\Jalali\CalendarUtils::createCarbonFromFormat('Y/m/d H:i:s', $farsiDate);
     }
 
-
-    /**
-     * @param $dateFormat
-     * @return false|int
-     */
-    public static function convertIntoUnix($dateFormat)
-    {
-        return strtotime($dateFormat);
-
-    }
-
     /**
      * @param $unix
      * @return Jalalian
@@ -123,18 +100,6 @@ class Date
     {
         return Jalalian::forge($unix);
     }
-
-    /**
-     * @param $day
-     * @return string
-     */
-    public static function convertTheClickedDayIntoFarsi($day): string
-    {
-        return self::getFarsiYear() . showDateDivider()
-            . makeDoubleDigit(self::getFarsiMonth())
-            . showDateDivider() . $day;
-    }
-
 
     public static function convertTheClickedDayIntoDay($day)
     {
@@ -152,61 +117,15 @@ class Date
         )->format('Y-m-d');
     }
 
-    public static function convertTimeStamp($time): Jalalian
-    {
-        return Jalalian::forge($time);
-    }
-
     /**
-     * @param bool $date
-     * @param array $remaining
-     * @param int $i
-     * @return array
+     * @param $day
+     * @return string
      */
-    public static function displayAfterSaturday(bool $date, array $remaining, int $i): array
+    public static function convertTheClickedDayIntoFarsi($day): string
     {
-        while (self::showNumberOfDayInWeek($date) < 6) {
-            $remaining[] = self::makeDate(self::convertIntoUnix($date));
-            $date = self::addOneToDay(self::convertIntoUnix($date));
-            $i++;
-        }
-        return $remaining;
-    }
-
-    /**
-     * @param $date
-     * @param array $remaining
-     * @return array
-     */
-    public static function displayFromSaturday($date, array $remaining): array
-    {
-        if (self::showNumberOfDayInWeek($date) == 6) {
-            $remaining[] = self::makeDate(self::convertIntoUnix($date));
-            $date = self::addOneToDay(self::convertIntoUnix($date));
-        }
-        return array($remaining, $date);
-    }
-
-    public static function getEndOfMonth(): string
-    {
-        return implode('-',
-                CalendarUtils::toGregorian(Date::getFarsiYear(), Date::getFarsiMonth(), Date::getLastDayOfMonth())) . " 23:59:59";
-    }
-
-    /**
-     * @return int
-     */
-    public static function getFarsiDay(): int
-    {
-        return makeDoubleDigit(Jalalian::now()->getDay());
-    }
-
-    /**
-     * @return int
-     */
-    public static function getFarsiMonth(): int
-    {
-        return makeDoubleDigit(Jalalian::now()->getMonth());
+        return self::getFarsiYear() . showDateDivider()
+            . makeDoubleDigit(self::getFarsiMonth())
+            . showDateDivider() . $day;
     }
 
     /**
@@ -220,9 +139,20 @@ class Date
     /**
      * @return int
      */
-    public static function getFarsiTime(): int
+    public static function getFarsiMonth(): int
     {
-        return makeDoubleDigit(Jalalian::now()->getTimestamp());
+        return makeDoubleDigit(Jalalian::now()->getMonth());
+    }
+
+    public static function convertTimeStamp($time): Jalalian
+    {
+        return Jalalian::forge($time);
+    }
+
+    public static function getEndOfMonth(): string
+    {
+        return implode('-',
+                CalendarUtils::toGregorian(Date::getFarsiYear(), Date::getFarsiMonth(), Date::getLastDayOfMonth())) . " 23:59:59";
     }
 
     public static function getLastDayOfMonth(): int
@@ -230,13 +160,27 @@ class Date
         return (new Jalalian(Date::getFarsiYear(), Date::getFarsiMonth(), 1))->getMonthDays();
     }
 
+    /**
+     * @return int
+     */
+    public static function getFarsiDay(): int
+    {
+        return makeDoubleDigit(Jalalian::now()->getDay());
+    }
+
+    /**
+     * @return int
+     */
+    public static function getFarsiTime(): int
+    {
+        return makeDoubleDigit(Jalalian::now()->getTimestamp());
+    }
 
     public static function getStartOfMonth(): string
     {
         return implode('-',
                 CalendarUtils::toGregorian(self::getFarsiYear(), self::getFarsiMonth(), 1)) . " 00:00:00";
     }
-
 
     public static function getStartOfPersianMonth($next = 0)
     {
@@ -248,23 +192,11 @@ class Date
         return $date['timestamp'];
     }
 
-
     public static function getStartOfPersianYear($next = 0)
     {
         $date = (new Jalalian((self::getFarsiYear() + $next), 01, 01))->toArray();
         return $date['timestamp'];
     }
-
-
-    /**
-     * @param $currentUnix
-     * @return false|string
-     */
-    public static function makeDate($currentUnix)
-    {
-        return date('Y-m-d', $currentUnix);
-    }
-
 
     public static function listWeekDays(): array
     {
@@ -294,16 +226,6 @@ class Date
         return strtoupper(substr($day, 0, 3));
     }
 
-
-    /**
-     * @param $date
-     * @return false|string
-     */
-    public static function showNumberOfDayInWeek($date)
-    {
-        return date('w', strtotime($date));
-    }
-
     /**
      * @param $date
      * @return array
@@ -316,5 +238,83 @@ class Date
         list($remaining, $date) = self::displayFromSaturday($date, $remaining);
         // to show the remaining days if the given day is after Sat
         return self::displayAfterSaturday($date, $remaining, $i);
+    }
+
+    /**
+     * @param $date
+     * @param array $remaining
+     * @return array
+     */
+    public static function displayFromSaturday($date, array $remaining): array
+    {
+        if (self::showNumberOfDayInWeek($date) == 6) {
+            $remaining[] = self::makeDate(self::convertIntoUnix($date));
+            $date = self::addOneToDay(self::convertIntoUnix($date));
+        }
+        return array($remaining, $date);
+    }
+
+    /**
+     * @param $date
+     * @return false|string
+     */
+    public static function showNumberOfDayInWeek($date)
+    {
+        return date('w', strtotime($date));
+    }
+
+    /**
+     * @param $currentUnix
+     * @return false|string
+     */
+    public static function makeDate($currentUnix)
+    {
+        return date('Y-m-d', $currentUnix);
+    }
+
+    /**
+     * @param $dateFormat
+     * @return false|int
+     */
+    public static function convertIntoUnix($dateFormat)
+    {
+        return strtotime($dateFormat);
+
+    }
+
+    /**
+     * @param $currentUnix
+     * @return false|string
+     */
+    public static function addOneToDay($currentUnix)
+    {
+        return date('Y-m-d', ($currentUnix + (86400)));
+    }
+
+    /**
+     * @param bool $date
+     * @param array $remaining
+     * @param int $i
+     * @return array
+     */
+    public static function displayAfterSaturday(bool $date, array $remaining, int $i): array
+    {
+        while (self::showNumberOfDayInWeek($date) < 6) {
+            $remaining[] = self::makeDate(self::convertIntoUnix($date));
+            $date = self::addOneToDay(self::convertIntoUnix($date));
+            $i++;
+        }
+        return $remaining;
+    }
+
+    public static function toJalali($date, $format): string
+    {
+        $dt = match (true) {
+            $date instanceof \DateTimeInterface => Carbon::instance($date),
+            is_numeric($date) => Carbon::createFromTimestamp($date),
+            default => Carbon::parse($date),
+        };
+
+        return Jalalian::fromDateTime($dt)->format($format);
     }
 }

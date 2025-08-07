@@ -9,6 +9,9 @@ class AgeChart extends LineChartWidget
 {
     protected static ?string $heading = 'Age & Gender';
 
+    protected static ?string $pollingInterval = '30s';
+
+
     protected function getData(): array
     {
         $dataset = UserStatistics::getAgeDistribution();

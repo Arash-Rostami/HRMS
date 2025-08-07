@@ -10,6 +10,8 @@ use Filament\Widgets\BarChartWidget;
 class LeaveVolumeChart extends BarChartWidget
 {
 
+    protected static ?string $pollingInterval = '30s';
+
     protected function getHeading(): string
     {
         return "Leaves duration in " . Date::getFarsiYear();

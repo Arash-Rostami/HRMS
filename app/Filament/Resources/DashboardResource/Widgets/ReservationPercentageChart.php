@@ -12,6 +12,9 @@ class ReservationPercentageChart extends BarChartWidget
 
     public ?string $filter = 'null';
 
+    protected static ?string $pollingInterval = '30s';
+
+
     /**
      * @return array
      */

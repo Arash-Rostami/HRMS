@@ -53,7 +53,7 @@
          data-te-collapse-collapsed
          aria-labelledby="flush-headingOne"
          data-te-parent="#accordionFlushExample">
-        <x-user.font-size :return-url="route('user.panel.ths') "/>
+        <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'ths']) "/>
         <div :class="currentFontSizeClass">
             @livewire('t-h-s')
         </div>

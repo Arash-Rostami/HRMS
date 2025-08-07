@@ -57,7 +57,7 @@
          data-te-collapse-collapsed
          aria-labelledby="flush-collapseSuggestion"
          data-te-parent="#accordionFlushExample">
-        <x-user.font-size :return-url="route('user.panel.suggestion') "/>
+        <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'suggestion']) "/>
         <div :class="currentFontSizeClass">
             @livewire('suggestion-process')
         </div>

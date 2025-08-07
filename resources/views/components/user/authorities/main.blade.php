@@ -55,7 +55,7 @@
          aria-labelledby="flush-collapseDelegation"
          data-te-parent="#accordionFlushExample">
         <div :class="currentFontSizeClass">
-            <x-user.font-size :return-url="route('user.panel.delegation') "/>
+            <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'delegation']) "/>
             <x-user.authorities.items :delegations="$delegations"/>
         </div>
     </div>

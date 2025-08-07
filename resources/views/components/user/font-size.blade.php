@@ -22,7 +22,7 @@
         ]
     ];
 @endphp
-<div class="flex justify-end gap-3">
+<div class="flex justify-end gap-3 mb-6">
     @foreach($buttons as $btn)
         <button
             @click="{{ $btn['action'] }}"

@@ -13,18 +13,19 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         'App\Models\App' => 'App\Policies\AppPolicy',
-        'App\Models\Desk' => 'App\Policies\DeskPolicy',
-        'App\Models\Park' => 'App\Policies\ParkPolicy',
         'App\Models\Cancellation' => 'App\Policies\CancellationPolicy',
-        'App\Models\Profile' => 'App\Policies\ProfilePolicy',
+        'App\Models\Desk' => 'App\Policies\DeskPolicy',
         'App\Models\DMS' => 'App\Policies\DMSPolicy',
+        'App\Models\EnergyTest' => 'App\Policies\EnergyTestPolicy',
         'App\Models\FAQ' => 'App\Policies\FAQPolicy',
         'App\Models\Feedback' => 'App\Policies\FeedbackPolicy',
         'App\Models\InstantMessage' => 'App\Policies\InstantMessagePolicy',
         'App\Models\Job' => 'App\Policies\JobPolicy',
         'App\Models\Link' => 'App\Policies\LinkPolicy',
+        'App\Models\Park' => 'App\Policies\ParkPolicy',
         'App\Models\Permission' => 'App\Policies\PermissionPolicy',
         'App\Models\Post' => 'App\Policies\PostPolicy',
+        'App\Models\Profile' => 'App\Policies\ProfilePolicy',
         'App\Models\Report' => 'App\Policies\ReportPolicy',
         'App\Models\Seat' => 'App\Policies\SeatPolicy',
         'App\Models\Spot' => 'App\Policies\SpotPolicy',
@@ -42,6 +43,5 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
     }
 }

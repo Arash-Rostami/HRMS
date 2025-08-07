@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Events\UpdateLastSeen;
 use App\Events\UserLoggedIn;
-use App\Models\Delegation;
 use App\Models\User;
 use App\Pipes\CheckOtp;
 use App\Pipes\CheckUserProfileExists;
@@ -19,14 +18,22 @@ use App\Services\ViewPagination;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use Storage;
 
 
 class UserPanelController extends Controller
 {
+
+    public static function isPaginationInvoked($page)
+    {
+        if (isset($page)) {
+            // Clear the cache for the current page of posts
+            Cache::forget('posts' . $page);
+            // Clear the cache for the current page of pins
+            Cache::forget('pins' . $page);
+            // Clear the cache for the current page of reports
+            Cache::forget('reports' . $page);
+        }
+    }
 
     public function changePresence($status)
     {
@@ -54,6 +61,27 @@ class UserPanelController extends Controller
         return back()->with('success', 'وضعیت با موفقیت به‌روزرسانی شد 🙂');
     }
 
+    public function edit()
+    {
+        // Cache the text for a specific duration, for example, 1 month (31 days )
+        Cache::put('profile_edit_user_' . auth()->user()->id, true, now()->addDays(31));
+
+        return redirect()->route('user.panel');
+    }
+
+
+    public function index(Request $request)
+    {
+        $data = $this->fetchData($request);
+
+
+        if ($request->ajax()) {
+            $view = ViewPagination::create($request->input('table'), $data);
+            return $view->render();
+        }
+
+        return view('user', $data);
+    }
 
     public function fetchData($request): array
     {
@@ -74,155 +102,13 @@ class UserPanelController extends Controller
         ];
     }
 
-    public function edit()
+    public function dismissEnergy(Request $request)
     {
-        // Cache the text for a specific duration, for example, 1 month (31 days )
-        Cache::put('profile_edit_user_' . auth()->user()->id, true, now()->addDays(31));
+        $request->session()->put('dismissed_questionnaire', true);
+
+        Cache::forget('profile_initiate_energy_' . auth()->id());
 
         return redirect()->route('user.panel');
-    }
-
-    public function loadMusic()
-    {
-        $cacheKey = 'profile_load_music_' . auth()->user()->id;
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            // Cache for one hour (60 minutes)
-            Cache::put($cacheKey, true, now()->addMinutes(60));
-        }
-        return back();
-    }
-
-
-    public static function isPaginationInvoked($page)
-    {
-        if (isset($page)) {
-            // Clear the cache for the current page of posts
-            Cache::forget('posts' . $page);
-            // Clear the cache for the current page of pins
-            Cache::forget('pins' . $page);
-            // Clear the cache for the current page of reports
-            Cache::forget('reports' . $page);
-        }
-    }
-
-    public function viewAnalytics()
-    {
-        $cacheKey = 'profile_view_analytics_' . auth()->user()->id;
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            // Cache for one hour (60 minutes)
-            Cache::put($cacheKey, true, now()->addMinutes(60));
-        }
-        return back();
-    }
-
-    public function index(Request $request)
-    {
-        $data = $this->fetchData($request);
-
-        if ($request->ajax()) {
-            $view = ViewPagination::create($request->input('table'), $data);
-            return $view->render();
-        }
-
-        return view('user', $data);
-    }
-
-    public function loadDMS()
-    {
-        $cacheKey = 'profile_initiate_dms_' . auth()->user()->id;
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            // Cache for one hour (60 minutes)
-            Cache::put($cacheKey, true, now()->addMinutes(60));
-        }
-        return back();
-    }
-
-    public function loadTHS()
-    {
-        $cacheKey = 'profile_initiate_ths_' . auth()->user()->id;
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            // Cache for one hour (60 minutes)
-            Cache::put($cacheKey, true, now()->addMinutes(60));
-        }
-        return back();
-    }
-
-    public function loadDelegation()
-    {
-        $cacheKey = 'profile_initiate_delegation_' . auth()->user()->id;
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            // Cache for one hour (60 minutes)
-            Cache::put($cacheKey, true, now()->addMinutes(60));
-        }
-        return back();
-    }
-
-    public function loadEnergy()
-    {
-        $cacheKey = 'profile_initiate_energy_' . auth()->user()->id;
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            // Cache for one hour (60 minutes)
-            Cache::put($cacheKey, true, now()->addMinutes(60));
-        }
-        return back();
-    }
-
-    public function loadOnboarding()
-    {
-        $cacheKey = 'profile_initiate_onboarding_' . auth()->user()->id;
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            // Cache for one hour (60 minutes)
-            Cache::put($cacheKey, true, now()->addMinutes(60));
-        }
-        return back();
-    }
-
-    public function loadSurvey()
-    {
-        $cacheKey = 'profile_initiate_surveys_' . auth()->user()->id;
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            // Cache for one hour (60 minutes)
-            Cache::put($cacheKey, true, now()->addMinutes(60));
-        }
-        return back();
-    }
-
-
-    public function loadSuggestion()
-    {
-        $cacheKey = 'profile_initiate_suggestion_' . auth()->user()->id;
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            // Cache for one hour (60 minutes)
-            Cache::put($cacheKey, true, now()->addMinutes(60));
-        }
-        return back();
     }
 
     public function updatePresence($user, $isp, $presence)
@@ -309,5 +195,25 @@ class UserPanelController extends Controller
             ->thenReturn();
 
         return $response ?: redirect()->route('user.panel');
+    }
+
+    public function toggleModule(Request $request, string $module)
+    {
+        $validModules = [
+            'music', 'analytics', 'dms', 'ths', 'delegation',
+            'energy', 'onboarding', 'surveys', 'suggestion'
+        ];
+
+        if (!in_array($module, $validModules)) abort(404, 'Invalid module specified.');
+
+        $cacheKey = 'profile_initiate_' . $module . '_' . auth()->id();
+
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        } else {
+            Cache::put($cacheKey, true, 3600);
+        }
+
+        return back();
     }
 }

@@ -56,7 +56,17 @@
          data-te-collapse-show
          aria-labelledby="flush-headingOne"
          data-te-parent="#accordionFlushExample">
-        <x-user.font-size :return-url="route('user.panel.energy') "/>
+        @if (!isForcedQuestionnairePeriod(auth()->user()))
+            <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'energy']) "/>
+        @endif
+        @if (isOptionalQuestionnairePeriod(auth()->user()))
+            <div class="mb-4 text-right animate-pulse">
+                <a class="inline-block px-6 py-2 bg-green-500 rounded-lg hover:bg-gray-300 focus:outline-none
+                 focus:ring-2 focus:ring-green-400" href="{{ route('user.panel.energy.dismiss') }}">
+                    <i class="fas fa-redo"></i> بعدا انجام می‌دهم
+                </a>
+            </div>
+        @endif
         <div :class="currentFontSizeClass">
             @livewire('energy-test')
         </div>

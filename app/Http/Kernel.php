@@ -64,5 +64,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'lscache' => \App\Http\Middleware\LiteSpeedCacheMiddleware::class,
+        'questionnaire.completed' => \App\Http\Middleware\EnsureQuestionnaireIsCompleted::class,
     ];
 }

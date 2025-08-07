@@ -46,7 +46,7 @@
          data-te-collapse-item
          aria-labelledby="flush-headingOne"
          data-te-parent="#accordionFlushExample">
-        <x-user.font-size :return-url="route('user.panel.onboarding') "/>
+        <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'onboarding'])"/>
         <div class="flex flex-col md:flex-row items-start">
             {{--nav links--}}
             <x-user.onboarding.nav></x-user.onboarding.nav>

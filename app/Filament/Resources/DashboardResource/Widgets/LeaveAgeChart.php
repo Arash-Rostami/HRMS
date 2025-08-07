@@ -9,6 +9,9 @@ class LeaveAgeChart extends BarChartWidget
 {
     protected static ?string $heading = 'Leaves Type & Age';
 
+    protected static ?string $pollingInterval = '30s';
+
+
     /**
      * @return array
      */

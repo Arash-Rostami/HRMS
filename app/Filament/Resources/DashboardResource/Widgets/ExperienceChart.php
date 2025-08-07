@@ -9,6 +9,9 @@ class ExperienceChart extends BarChartWidget
 {
     protected static ?string $heading = 'Education & Experience';
 
+    protected static ?string $pollingInterval = '30s';
+
+
 
     private function fetchStatistics(): array
     {

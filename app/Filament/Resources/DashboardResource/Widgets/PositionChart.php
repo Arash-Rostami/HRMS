@@ -10,6 +10,7 @@ class PositionChart extends BarChartWidget
 {
     protected static ?string $heading = 'Position & Gender';
 
+    protected static ?string $pollingInterval = '30s';
 
     private function fetchStatistics(): array
     {

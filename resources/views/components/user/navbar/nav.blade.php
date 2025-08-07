@@ -105,311 +105,155 @@
          class="w-full md:container md:mx-auto flex items-center justify-start space-x-6 overflow-x-auto overflow-y-hidden scrollbar-hide px-4 relative">
         {{-- Admin Panel Icon --}}
         @if (isAdmin(auth()->user()))
-            <div class="flex flex-col items-center text-center ml-4">
-                <a href="/main/admin"
-                   @mouseenter="window.innerWidth > 768 && showTooltip('ورود به ادمین پنل', $event)"
-                   @mouseleave="hideTooltip()"
-                   class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                    <i class="fas fa-cogs"></i>
-                </a>
-                <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>ادمین</span>
-            </div>
+            <x-user.navbar.icon href="/main/admin"
+                                icon="fas fa-cogs"
+                                label="ادمین"
+                                tooltip="ورود به ادمین پنل"/>
         @endif
         {{-- Parking Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a href="{{ route('dashboard',['type'=>'parking']) }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('ورود به پنل رزرواسیون پارکینگ', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fas fa-parking"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>رزرو...</span>
-        </div>
+        <x-user.navbar.icon href="{{ route('dashboard',['type'=>'parking']) }}"
+                            icon="fas fa-parking"
+                            label="رزرو..."
+                            tooltip="ورود به پنل رزرواسیون پارکینگ"/>
         {{-- Calendar Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a @click.prevent="scrollToSection('#calendar')"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده تقویم سازمانی برای تولد، سالگرد و رویداد های مهم', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110 cursor-pointer">
-                <i class="fas fa-calendar-alt"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>تقویم</span>
-        </div>
+        <x-user.navbar.icon
+            href=""
+            @click.prevent="scrollToSection('#calendar')"
+            icon="fas fa-calendar-alt"
+            label="تقویم"
+            tooltip="مشاهده تقویم سازمانی برای تولد، سالگرد و رویداد های مهم"/>
         {{-- Bulletin Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a @click.prevent="scrollToSection('#bulletin')"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده اعلانات واحد منابع/سرمایه انسانی', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110 cursor-pointer">
-                <i class="fa fa-newspaper-o"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>اعلانات</span>
-        </div>
+        <x-user.navbar.icon
+            href=""
+            @click.prevent="scrollToSection('#bulletin')"
+            icon="fa fa-newspaper-o"
+            label="اعلانات"
+            tooltip="مشاهده اعلانات واحد منابع/سرمایه انسانی"/>
         {{-- Personnel Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a @click="scrollToSection('#personnel')"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده وضعیت حضور پرسنل', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110 cursor-pointer">
-                <i class="fas fa-users"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>پرسنل</span>
-        </div>
+        <x-user.navbar.icon href=""
+                            @click.prevent="scrollToSection('#personnel')"
+                            icon="fas fa-users"
+                            label="پرسنل"
+                            tooltip="مشاهده وضعیت حضور پرسنل"/>
         {{-- Report Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a @click="scrollToSection('#report')"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده گزارشات سازمانی', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110 cursor-pointer">
-                <i class="fas fa-chart-line"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>گزارشات </span>
-        </div>
+        <x-user.navbar.icon href=""
+                            @click.prevent="scrollToSection('#report')"
+                            icon="fas fa-chart-line"
+                            label="گزارشات"
+                            tooltip="مشاهده گزارشات سازمانی"/>
         {{-- Tools Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a @click="scrollToSection('#tools')"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده ابزار سازمانی/لینک های خارچی', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110 cursor-pointer">
-                <i class="fas fa-external-link-alt"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>ابزار </span>
-        </div>
+        <x-user.navbar.icon href="" @click.prevent="scrollToSection('#tools')"
+                            icon="fas fa-external-link-alt"
+                            label="ابزار"
+                            tooltip="مشاهده ابزار سازمانی/لینک های خارچی"/>
         {{-- Links Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a @click="scrollToSection('#links')"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده لینک های داخلی', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110 cursor-pointer">
-                <i class="fas fa-link"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>لینک </span>
-        </div>
+        <x-user.navbar.icon href=""
+                            @click.prevent="scrollToSection('#links')"
+                            icon="fas fa-link" label="لینک"
+                            tooltip="مشاهده لینک های داخلی"/>
         {{-- FAQ Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a @click="scrollToSection('#faq')"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده پرسش و پاسخ های متداول', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110 cursor-pointer">
-                <i class="fas fa-question-circle"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>سوالات...</span>
-        </div>
-        {{-- Suggestion Icon --}}
-        <div class="flex flex-col items-center text-center relative">
-            <a href="{{ route('user.panel.suggestion') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('ورود/مشاهده پنل پیشنهادات', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fa fa-bullhorn"></i>
-            </a>
+        <x-user.navbar.icon href=""
+                            @click.prevent="scrollToSection('#faq')"
+                            icon="fas fa-question-circle"
+                            label="سوالات..."
+                            tooltip="مشاهده پرسش و پاسخ های متداول"/>
+        {{-- Suggestion Icon (with custom badge) --}}
+        <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'suggestion']) }}"
+                            icon="fa fa-bullhorn"
+                            label="پیشنهادات"
+                            tooltip="ورود/مشاهده پنل پیشنهادات">
             @if(showSuggestionBadge())
-                <span
-                    @mouseenter="window.innerWidth > 768 && showTooltip('پیشنهادات در جریان', $event)"
-                    @mouseleave="hideTooltip()"
-                    class="absolute top-0 right-0 w-6 h-6 bg-red-600 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
-                    {{ showSuggestionBadgeNumber() }}
-                </span>
+                <span @mouseenter="window.innerWidth > 768 && showTooltip('پیشنهادات در جریان', $event)"
+                      @mouseleave="hideTooltip()"
+                      class="absolute top-0 right-0 w-6 h-6 bg-red-600 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
+                {{ showSuggestionBadgeNumber() }}
+            </span>
             @elseif(showSuggestionCEOBadge())
-                <span
-                    @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده تمامی پیشنهادات', $event)"
-                    @mouseleave="hideTooltip()"
-                    class="absolute top-0 right-0 w-6 h-6 bg-orange-500 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
-                    {{ showSuggestionCEOBadgeNumber() }}
-                </span>
+                <span @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده تمامی پیشنهادات', $event)"
+                      @mouseleave="hideTooltip()"
+                      class="absolute top-0 right-0 w-6 h-6 bg-orange-500 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
+                {{ showSuggestionCEOBadgeNumber() }}
+            </span>
             @endif
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>پیشنهادات</span>
-        </div>
-        {{-- DMS Icon --}}
-        <div class="flex flex-col items-center text-center relative">
-            <a href="{{ route('user.panel.dms') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('ورود به پنل مدیریت اسناد سازمانی', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fa fa-archive"></i>
-            </a>
+        </x-user.navbar.icon>
+        {{-- DMS Icon (with custom badge) --}}
+        <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'dms']) }}"
+                            icon="fa fa-archive"
+                            label="اسناد"
+                            tooltip="ورود به پنل مدیریت اسناد سازمانی">
             @if(getUnsignedDocCount() > 0)
-                <span
-                    @mouseenter="window.innerWidth > 768 && showTooltip('تایید اسناد سازمانی', $event)"
-                    @mouseleave="hideTooltip()"
-                    class="absolute top-0 right-0 w-6 h-6 bg-red-600 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
-                    {{ getUnsignedDocCount() }}
-                </span>
+                <span @mouseenter="window.innerWidth > 768 && showTooltip('تایید اسناد سازمانی', $event)"
+                      @mouseleave="hideTooltip()"
+                      class="absolute top-0 right-0 w-6 h-6 bg-red-600 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
+                {{ getUnsignedDocCount() }}
+            </span>
             @elseif(getUnreadDocCount() > 0)
-                <span
-                    @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده اسناد سازمانی', $event)"
-                    @mouseleave="hideTooltip()"
-                    class="absolute top-0 right-0 w-6 h-6 bg-orange-500 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
-                    {{ getUnreadDocCount() }}
-                </span>
+                <span @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده اسناد سازمانی', $event)"
+                      @mouseleave="hideTooltip()"
+                      class="absolute top-0 right-0 w-6 h-6 bg-orange-500 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
+                {{ getUnreadDocCount() }}
+            </span>
             @endif
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>اسناد</span>
-        </div>
-        {{-- THS Icon --}}
-        <div class="flex flex-col items-center text-center relative">
-            <a href="{{ route('user.panel.ths') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('ورود به پنل ارسال تیکت', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fas fa-ticket-alt"></i>
-            </a>
+        </x-user.navbar.icon>
+        {{-- THS Icon (with custom badge) --}}
+        <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'ths']) }}"
+                            icon="fas fa-ticket-alt"
+                            label="تیکت"
+                            tooltip="ورود به پنل ارسال تیکت">
             @if(getOpenTicketCount() > 0)
-                <span
-                    @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده تیکت های بررسی نشده', $event)"
-                    @mouseleave="hideTooltip()"
-                    class="absolute top-0 right-0 w-6 h-6 bg-red-600 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
-                    {{ getOpenTicketCount() }}
-                </span>
+                <span @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده تیکت های بررسی نشده', $event)"
+                      @mouseleave="hideTooltip()"
+                      class="absolute top-0 right-0 w-6 h-6 bg-red-600 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
+                {{ getOpenTicketCount() }}
+            </span>
             @elseif(getInProgressTicketCount() > 0)
-                <span
-                    @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده تیکت های در جریان', $event)"
-                    @mouseleave="hideTooltip()"
-                    class="absolute top-0 right-0 w-6 h-6 bg-orange-500 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
-                    {{ getInProgressTicketCount() }}
-                </span>
+                <span @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده تیکت های در جریان', $event)"
+                      @mouseleave="hideTooltip()"
+                      class="absolute top-0 right-0 w-6 h-6 bg-orange-500 text-white text-xs font-bold text-center rounded-full flex items-center justify-center cursor-help">
+                {{ getInProgressTicketCount() }}
+            </span>
             @endif
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>تیکت</span>
-        </div>
+        </x-user.navbar.icon>
         {{-- Profile Edit Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a href="{{ route('user.panel.edit') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده/ویرایش پروفایل', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fas fa-portrait"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>پروفایل</span>
-        </div>
+        <x-user.navbar.icon href="{{ route('user.panel.edit') }}"
+                            icon="fas fa-portrait"
+                            label="پروفایل"
+                            tooltip="مشاهده/ویرایش پروفایل"/>
         {{-- Energy Panel Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a href="{{ route('user.panel.energy') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('پرسشنامه(آمار) انرژی فردی/سازمانی', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fas fa-battery-full"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>انرژی</span>
-        </div>
+        <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'energy']) }}"
+                            icon="fas fa-battery-full"
+                            label="انرژی"
+                            tooltip="پرسشنامه(آمار) انرژی فردی/سازمانی"/>
         {{-- Delegation Panel Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a href="{{ route('user.panel.delegation') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده اختیارات', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class='fas fa-tasks'></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>اختیارات</span>
-        </div>
+        <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'delegation']) }}"
+                            icon="fas fa-tasks"
+                            label="اختیارات"
+                            tooltip="مشاهده اختیارات"/>
         {{-- Onboarding Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a href="{{ route('user.panel.onboarding') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده نکات مهم در مرحله آنبوردینگ', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fa fa-road"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>آنبوردینگ</span>
-        </div>
+        <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'onboarding']) }}"
+                            icon="fa fa-road"
+                            label="آنبوردینگ"
+                            tooltip="مشاهده نکات مهم در مرحله آنبوردینگ"/>
         {{-- Analytics Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a href="{{ route('user.panel.analytics') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده آنالیتیک اعضای سازمان', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fas fa-chart-bar"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>آنالیتیک</span>
-        </div>
+        <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'analytics']) }}"
+                            icon="fas fa-chart-bar"
+                            label="آنالیتیک"
+                            tooltip="مشاهده آنالیتیک اعضای سازمان"/>
         {{-- Music Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a href="{{ route('user.panel.music') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('ورود به پنل پخش موسیقی', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fa fa-headphones"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>موسیقی</span>
-        </div>
+        <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'music']) }}"
+                            icon="fa fa-headphones"
+                            label="موسیقی"
+                            tooltip="ورود به پنل پخش موسیقی"/>
         {{-- CRM Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a href="{{ route('crm') }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('ورود به خروجی سی آر ام سرو', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fas fa-database"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>سی آر ام</span>
-        </div>
+        <x-user.navbar.icon href="{{ route('crm') }}"
+                            icon="fas fa-database"
+                            label="سی آر ام"
+                            tooltip="ورود به خروجی سی آر ام سرو"/>
         {{-- Office Icon --}}
-        <div class="flex flex-col items-center text-center">
-            <a href="{{ route('dashboard',['type'=>'office']) }}"
-               @mouseenter="window.innerWidth > 768 && showTooltip('ورود به پنل رزرواسیون میز سازمانی', $event)"
-               @mouseleave="hideTooltip()"
-               class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
-                <i class="fas fa-building"></i>
-            </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>رزرو...</span>
-        </div>
+        <x-user.navbar.icon href="{{ route('dashboard',['type'=>'office']) }}"
+                            icon="fas fa-building"
+                            label="رزرو..."
+                            tooltip="ورود به پنل رزرواسیون میز سازمانی"/>
         {{-- Calculator Icon --}}
         <div class="flex flex-col items-center text-center cursor-pointer">
             <a id="openCalculator"
@@ -418,10 +262,7 @@
                class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
                 <i class="fas fa-calculator"></i>
             </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>ماشین...</span>
+            <span @class(['mt-1 text-sm text-gray-700', 'text-gray-300 ' => isDarkMode()])>ماشین...</span>
         </div>
         {{-- Audio Timer Icon --}}
         <div class="flex flex-col items-center text-center cursor-pointer">
@@ -431,24 +272,17 @@
                class="text-center px-4 py-2 transition-all duration-300 text-white text-xl bg-main-mode shadow-lg rounded-lg group-hover:scale-110">
                 <i id="clockIcon" class="fas fa-clock"></i>
             </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>تایمر</span>
+            <span @class(['mt-1 text-sm text-gray-700', 'text-gray-300 ' => isDarkMode()])>تایمر</span>
         </div>
         {{-- Slogan Icon --}}
         <div class="flex flex-col items-center text-center cursor-pointer">
             <a id="sloganLink"
                @mouseenter="window.innerWidth > 768 && showTooltip('مشاهده اصول سازمانی', $event)"
                @mouseleave="hideTooltip()"
-               class="text-center px-5 py-2 bg-main-mode text-xl text-white rounded shadow-lg"
-            >
+               class="text-center px-5 py-2 bg-main-mode text-xl text-white rounded shadow-lg">
                 <i class="fas fa-lightbulb"></i>
             </a>
-            <span @class([
-                   'mt-1 text-sm text-gray-700',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])>اصول...</span>
+            <span @class(['mt-1 text-sm text-gray-700', 'text-gray-300 ' => isDarkMode()])>اصول...</span>
         </div>
     </div>
     <x-user.navbar.tooltip/>

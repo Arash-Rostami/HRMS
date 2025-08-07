@@ -8,6 +8,7 @@ use Filament\Widgets\LineChartWidget;
 
 class LeaveNumberChart extends LineChartWidget
 {
+    protected static ?string $pollingInterval = '30s';
 
     protected function getHeading(): string
     {

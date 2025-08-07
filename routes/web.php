@@ -41,34 +41,17 @@ Route::match(['get', 'post'], '/otp', [UserPanelController::class, 'handleOtp'])
 Route::get('welcome', [LoginController::class, 'index'])->name('landing.page');
 
 // Users' panel
-Route::middleware(['auth'])->prefix('main')->group(function () {
-
-
+Route::middleware(['auth', 'questionnaire.completed'])->prefix('main')->group(function () {
     // panel +
     Route::get('/', [UserPanelController::class, 'index'])->middleware('lscache')->name('user.panel');
     // panel edit +
     Route::get('/edit', [UserPanelController::class, 'edit'])->name('user.panel.edit');
-    // panel music +
-    Route::get('/music', [UserPanelController::class, 'loadMusic'])->name('user.panel.music');
-    // panel DMS +
-    Route::get('/dms', [UserPanelController::class, 'loadDMS'])->name('user.panel.dms');
-    // panel THS +
-    Route::get('/ths', [UserPanelController::class, 'loadTHS'])->name('user.panel.ths');
-    // panel delegation +
-    Route::get('/delegation', [UserPanelController::class, 'loadDelegation'])->name('user.panel.delegation');
-    // panel onboarding +
-    Route::get('/onboarding', [UserPanelController::class, 'loadOnboarding'])->name('user.panel.onboarding');
-    // panel survey +
-    Route::get('/survey', [UserPanelController::class, 'loadSurvey'])->name('user.panel.survey');
-    // panel suggestion +
-    Route::get('/suggestion', [UserPanelController::class, 'loadSuggestion'])->name('user.panel.suggestion');
-    // panel analytics +
-    Route::get('/analytics', [UserPanelController::class, 'viewAnalytics'])->name('user.panel.analytics');
+    // panel module switcher +
+    Route::get('/toggle-module/{module}', [UserPanelController::class, 'toggleModule'])->name('user.toggleModule');
     // panel energy +
-    Route::get('/energy', [UserPanelController::class, 'loadEnergy'])->name('user.panel.energy');
+    Route::get('/energy/dismiss', [UserPanelController::class, 'dismissEnergy'])->name('user.panel.energy.dismiss');
     // presence +
     Route::get('/presence/{status}', [UserPanelController::class, 'changePresence'])->name('user.presence');
-
 
     Route::get('/send-email', [UserEmailController::class, 'show']);
     // email dispatch #
@@ -92,7 +75,7 @@ Route::get('/authorized-document/{file?}', [FileController::class, 'serveDocumen
     ->middleware('auth')
     ->name('protected-docs');
 
-// Reservation Application
+// Reservation Segment
 Route::prefix('sms')->group(function () {
     // parking map +
     Route::view('/parking-map/{number}', 'parking-map');
