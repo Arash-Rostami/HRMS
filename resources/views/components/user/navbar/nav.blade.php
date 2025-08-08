@@ -223,7 +223,10 @@
         <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'energy']) }}"
                             icon="fas fa-battery-full"
                             label="انرژی"
-                            tooltip="پرسشنامه(آمار) انرژی فردی/سازمانی"/>
+                            tooltip="پرسشنامه(آمار) انرژی فردی/سازمانی">
+            <span
+                class="absolute top-0 -left-4 -rotate-12 bg-green-500 text-white text-xs px-1 py-1 rounded-full animate-pulse">جدید</span>
+        </x-user.navbar.icon>
         {{-- Delegation Panel Icon --}}
         <x-user.navbar.icon href="{{ route('user.toggleModule', ['module' => 'delegation']) }}"
                             icon="fas fa-tasks"

@@ -3,12 +3,12 @@
         --main: #718096;
         --bg-main: #1B232E;
         @if((Cookie::get('theme')))
-                      --main: {{Cookie::get('theme')}};
+                       --main: {{Cookie::get('theme')}};
         @endif
         @if((Cookie::get('mode')))
-                     --bg-main: {{Cookie::get('mode')}};
+                      --bg-main: {{Cookie::get('mode')}};
         @endif
-                   --red: #C82348;
+                    --red: #C82348;
         --blue: #1785FF;
         --purple: #673AB7;
         --green: #acf9a7;
@@ -65,7 +65,8 @@
     }
 
     body {
-        background: linear-gradient(90deg, #1A2027, #2D3748, #4A5568, #718096, #A0AEC0, #CBD5E0);
+        /*background: linear-gradient(90deg, #1A2027, #2D3748, #4A5568, #718096, #A0AEC0, #CBD5E0);*/
+        background: linear-gradient(135deg, #1A2027, #2D3748, #2D3748, #2D3748, #2D3748, #2D3748, #4A5568, #718096, #A0AEC0);
     }
 
     @endif
@@ -125,6 +126,7 @@
         }
 
     @endif
+
 
 
 

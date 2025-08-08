@@ -50,7 +50,7 @@
             duration-300 ease-in-out hover:bg-blue-600 hover:shadow-lg hover:-translate-y-0.5
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50
              disabled:cursor-not-allowed disabled:hover:transform-none">
-        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        <span> « </span>
     </button>
     @if($step < $totalSteps)
         <button wire:click="nextStep"
@@ -61,7 +61,7 @@
                 duration-300 ease-in-out hover:bg-blue-600 hover:shadow-lg hover:-translate-y-0.5 focus:outline-none
                  focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed
                  disabled:hover:transform-none">
-            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+            <span> » </span>
         </button>
     @else
         <button wire:click="submitTest"
