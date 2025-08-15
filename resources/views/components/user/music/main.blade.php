@@ -1,4 +1,5 @@
 <div
+    id="music"
     dir="rtl"
     @class([
      'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
@@ -55,7 +56,7 @@
          data-te-collapse-item
          data-te-collapse-show
          aria-labelledby="flush-headingWorkOut"
-         data-te-parent="#accordionFlushExample">
+         data-te-parent="#music">
         <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'music']) "/>
         <x-user.music.tunes></x-user.music.tunes>
         <!-- Background Shapes -->

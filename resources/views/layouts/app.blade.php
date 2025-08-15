@@ -5,9 +5,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ asset('css/app.css')}}" rel="stylesheet">
     <script src="{{ asset('js/app.js')}}" defer></script>
-
     <script src="{{ asset('js/calender.js')}}"></script>
-
     <x-extra-css/>
 </head>
 <body class=" antialiased">

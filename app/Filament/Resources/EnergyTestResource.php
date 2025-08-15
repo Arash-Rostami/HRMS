@@ -11,7 +11,6 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Filament\Tables\Filters\Layout;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class EnergyTestResource extends Resource
@@ -22,37 +21,14 @@ class EnergyTestResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'id';
 
-    public static function table(Table $table): Table
+    public static function canCreate(): bool
     {
-        return $table
-            ->columns([
-                Admin::showRespondent(),
-                Admin::showOverallScore(),
-                Admin::showMindScore(),
-                Admin::showEmotionScore(),
-                Admin::showPhysiqueScore(),
-                Admin::showSoulScore(),
-                Admin::showCreatedAt(),
-                Admin::showCompletedAt(),
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-            ])
-            ->bulkActions([
-                ExportBulkAction::make(),
-            ]);
+        return false;
     }
 
     public static function form(Form $form): Form
     {
         return $form->schema([]);
-    }
-
-    public static function getWidgets(): array
-    {
-        return [
-            StatsOverview::class,
-        ];
     }
 
     public static function getPages(): array
@@ -63,10 +39,34 @@ class EnergyTestResource extends Resource
         ];
     }
 
-
-    public static function canCreate(): bool
+    public static function getWidgets(): array
     {
-        return false;
+        return [
+            StatsOverview::class,
+        ];
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Admin::showRespondent(),
+                Admin::showPersonalCode(),
+                Admin::showOverallScore(),
+                Admin::showMindScore(),
+                Admin::showEmotionScore(),
+                Admin::showPhysiqueScore(),
+                Admin::showSoulScore(),
+                Admin::showCreatedAt(),
+                Admin::showCompletedAt(),
+            ])
+            ->defaultSort('id', 'desc')
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+            ])
+            ->bulkActions([
+                ExportBulkAction::make(),
+            ]);
     }
 
     protected static function getNavigationBadge(): ?string

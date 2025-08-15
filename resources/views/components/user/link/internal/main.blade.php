@@ -1,6 +1,6 @@
 <div
     id="links"
-    data-id="6"
+    data-id="7"
     title="move me ↑ ↓"
     dir="rtl"
     @class([
@@ -43,7 +43,7 @@
          data-te-collapse-show
          data-te-collapse-item
          aria-labelledby="flush-headingOne"
-         data-bs-parent="#accordionFlushExample">
+         data-bs-parent="#links">
         <x-user.link.internal.links :links="$links"/>
     </div>
 </div>

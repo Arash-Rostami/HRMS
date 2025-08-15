@@ -160,6 +160,16 @@
         animation: pulseGlowIn 1.5s ease-out forwards;
     }
 
+    .custom-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .custom-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+
     @keyframes pulseGlowIn {
         0% {
             opacity: 0;

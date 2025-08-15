@@ -15,7 +15,7 @@
 </div>
 
 {{-- Question title --}}
-<h1 class="mt-16 mb-8 font-bold text-gray-800 transition-all duration-500 ease-in-out">
+<h1 class="mt-16 mb-8 font-bold transition-all duration-500 ease-in-out">
     {{ $prompts[$cat] }}
 </h1>
 {{-- Multiple choices --}}

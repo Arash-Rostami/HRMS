@@ -1,4 +1,5 @@
 <div
+    id="analytics"
     dir="rtl"
     @class([
      'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
@@ -51,7 +52,7 @@
                ])
          data-te-collapse-item
          data-te-collapse-show
-         data-te-parent="#accordionFlushExample"
+         data-te-parent="#analytics"
          aria-labelledby="flush-headingStatistics">
         <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'analytics']) "/>
         <div :class="currentFontSizeClass">

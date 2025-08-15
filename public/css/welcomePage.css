@@ -70,7 +70,7 @@ main {
 .hrms-title {
     font-size: clamp(4rem, 8vw, 6rem);
     font-weight: 900;
-    letter-spacing: -0.08em;
+    letter-spacing: -0.03em;
     margin: 0;
     position: relative;
     background: linear-gradient(135deg, var(--main), var(--text-primary));

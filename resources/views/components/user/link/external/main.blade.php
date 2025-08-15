@@ -1,7 +1,7 @@
 @if($links->filter(fn($link) => $link['link'] === 'external')->isNotEmpty())
     <div
         id="tools"
-        data-id="7"
+        data-id="6"
         title="move me ↑ ↓"
         dir="rtl"
         @class([
@@ -45,7 +45,7 @@
              data-te-collapse-show
              data-te-collapse-item
              aria-labelledby="flush-headingOne"
-             data-te-parent="#accordionFlushExample">
+             data-te-parent="#tools">
             <x-user.link.external.links :links="$links"/>
         </div>
     </div>

@@ -44,7 +44,7 @@
              data-te-collapse-item
              data-te-collapse-show
              aria-labelledby="flush-headingReports"
-             data-te-parent="#accordionFlushExample">
+             data-te-parent="#report">
             @include('components.user.report.table', ['reports' => $reports])
         </div>
     </div>

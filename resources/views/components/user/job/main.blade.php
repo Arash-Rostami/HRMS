@@ -41,7 +41,7 @@
              data-te-collapse-item
              data-te-collapse-show
              aria-labelledby="flush-headingOne"
-             data-te-parent="#accordionFlushExample">
+             data-te-parent="#job">
             <x-user.job.list :jobs="$jobs"/>
         </div>
     </div>

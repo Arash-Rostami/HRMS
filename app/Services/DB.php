@@ -24,100 +24,6 @@ class DB
         $this->user = $user;
     }
 
-    public static function showDailyReport($table, $day)
-    {
-        $isTablePark = $table == Park::class;
-
-
-        $query = $table::with(['user.profile', $isTablePark ? 'spot' : 'seat'])
-            ->whereRaw('start_date < ? AND end_date > ?', [$day, $day])
-            ->isNotCancelled()
-            ->isNotDeactivated()
-            ->orderBy($isTablePark ? 'spot_id' : 'seat_id')
-            ->orderByDesc('end_date')
-            ->take(100)
-            ->get();
-
-        return $query->transform(function ($reservation) use ($table, $isTablePark) {
-            $spot = $reservation->{$isTablePark ? 'spot' : 'seat'};
-
-            $reservation->start = $reservation->getStart();
-            $reservation->end = $reservation->getEnd();
-            $reservation->spot = $spot->number;
-            $reservation->reserver = $reservation->user->fullName;
-            $reservation->floor = $spot->{$table == Park::class ? 'floor' : 'location'};
-            /*if it is Park*/
-            $reservation->card = $isTablePark ? $spot->card : null;
-            $reservation->plate = !is_null(optional($reservation->user->profile)->license_plate)
-                ? optional($reservation->user->profile)->license_plate
-                : removeHTMLTags($reservation->user->details) ?? null;
-            /*if it is Desk*/
-            $reservation->extension = !$isTablePark ? $spot->extension : null;
-            $reservation->cell = optional($reservation->user->profile)->cellphone ?? null;
-
-            return $reservation;
-        });
-    }
-
-    public static function showMyTakenArea($reservations)
-    {
-        return $reservations->filter(function ($reservation) {
-            return $reservation->user_id == auth()->user()->id;
-        });
-    }
-
-    public static function showTakenArea($query, $param, $table)
-    {
-        return self::showDatesInBetween($query, $param, $table)
-            ->filter(function ($reservation) {
-                return $reservation->user_id == auth()->user()->id;
-            });
-    }
-
-    public static function showDatesInBetween($query, $param, $table)
-    {
-        $cacheKey = 'reservations_in_between_' . $table . '_' . $param . '_' . auth()->user()->id;
-        $queryDate = Utility::showCurrentMonthDate($param);
-        $startOfDay = $queryDate['startOfDay'];
-        $endOfDay = $queryDate['endOfDay'];
-        $dashboardType = getDashboardType();
-
-        return Cache::remember($cacheKey, now()->addSeconds(3), function () use ($table, $dashboardType, $startOfDay, $endOfDay) {
-
-            $sql = "
-                SELECT t.*
-                FROM {$table} AS t
-                WHERE t.soft_delete = 'false'
-                  AND t.state = 'active'
-                  AND t.start_date <= ?
-                  AND t.end_date >= ?
-                  AND NOT EXISTS (
-                      SELECT 1
-                      FROM cancellations AS c
-                      WHERE c.number = t.number
-                        AND c.user_id = t.user_id
-                        AND c.soft_delete = 'false'
-                        AND c.booking = ?
-                        AND (
-                            c.start_date BETWEEN ? AND ?
-                            OR c.end_date BETWEEN ? AND ?
-                            OR (c.start_date <= ? AND c.end_date >= ?)
-                        )
-                  )";
-
-            $bindings = [
-                $endOfDay, $startOfDay, // For t.start_date and t.end_date conditions
-                $dashboardType,         // For c.booking
-                $startOfDay, $endOfDay, // For c.start_date BETWEEN
-                $startOfDay, $endOfDay, // For c.end_date BETWEEN
-                $startOfDay, $endOfDay  // For c.start_date <= and c.end_date >=
-            ];
-
-            $results = Laravel::select($sql, $bindings);
-            return collect($results);
-        });
-    }
-
     public function checkAnyConflict()
     {
         if ($this->checkCancellationConflict() == 1) {
@@ -185,5 +91,100 @@ class DB
         return $this->checkReservationConflict()->get()->filter(function ($users) {
             return $users->user_id == $this->user->id;
         })->count();
+    }
+
+    public static function showDailyReport($table, $day)
+    {
+        $cacheKey = "report:{$table}:{$day}";
+
+        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($table, $day) {
+            $isTablePark = $table == Park::class;
+
+            $query = $table::with(['user.profile', $isTablePark ? 'spot' : 'seat'])
+                ->whereRaw('start_date < ? AND end_date > ?', [$day, $day])
+                ->isNotCancelled()
+                ->isNotDeactivated()
+                ->orderBy($isTablePark ? 'spot_id' : 'seat_id')
+                ->orderByDesc('end_date')
+                ->take(100)
+                ->get();
+
+            return $query->transform(function ($reservation) use ($table, $isTablePark) {
+                $spot = $reservation->{$isTablePark ? 'spot' : 'seat'};
+
+                $reservation->start = $reservation->getStart();
+                $reservation->end = $reservation->getEnd();
+                $reservation->spot = $spot->number;
+                $reservation->reserver = $reservation->user->fullName;
+                $reservation->floor = $spot->{$table == Park::class ? 'floor' : 'location'};
+                $reservation->card = $isTablePark ? $spot->card : null;
+                $reservation->plate = !is_null(optional($reservation->user->profile)->license_plate)
+                    ? optional($reservation->user->profile)->license_plate
+                    : removeHTMLTags($reservation->user->details) ?? null;
+                $reservation->extension = !$isTablePark ? $spot->extension : null;
+                $reservation->cell = optional($reservation->user->profile)->cellphone ?? null;
+
+                return $reservation;
+            });
+        });
+    }
+
+    public static function showDatesInBetween($query, $param, $table)
+    {
+        $cacheKey = 'reservations_in_between_' . $table . '_' . $param . '_' . auth()->user()->id;
+        $queryDate = Utility::showCurrentMonthDate($param);
+        $startOfDay = $queryDate['startOfDay'];
+        $endOfDay = $queryDate['endOfDay'];
+        $dashboardType = getDashboardType();
+
+        return Cache::remember($cacheKey, now()->addSeconds(3), function () use ($table, $dashboardType, $startOfDay, $endOfDay) {
+
+            $sql = "
+                SELECT t.*
+                FROM {$table} AS t
+                WHERE t.soft_delete = 'false'
+                  AND t.state = 'active'
+                  AND t.start_date <= ?
+                  AND t.end_date >= ?
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM cancellations AS c
+                      WHERE c.number = t.number
+                        AND c.user_id = t.user_id
+                        AND c.soft_delete = 'false'
+                        AND c.booking = ?
+                        AND (
+                            c.start_date BETWEEN ? AND ?
+                            OR c.end_date BETWEEN ? AND ?
+                            OR (c.start_date <= ? AND c.end_date >= ?)
+                        )
+                  )";
+
+            $bindings = [
+                $endOfDay, $startOfDay, // For t.start_date and t.end_date conditions
+                $dashboardType,         // For c.booking
+                $startOfDay, $endOfDay, // For c.start_date BETWEEN
+                $startOfDay, $endOfDay, // For c.end_date BETWEEN
+                $startOfDay, $endOfDay  // For c.start_date <= and c.end_date >=
+            ];
+
+            $results = Laravel::select($sql, $bindings);
+            return collect($results);
+        });
+    }
+
+    public static function showMyTakenArea($reservations)
+    {
+        return $reservations->filter(function ($reservation) {
+            return $reservation->user_id == auth()->user()->id;
+        });
+    }
+
+    public static function showTakenArea($query, $param, $table)
+    {
+        return self::showDatesInBetween($query, $param, $table)
+            ->filter(function ($reservation) {
+                return $reservation->user_id == auth()->user()->id;
+            });
     }
 }

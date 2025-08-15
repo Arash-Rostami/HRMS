@@ -13,6 +13,6 @@
 @php $dark = (Cookie::get('mode') == '#F1F1F1');@endphp
 <body class="antialiased  {{ str_contains(request()->url(), 'welcome') ? 'overflow-hidden' : '' }}">
 {{--<x-entry.backdrop :themes="$themes"/>--}}
-<x-entry.new-backdrop :themes="$themes"/>
+<x-entry.new-backdrop :themes="$themes" :farsiThemes="$farsiThemes"/>
 </body>
 </html>

@@ -1,5 +1,6 @@
 @if($questions > 0)
     <div
+        id="question"
         dir="rtl"
         @class([
             'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
@@ -42,7 +43,7 @@
              data-te-collapse-item
              data-te-collapse-show
              aria-labelledby="flush-headingQuestionOfMonth"
-             data-te-parent="#accordionFlushExample">
+             data-te-parent="#question">
             @livewire('question-of-month')
         </div>
     </div>

@@ -43,6 +43,17 @@ class Admin
     }
 
     /**
+     * @return TextColumn
+     */
+    public static function showPersonalCode(): TextColumn
+    {
+        return TextColumn::make('user.profile.personnel_id')
+            ->label('Personnel Code')
+            ->searchable( )
+            ->sortable();
+    }
+
+    /**
      * @return BadgeColumn
      */
     public static function showOverallScore(): BadgeColumn

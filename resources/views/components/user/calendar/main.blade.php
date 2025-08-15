@@ -43,7 +43,7 @@
        ])
         data-te-collapse-item
         data-te-collapse-show
-        data-te-parent="#accordionFlush"
+        data-te-parent="#calendar"
         aria-labelledby="flush-collapseCalender"
     >
         @livewire('timetable')

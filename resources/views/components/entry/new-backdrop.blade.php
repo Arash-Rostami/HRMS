@@ -54,7 +54,7 @@
                 @endif
 
                 @foreach($themes as $name => $code)
-                    <a href="{{route('landing-page', $name)}}" title="{{strstr($name,'-theme', true)}}">
+                    <a href="{{route('landing-page', $name)}}" title="{{ $farsiThemes[$name] }}">
                         <span class="color-dot {{strstr($name,'-theme', true)}}"></span>
                     </a>
                 @endforeach

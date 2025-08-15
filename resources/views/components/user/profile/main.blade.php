@@ -42,7 +42,7 @@
          data-te-collapse-item
          data-te-collapse-show
          aria-labelledby="flush-headingOne"
-         data-te-parent="#accordionFlushExample">
+         data-te-parent="#profile">
         @livewire('profile-form')
     </div>
 </div>

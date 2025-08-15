@@ -25,6 +25,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\Park' => 'App\Policies\ParkPolicy',
         'App\Models\Permission' => 'App\Policies\PermissionPolicy',
         'App\Models\Post' => 'App\Policies\PostPolicy',
+        'App\Models\Photo' => 'App\Policies\PhotoPolicy',
         'App\Models\Profile' => 'App\Policies\ProfilePolicy',
         'App\Models\Report' => 'App\Policies\ReportPolicy',
         'App\Models\Seat' => 'App\Policies\SeatPolicy',

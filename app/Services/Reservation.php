@@ -15,21 +15,42 @@ class Reservation
 
     public static function canReserveSeat($user): bool
     {
+        if (!$user) return false;
+
         return $user->booking == 'all' or $user->booking == 'office';
     }
 
 
     public static function canReserveSpot($user): bool
     {
+        if (!$user) return false;
+
         return $user->booking == 'all' or $user->booking == 'parking';
     }
 
+    public static function confirmDesk($desk): bool
+    {
+        if (!$desk) return false;
+
+        return session()->has('day') && self::isSeatReserved($desk);
+    }
+
+    public static function confirmParking($space): bool
+    {
+        if (!$space) return false;
+        return isNotInCenter($space) && session()->has('day') && self::isSpotReserved($space);
+    }
 
     public static function countDaysOfReservation(): int
     {
-        $matchingUser = session('user')->first(function ($user) {
-            return self::listAllNumbers(url()->full())->contains('id', $user->number);
-        });
+        $userReservations = session('user');
+        $matchingUser = null;
+
+        if ($userReservations && $userReservations->isNotEmpty()) {
+            $matchingUser = $userReservations->first(function ($user) {
+                return self::listAllNumbers(url()->full())->contains('id', $user->number);
+            });
+        }
 
         if ($matchingUser) {
             $totalSeconds = $matchingUser->end_date - $matchingUser->start_date;
@@ -42,18 +63,6 @@ class Reservation
         }
 
         return 0;
-    }
-
-
-    public static function confirmDesk($desk): bool
-    {
-        return session()->has('day') && self::isSeatReserved($desk);
-    }
-
-
-    public static function confirmParking($space): bool
-    {
-        return isNotInCenter($space) && session()->has('day') && self::isSpotReserved($space);
     }
 
 //    /**
@@ -71,9 +80,10 @@ class Reservation
 //        })->all();
 //    }
 
-
     public static function getReservationId()
     {
+        if (!session()->has('user') || session('user')->isEmpty()) return null;
+
         foreach (session('user') as $data) {
             return $data->id;
         }
@@ -82,22 +92,18 @@ class Reservation
 
     public static function getReservationNumber()
     {
-        $reservations = self::listAllNumbers(url()->full());
+        if (!session()->has('user') || session('user')->isEmpty()) return null;
 
+        $reservations = self::listAllNumbers(url()->full());
         $userNumbers = session('user')->pluck('number')->flip();
 
-        return $reservations->first(function ($reservation) use ($userNumbers) {
+        $matchingReservation = $reservations->first(function ($reservation) use ($userNumbers) {
             return isset($userNumbers[$reservation->id]);
-        })->number ?? null;
-    }
+        });
 
+        if ($matchingReservation) return $matchingReservation->number;
 
-    /**
-     * @return bool
-     */
-    public static function hasUserReserved(): bool
-    {
-        return session()->has('user') && count(session('user')) != 0;
+        return null;
     }
 
     /**
@@ -106,6 +112,8 @@ class Reservation
      */
     public static function hasUserMaxed($user, $park): bool
     {
+        if (!$user || !$park) return false;
+
         // ignore limit on that specific day
         if (now()->timestamp > $park->start_date && now()->timestamp < $park->end_date) {
             return false;
@@ -118,12 +126,18 @@ class Reservation
         return (Park::countLimit($user->id) >= $user->maximum);
     }
 
+    /**
+     * @return bool
+     */
+    public static function hasUserReserved(): bool
+    {
+        return session()->has('user') && count(session('user')) != 0;
+    }
 
     public static function isSeatReserved($seat): bool
     {
-        if (!session()->has('area')) {
-            return false;
-        }
+        if (!$seat || !session()->has('area')) return false;
+
         $reservedDeskIds = session('area')->pluck('id')->flip();
 
         return $seat->desks->pluck('id')->intersect($reservedDeskIds->keys())->isNotEmpty();
@@ -131,9 +145,7 @@ class Reservation
 
     public static function isSpotReserved($spot)
     {
-        if (!session()->has('area')) {
-            return false;
-        }
+        if (!session()->has('area') || !$spot || is_null($spot->parks)) return false;
 
         $reservedSpotIds = session('area')->pluck('id')->flip();
 
@@ -154,24 +166,13 @@ class Reservation
         return (str_contains($url, "parking")) ? self::showUntakenSpots() : self::showUntakenSeats();
     }
 
-
-    public static function showMyArea($reservations)
-    {
-        return DB::showMyTakenArea($reservations);
-    }
-
-
-    public static function showReserveArea($number)
-    {
-        $modelClass = getDashboardType() == 'parking' ? Park::class : Desk::class;
-
-        return $modelClass::betweenStartAndEndDate($number);
-    }
-
-
     public static function showDetails($space)
     {
+        if (!$space) return;
+
         $reservations = isParking() ? $space->parks : $space->desks;
+
+        if (is_null($reservations) || !session()->has('area')) return;
 
         $reservedIds = session('area')->pluck('id')->flip();
 
@@ -182,6 +183,18 @@ class Reservation
         if ($matchingReservation) {
             Utility::showPopUpDetails($matchingReservation);
         }
+    }
+
+    public static function showMyArea($reservations)
+    {
+        return DB::showMyTakenArea($reservations);
+    }
+
+    public static function showReserveArea($number)
+    {
+        $modelClass = getDashboardType() == 'parking' ? Park::class : Desk::class;
+
+        return $modelClass::betweenStartAndEndDate($number);
     }
 
     public static function showUntakenSeats()

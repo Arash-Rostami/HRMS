@@ -17,6 +17,7 @@ use App\Models\DMS;
 use App\Models\FAQ;
 use App\Models\Job;
 use App\Models\Link;
+use App\Models\Photo;
 use App\Models\Post;
 use App\Models\Profile;
 use App\Models\Question;
@@ -28,6 +29,7 @@ use App\Observers\DmsFileObserver;
 use App\Observers\FAQObserver;
 use App\Observers\JobObserver;
 use App\Observers\LinkObserver;
+use App\Observers\PhotoObserver;
 use App\Observers\PinObserver;
 use App\Observers\PostObserver;
 use App\Observers\ProfileObserver;
@@ -85,6 +87,7 @@ class EventServiceProvider extends ServiceProvider
         //Grouped
         Post::observe(PostObserver::class);
 //        Post::observe(PinObserver::class);
+        Photo::observe(PhotoObserver::class);
         Profile::observe(ProfileObserver::class);
         Question::observe(QuestionObserver::class);
         //Grouped

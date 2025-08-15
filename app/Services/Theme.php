@@ -29,6 +29,25 @@ class Theme
     }
 
     /**
+     * Returns the Farsi translation for each theme.
+     * @return string[]
+     */
+    public static function getFarsiTheme(): array
+    {
+        return [
+            'red-theme' => 'قرمز',
+            'blue-theme' => 'آبی',
+            'purple-theme' => 'بنفش',
+            'oak-theme' => 'بلوطی',
+            'teal-theme' => 'سبز دودی',
+            'maroon-theme' => 'زرشکی',
+            'grey-theme' => 'خاکستری',
+            'silver-theme' => 'نقره‌ای',
+            'orange-theme' => 'نارنجی',
+        ];
+    }
+
+    /**
      * @param $color
      * @return string
      */

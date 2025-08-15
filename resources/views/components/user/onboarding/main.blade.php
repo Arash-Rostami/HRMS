@@ -1,4 +1,6 @@
-<div dir="rtl"
+<div
+    id="onboarding"
+    dir="rtl"
      @class([
      'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
       bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel persol-farsi-font',
@@ -45,7 +47,7 @@
          data-te-collapse-show
          data-te-collapse-item
          aria-labelledby="flush-headingOne"
-         data-te-parent="#accordionFlushExample">
+         data-te-parent="#onboarding">
         <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'onboarding'])"/>
         <div class="flex flex-col md:flex-row items-start">
             {{--nav links--}}

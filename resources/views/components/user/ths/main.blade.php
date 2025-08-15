@@ -1,4 +1,5 @@
 <div
+    id="ths"
     dir="rtl"
     @class([
      'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
@@ -52,7 +53,7 @@
          data-te-collapse-show
          data-te-collapse-collapsed
          aria-labelledby="flush-headingOne"
-         data-te-parent="#accordionFlushExample">
+         data-te-parent="#ths">
         <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'ths']) "/>
         <div :class="currentFontSizeClass">
             @livewire('t-h-s')

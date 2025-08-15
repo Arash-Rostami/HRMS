@@ -45,7 +45,7 @@
              data-te-collapse-item
              data-te-collapse-show
              aria-labelledby="flush-headingOne"
-             data-te-parent="#accordionFlushExample">
+             data-te-parent="#faq">
             <x-user.faq.table :faqs="$faqs"/>
         </div>
     </div>

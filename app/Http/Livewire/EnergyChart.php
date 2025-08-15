@@ -5,7 +5,6 @@ namespace App\Http\Livewire;
 use App\Http\Livewire\Energy\Test;
 use App\Models\EnergyTest;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class EnergyChart extends Component
@@ -54,22 +53,20 @@ class EnergyChart extends Component
      */
     public function getCompanyAveragesProperty(): array
     {
-        return Cache::remember('company-energy-averages', now()->addHour(), function () {
-            $cutoff = now()->subMonths(18);
+        $cutoff = now()->subMonths(18);
 
-            return EnergyTest::query()
-                ->where('user_id', '!=', $this->user->id)
-                ->where(fn($q) => $q->where('completed_at', '>=', $cutoff)->orWhere('created_at', '>=', $cutoff))
-                ->selectRaw('
+        return EnergyTest::query()
+            ->where('user_id', '!=', $this->user->id)
+            ->where(fn($q) => $q->where('completed_at', '>=', $cutoff)->orWhere('created_at', '>=', $cutoff))
+            ->selectRaw('
                     COALESCE(AVG(mind_score), 0) as mind,
                     COALESCE(AVG(emotion_score), 0) as emotion,
                     COALESCE(AVG(physique_score), 0) as physique,
                     COALESCE(AVG(soul_score), 0) as soul,
                     COALESCE(AVG(overall_score), 0) as overall
                 ')
-                ->first()
-                ->toArray();
-        });
+            ->first()
+            ->toArray();
     }
 
     /**
@@ -77,21 +74,21 @@ class EnergyChart extends Component
      */
     public function getTeamMembersDataProperty(): array
     {
-        if (!$this->isManager || !$this->user->profile->department) {
+        if (!$this->isManager || !$this->user->profile?->department) {
             return [];
         }
 
         return User::query()
             ->whereHas('profile', fn($q) => $q->where('department', $this->user->profile->department))
             ->where('id', '!=', $this->user->id)
-            ->with(['profile:user_id,name', 'latestEnergyTest'])
+            ->with(['profile:user_id,department', 'latestEnergyTest'])
             ->get()
             ->map(function (User $member) {
                 if (!$member->latestEnergyTest) {
                     return null;
                 }
                 return [
-                    'name' => $member->profile->name,
+                    'name' => $member->full_name,
                     'scores' => [
                         'physique' => $member->latestEnergyTest->physique_score,
                         'emotion' => $member->latestEnergyTest->emotion_score,

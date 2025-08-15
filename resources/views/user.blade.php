@@ -27,6 +27,9 @@
                     {{--                 Posts Section --}}
                     <x-user.posts.main :posts="$posts" :pins="$pins"></x-user.posts.main>
 
+                    {{-- NEW: Gallery Section --}}
+                    <x-user.gallery.main />
+
                     {{--                 User Status Section --}}
                     <x-user.status.main :users="$users"></x-user.status.main>
 

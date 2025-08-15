@@ -55,7 +55,7 @@
          data-te-collapse-item
          data-te-collapse-show
          aria-labelledby="flush-headingOne"
-         data-te-parent="#accordionFlushExample">
+         data-te-parent="#energy-test">
         @if (!isForcedQuestionnairePeriod(auth()->user()))
             <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'energy']) "/>
         @endif

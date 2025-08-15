@@ -40,7 +40,8 @@ class LoginController extends Controller
     public function index()
     {
         return view('main', [
-            'themes' => Theme::getTheme() ?? ' '
+            'themes' => Theme::getTheme() ?? ' ',
+            'farsiThemes' => Theme::getFarsiTheme() ?? ' '
         ]);
     }
 

@@ -1,6 +1,6 @@
 <div
     id="personnel"
-    data-id="3"
+    data-id="4"
     title="move me ↑ ↓"
     dir="rtl"
     @class([
@@ -41,7 +41,7 @@
             ])
          data-te-collapse-item
          data-te-collapse-show
-         data-te-parent="#accordionFlush"
+         data-te-parent="#personnel"
          aria-labelledby="flush-headingOne">
         <x-user.status.avatars :users="$users"/>
     </div>

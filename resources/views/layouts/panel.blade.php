@@ -9,7 +9,7 @@
 <div class="loading-line"></div>
 
 <!--customized menu of user panel -->
-<x-user.navbar.main />
+<x-user.navbar.main/>
 <!-- Page Content -->
 <main>
     @yield('content')
@@ -20,5 +20,6 @@
 
 <!-- Scripts -->
 <x-user.assets.js :translatePage="$translatePage" :jobs="$jobs"/>
+@stack('scripts')
 </body>
 </html>

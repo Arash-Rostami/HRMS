@@ -10,7 +10,7 @@
 @endphp
 
 <x-app-layout>
-    <x-dark-light-mode/>
+    <x-entry.dark-light-mode/>
 
     <div class="pt-10 rtl-direction persol-farsi-font mx-auto">
 

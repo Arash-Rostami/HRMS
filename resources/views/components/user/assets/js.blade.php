@@ -1,6 +1,9 @@
 <!-- Custom scripts -->
 @if( isUserPanel())
-
+    {{-- Alpine js Intersect Plugin for Gallery--}}
+    <script src="{{ asset('js/intersect.js') }}"></script>
+    {{-- FancyBox JS for Gallery--}}
+    <script src="{{ asset('js/fancyBox.js') }}"></script>
     {{--    modal library and its config file--}}
     <script src="{{ asset('/js/modal.js') }}"></script>
     <script>
@@ -56,12 +59,6 @@
     {{--   music player timer   --}}
     <script src="{{ asset('/js/autoPlayAudio.js') }}"></script>
 @endif
-
-
-<!-- Froala Editor & config file -->
-<script src="{{ asset('/js/froala.js') }}"></script>
-<script src="{{ asset('/js/editor.js') }}"></script>
-
 
 
 

@@ -53,7 +53,7 @@
          data-te-collapse-item
          data-te-collapse-show
          aria-labelledby="flush-collapseDelegation"
-         data-te-parent="#accordionFlushExample">
+         data-te-parent="#authorities">
         <div :class="currentFontSizeClass">
             <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'delegation']) "/>
             <x-user.authorities.items :delegations="$delegations"/>

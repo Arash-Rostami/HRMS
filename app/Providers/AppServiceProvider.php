@@ -16,6 +16,7 @@ use App\Filament\Resources\JobResource;
 use App\Filament\Resources\LinkResource;
 use App\Filament\Resources\ParkResource;
 use App\Filament\Resources\PermissionResource;
+use App\Filament\Resources\PhotoResource;
 use App\Filament\Resources\PostResource;
 use App\Filament\Resources\ProfileResource;
 use App\Filament\Resources\QuestionResource;
@@ -85,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
                     ->items([
                         ...AppResource::getNavigationItems(),
                         ...EnergyTestResource::getNavigationItems(),
+                        ...PhotoResource::getNavigationItems(),
                         ...DelegationResource::getNavigationItems(),
                         ...DMSResource::getNavigationItems(),
                         ...QuestionResource::getNavigationItems(),
