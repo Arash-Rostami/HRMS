@@ -1,7 +1,7 @@
 @if(count($faqs) > 0)
     <div
         id="faq"
-        data-id="8"
+        data-id="9"
         title="move me ↑ ↓"
         dir="rtl"
         @class([
@@ -10,7 +10,8 @@
            persol-farsi-font',
           'bg-[#1F2937]' => isDarkMode(),
         ])
-        x-data x-cloak>
+        x-data
+        x-cloak>
         {{--rubric--}}
         <div class="mb-5 w-1/2 md:w-1/4">
             <h2
@@ -33,8 +34,6 @@
                 <i class="fas fa-question-circle text-gray-400"></i>
               </span>
             </h2>
-            <!-- Background Shapes -->
-            <x-user.bg-shapes/>
         </div>
         {{-- main body content--}}
         <div id="flush-collapseFAQ"
@@ -47,6 +46,8 @@
              aria-labelledby="flush-headingOne"
              data-te-parent="#faq">
             <x-user.faq.table :faqs="$faqs"/>
+            <!-- Background Shapes -->
+            <x-user.bg-shapes/>
         </div>
     </div>
 @endif

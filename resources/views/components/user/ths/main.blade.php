@@ -24,24 +24,22 @@
     {{--rubric--}}
     <div class="mb-5 w-1/2 md:w-1/4">
         <h2
-            @class([
-              'accordion-header rounded-lg px-4 py-2 cursor-pointer
-               hover:bg-gray-100 focus:ring focus:ring-offset-2
-               focus:ring-blue-500 transition duration-300',
-              'bg-gray-700 text-gray-200 hover:bg-gray-900' => isDarkMode(),
-            ])
-            title="ارسال و پیگیری تیکت از طریق سرویس پشتیبانی تیکت"
-            data-te-collapse-init
-            data-te-target="#flush-collapseTHS"
-            type="button" data-te-toggle="collapse" data-bs-target="#flush-collapseTHS"
-            aria-expanded="true" aria-controls="flush-collapseTHS">
+                @class([
+                  'accordion-header rounded-lg px-4 py-2 cursor-pointer
+                   hover:bg-gray-100 focus:ring focus:ring-offset-2
+                   focus:ring-blue-500 transition duration-300',
+                  'bg-gray-700 text-gray-200 hover:bg-gray-900' => isDarkMode(),
+                ])
+                title="ارسال و پیگیری تیکت از طریق سرویس پشتیبانی تیکت"
+                data-te-collapse-init
+                data-te-target="#flush-collapseTHS"
+                type="button" data-te-toggle="collapse" data-bs-target="#flush-collapseTHS"
+                aria-expanded="true" aria-controls="flush-collapseTHS">
              <span class="flex items-center justify-between">
                  <span>تیکت</span>
                  <i class="fas fa-ticket-alt text-gray-400"></i>
             </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseTHS"
@@ -58,5 +56,7 @@
         <div :class="currentFontSizeClass">
             @livewire('t-h-s')
         </div>
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>

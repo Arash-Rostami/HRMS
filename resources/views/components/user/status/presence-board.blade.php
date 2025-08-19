@@ -1,6 +1,8 @@
 @foreach($presences as $presenceType => $details)
-    <div class="w-full card-job links-thumbnails my-1 transform transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg">
-        <div class="flex clear-both cursor-help transition-transform duration-200 hover:scale-105" title="working {{ $presenceType }}: {{ $details['count'] }}">
+    <div
+        class="w-full card-job links-thumbnails my-1 transform transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg">
+        <div class="flex clear-both cursor-help transition-transform duration-200 hover:scale-105"
+             title="working {{ $presenceType }}: {{ $details['count'] }}">
             <i class="fa {{ $details['icon'] }} {{ $details['color'] }} m-2 transition-all duration-300 ease-in-out hover:rotate-12 hover:scale-110"></i>
         </div>
         <div class="flex py-1 flex-wrap justify-content-evenly">
@@ -22,9 +24,14 @@
                                 : ($cellphone ? tel($cellphone) : '');
                 @endphp
                 @if($isPresent && $isNotGuest)
-                    <div class="text-center items-center justify-center mx-1 avatar-container relative group {{ $details['fade'] }} transform transition-all duration-300 ease-out hover:scale-105 hover:-translate-y-1">
-                        <img class="{{ $avatarClass }} mx-auto w-12 md:w-24 aspect-square object-cover rounded-full transition-all duration-500 ease-in-out hover:scale-110 hover:shadow-xl hover:brightness-110 group-hover:ring-2 group-hover:ring-opacity-60"
-                             src="{{ showUserProfile($user) }}" alt="Avatar"/>
+                    <div
+                        class="text-center items-center justify-center mx-1 avatar-container relative group {{ $details['fade'] }} transform transition-all duration-300 ease-out hover:scale-105 hover:-translate-y-1">
+                        <img
+                            class="{{ $avatarClass }} mx-auto w-12 md:w-24 aspect-square object-cover rounded-full transition-all duration-500 ease-in-out hover:scale-110 hover:shadow-xl hover:brightness-110 group-hover:ring-2 group-hover:ring-opacity-60"
+                            loading="lazy"
+                            decoding="async"
+                            src="{{ showUserProfile($user) }}"
+                            alt="Avatar"/>
                         <p class="text-neutral-500 dark:text-neutral-400 cursor-pointer transition-all duration-200 ease-in-out hover:scale-105 hover:font-medium"
                            dir="ltr"
                            title="ارسال SMS 📲"

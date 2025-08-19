@@ -1,6 +1,5 @@
 import './bootstrap';
 import './icon';
-import './backdrop';
 import './tailwindcss';
 import './timer';
 import './connectionStatus';

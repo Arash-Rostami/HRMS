@@ -1,53 +1,65 @@
+@php
+    $shapes = isDarkMode()
+        ? ['circle','square','triangle','blob']
+        : ['circle','square','triangle','blob','diamond','hexagon','star','oval'];
+
+    $isDark = isDarkMode();
+@endphp
+
 <div
-    class="relative inset-0 -z-10"
+    class="absolute inset-0 -z-10 overflow-hidden"
     x-data="{
         shapes: [],
-        init() {
-            this.generateShapes();
-        },
+        isDark: @js($isDark),
+        init() { setTimeout(() => this.generateShapes(), 100) },
         generateShapes() {
-             const types = ['circle', 'square', 'triangle', 'blob'];
-             this.shapes = types.map(type => ({
-                type: type,
-                color: this.getRandomColor(),
-                size: this.getRandomSize(),
-                position: this.getRandomRandomizedPosition()
-            }));
+            const types = @js($shapes);
+            const positions = [];
+            this.shapes = types.map(type => {
+                const size = this.getRandomSize();
+                const position = this.getRandomPosition(size, positions);
+                positions.push(position);
+                return { type, color: this.getRandomColor(), size, position };
+            });
         },
         getRandomColor() {
-            const colors = ['#FFB3C6', '#C6D8FF', '#FFE4B3', '#B3FFC6', '#D9B3FF', '#FFDAC6', '#C6FFF0', '#FFD9F0'];
+            const colors = ['#FFB3C6','#C6D8FF','#FFE4B3','#B3FFC6','#D9B3FF','#FFDAC6','#C6FFF0','#FFD9F0'];
             return colors[Math.floor(Math.random() * colors.length)];
         },
         getRandomSize() {
-            const sizes = [
-                { width: 60, height: 60 },
-                { width: 100, height: 100 },
-                { width: 150, height: 150 },
-            ];
-            return sizes[Math.floor(Math.random() * sizes.length)];
+            const sizes = [{w:60,h:60},{w:100,h:100},{w:150,h:150}];
+            const s = sizes[Math.floor(Math.random() * sizes.length)];
+            return { width: s.w, height: s.h };
         },
-        getRandomRandomizedPosition() {
-            const maxWidth = window.innerWidth;
-            const maxHeight = window.innerHeight;
-            const randomTop = Math.floor(Math.random() * (maxHeight - 150)); // Adjust 150 to avoid overflow
-            const randomLeft = Math.floor(Math.random() * (maxWidth - 150)); // Adjust 150 to avoid overflow
-            return { top: `${randomTop}px`, left: `${randomLeft}px` };
+        getRandomPosition(size, existing = []) {
+            const c = this.$el.parentElement;
+            const W = c.offsetWidth, H = c.offsetHeight, minD = 400;
+            let tries = 0, pos;
+            do {
+                const top = Math.floor(Math.random() * Math.max(0, H - size.height));
+                const left = Math.floor(Math.random() * Math.max(0, W - size.width));
+                pos = { top, left };
+                tries++;
+            } while (tries < 50 && existing.some(p =>
+                Math.hypot(pos.left - p.left, pos.top - p.top) < minD
+            ));
+            return { top: `${pos.top}px`, left: `${pos.left}px` };
         }
     }"
 >
     <template x-for="shape in shapes" :key="`${shape.type}-${shape.color}-${shape.position.top}-${shape.position.left}`">
-        <div
-            class="absolute"
-            :style="
-            shape.type === 'circle'
-                ? `width: ${shape.size.width}px; height: ${shape.size.height}px; border-radius: 50%; background-color: ${shape.color}; top: ${shape.position.top}; left: ${shape.position.left};  {{ isDarkMode() ? 'opacity:0.1' : 'opacity:0.3' }}`
-                : shape.type === 'square'
-                ? `width: ${shape.size.width}px; height: ${shape.size.height}px; background-color: ${shape.color}; top: ${shape.position.top}; left: ${shape.position.left}; {{ isDarkMode() ? 'opacity:0.1' : 'opacity:0.3' }}`
-                : shape.type === 'triangle'
-                ? `width: 0; height: 0; border-left: ${shape.size.width / 2}px solid transparent; border-right: ${shape.size.width / 2}px solid transparent; border-bottom: ${shape.size.height}px solid ${shape.color}; top: ${shape.position.top}; left: ${shape.position.left}; {{ isDarkMode() ? 'opacity:0.1' : 'opacity:0.3' }};`
-                : shape.type === 'blob'
-                ? `width: ${shape.size.width}px; height: ${shape.size.height}px; background-color: ${shape.color}; border-radius: 50% 40% 60% 40% / 40% 60% 40% 60%; top: ${shape.position.top}; left: ${shape.position.left}; {{ isDarkMode() ? 'opacity:0.1' : 'opacity:0.3' }};`
-                : ''"
-        ></div>
+        <div class="absolute animate-pulse"
+             style="animation-duration: 4s;"
+             :style="
+                shape.type === 'circle'   ? `width:${shape.size.width}px;height:${shape.size.height}px;border-radius:50%;background:${shape.color};top:${shape.position.top};left:${shape.position.left};opacity:${isDark?'0.05':'0.3'};` :
+                shape.type === 'square'   ? `width:${shape.size.width}px;height:${shape.size.height}px;background:${shape.color};top:${shape.position.top};left:${shape.position.left};opacity:${isDark?'0.05':'0.3'};` :
+                shape.type === 'triangle' ? `width:0;height:0;border-left:${shape.size.width/2}px solid transparent;border-right:${shape.size.width/2}px solid transparent;border-bottom:${shape.size.height}px solid ${shape.color};top:${shape.position.top};left:${shape.position.left};opacity:${isDark?'0.05':'0.3'};` :
+                shape.type === 'blob'     ? `width:${shape.size.width}px;height:${shape.size.height}px;background:${shape.color};border-radius:50% 40% 60% 40% / 40% 60% 40% 60%;top:${shape.position.top};left:${shape.position.left};opacity:${isDark?'0.05':'0.3'};` :
+                shape.type === 'diamond'  ? `width:${shape.size.width}px;height:${shape.size.height}px;background:${shape.color};transform:rotate(45deg);top:${shape.position.top};left:${shape.position.left};opacity:${isDark?'0.05':'0.3'};` :
+                shape.type === 'hexagon'  ? `width:${shape.size.width}px;height:${shape.size.height}px;background:${shape.color};clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);top:${shape.position.top};left:${shape.position.left};opacity:${isDark?'0.05':'0.3'};` :
+                shape.type === 'star'     ? `width:${shape.size.width}px;height:${shape.size.height}px;background:${shape.color};clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);top:${shape.position.top};left:${shape.position.left};opacity:${isDark?'0.05':'0.3'};` :
+                shape.type === 'oval'     ? `width:${shape.size.width}px;height:${shape.size.height}px;background:${shape.color};border-radius:50%;transform:scaleX(1.5);top:${shape.position.top};left:${shape.position.left};opacity:${isDark?'0.05':'0.3'};` : ''
+             ">
+        </div>
     </template>
 </div>

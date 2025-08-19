@@ -21,6 +21,8 @@
                 <x-user.question.main :questions="$questions"></x-user.question.main>
 
                 <div id="sortMe">
+                    {{-- NEW: Feed Section --}}
+                    <x-user.feed.main/>
                     {{--                Calendar Section--}}
                     <x-user.calendar.main></x-user.calendar.main>
 
@@ -28,7 +30,7 @@
                     <x-user.posts.main :posts="$posts" :pins="$pins"></x-user.posts.main>
 
                     {{-- NEW: Gallery Section --}}
-                    <x-user.gallery.main />
+                    <x-user.gallery.main/>
 
                     {{--                 User Status Section --}}
                     <x-user.status.main :users="$users"></x-user.status.main>

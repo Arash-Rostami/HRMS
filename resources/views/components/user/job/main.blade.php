@@ -1,6 +1,7 @@
 @if(count($jobs) > 0)
     <div
         id="job"
+        data-id="0"
         dir="rtl"
         @class([
            'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
@@ -8,7 +9,8 @@
             persol-farsi-font',
            'bg-[#1F2937]' => isDarkMode(),
          ])
-        x-data x-cloak>
+        x-data
+        x-cloak>
         {{--rubric--}}
         <div class="mb-5 w-1/2 md:w-1/4">
             <h2
@@ -29,8 +31,6 @@
                 <i class="fas fa-handshake text-gray-400"></i>
                 </span>
             </h2>
-            <!-- Background Shapes -->
-            <x-user.bg-shapes/>
         </div>
         {{-- main body content--}}
         <div id="flush-collapseSeven"
@@ -43,6 +43,8 @@
              aria-labelledby="flush-headingOne"
              data-te-parent="#job">
             <x-user.job.list :jobs="$jobs"/>
+            <!-- Background Shapes -->
+            <x-user.bg-shapes/>
         </div>
     </div>
 @endif

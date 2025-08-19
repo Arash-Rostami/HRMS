@@ -2,14 +2,15 @@
 <link href="{{ asset('css/app.css')}}" rel="stylesheet">
 <link href="{{ asset('css/tw.css')}}" rel="stylesheet">
 <link href="{{ asset('css/fancyBox.css')}}" rel="stylesheet">
-{{--<link href="{{ asset('/css/froala.css') }}" rel="stylesheet" type="text/css">--}}
-<script src="{{ asset('/js/sortable.js') }}"></script>
+<!-- HEAD JS -->
 <script src="{{ asset('js/app.js')}}" defer></script>
-<x-extra-css/>
+<script src="{{ asset('js/sortable.js') }}"></script>
 
+
+<!-- General styles -->
+<x-extra-css/>
 <!-- Livewire styles -->
 @livewireStyles
-
 <!-- Custom CSS -->
 @if(trim($__env->yieldContent('css')))
     @yield('css')

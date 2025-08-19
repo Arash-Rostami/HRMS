@@ -70,6 +70,8 @@
                        class="block hover:opacity-90 transition-opacity"
                        title="{{ $video['title'] }}">
                         <img
+                            loading="lazy"
+                            decoding="async"
                             class="thumbnail welcome-thumbnails welcome-thumbnails-color rounded hover:grayscale-0 transform transition-all duration-300 ease-out"
                             :class="hover ? 'scale-105' : 'scale-100'"
                             :src="hover ? '{{ $video['img'] }}-play.svg' : '{{ $video['img'] }}.svg'"
@@ -100,8 +102,13 @@
                             @click="handleVideoClose()">
                         &times;
                     </button>
-                    <video x-ref="videoPlayer" :src="videoSrc" controls autoplay controlsList="nodownload"
-                           class="w-full h-full object-contain">
+                    <video x-ref="videoPlayer"
+                           :src="videoSrc"
+                           controls
+                           autoplay
+                           controlsList="nodownload"
+                           class="w-full h-full object-contain"
+                           preload="none">
                     </video>
                 </div>
             </div>

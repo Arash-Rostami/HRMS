@@ -45,6 +45,9 @@
              aria-labelledby="flush-headingQuestionOfMonth"
              data-te-parent="#question">
             @livewire('question-of-month')
+
+            <!-- Background Shapes -->
+            <x-user.bg-shapes/>
         </div>
     </div>
 @endif

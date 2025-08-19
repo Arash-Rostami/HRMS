@@ -42,8 +42,6 @@
                 <i class="fa fa-archive text-gray-400"></i>
               </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseDMS"
@@ -59,5 +57,7 @@
         <div :class="currentFontSizeClass">
             @livewire('d-m-s')
         </div>
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>

@@ -41,8 +41,6 @@
                 <i class="fas fa-chart-bar text-gray-400"></i>
             </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseStatistics"
@@ -58,5 +56,7 @@
         <div :class="currentFontSizeClass">
             <x-user.analytics.charts/>
         </div>
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>

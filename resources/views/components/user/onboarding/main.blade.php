@@ -1,12 +1,12 @@
 <div
     id="onboarding"
     dir="rtl"
-     @class([
-     'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
-      bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel persol-farsi-font',
-     'bg-[#1F2937]' => isDarkMode(),
-           ])
-     x-data="{
+    @class([
+    'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
+     bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel persol-farsi-font',
+    'bg-[#1F2937]' => isDarkMode(),
+          ])
+    x-data="{
         activeTab: 'welcome',
         currentFontSizeIndex: 0,
         fontSizes : ['text-base', 'text-lg', 'text-xl'],
@@ -20,8 +20,8 @@
             }
         }
     }"
-     @tab-changed.window="activeTab = $event.detail.tab"
-     x-cloak>
+    @tab-changed.window="activeTab = $event.detail.tab"
+    x-cloak>
     {{-- Rubric --}}
     <div class="mb-5 w-1/2 md:w-1/4">
         <h2 @class([
@@ -73,6 +73,8 @@
                 </div>
             </div>
         </div>
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>
 

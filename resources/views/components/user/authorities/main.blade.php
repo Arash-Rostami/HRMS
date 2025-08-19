@@ -41,8 +41,6 @@
                     <i class="fas fa-tasks text-gray-400"></i>
                   </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseDelegation"
@@ -58,5 +56,7 @@
             <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'delegation']) "/>
             <x-user.authorities.items :delegations="$delegations"/>
         </div>
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>

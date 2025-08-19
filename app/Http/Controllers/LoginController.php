@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\Theme;
 use App\Services\Utility;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cookie;
 
@@ -34,6 +35,17 @@ class LoginController extends Controller
         return back();
     }
 
+    public function clearAppCache(): JsonResponse
+    {
+        $themeCookieName = Utility::nameCookie('theme');
+        $modeCookieName = Utility::nameCookie('mode');
+
+        Cookie::queue(Cookie::forget($themeCookieName));
+        Cookie::queue(Cookie::forget($modeCookieName));
+
+        return response()->json(['status' => 'success']);
+    }
+
     /**
      * @return Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
@@ -44,7 +56,6 @@ class LoginController extends Controller
             'farsiThemes' => Theme::getFarsiTheme() ?? ' '
         ]);
     }
-
 
     public function show()
     {

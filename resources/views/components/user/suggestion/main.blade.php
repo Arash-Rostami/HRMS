@@ -43,8 +43,6 @@
             <i class="fa fa-bullhorn text-gray-400"></i>
           </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseSuggestion"
@@ -61,5 +59,7 @@
         <div :class="currentFontSizeClass">
             @livewire('suggestion-process')
         </div>
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>

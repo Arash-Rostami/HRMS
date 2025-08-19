@@ -19,6 +19,8 @@
                                 <img class="w-1/2 mx-auto"
                                      title="{{  $genderTitle }}"
                                      src="{{ $avatar }}"
+                                     loading="lazy"
+                                     decoding="async"
                                      alt="Avatar">
                                 <div class="container-job p-1">
                                     <h2 class="border-b border-dotted border-[var(--main)] pb-1">{!!  $job->position !!}</h2>

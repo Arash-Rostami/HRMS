@@ -1,15 +1,14 @@
-<audio class="hidden" id="parking" src="/audio/parking.mp3"></audio>
-<audio class="hidden" id="office" src="/audio/office.mp3"></audio>
-
+<audio hidden id="parking" data-src="/audio/parking.mp3"></audio>
+<audio hidden id="office" data-src="/audio/office.mp3"></audio>
 
 <script>
-    window.onload = function () {
-        let audio = Cookie.getCookie('audio');
-        if (audio == null) {
-            (window.location.href.includes('office'))
-                ? document.getElementById("office").play()
-                : document.getElementById("parking").play();
-            return Cookie.setCookie('audio', 'played', 1);
+    window.onload = () => {
+        if (!Cookie.getCookie('audio')) {
+            let id = location.href.includes('office') ? "office" : "parking";
+            let el = document.getElementById(id);
+            el.src = el.dataset.src;
+            el.play().catch(()=>{});
+            Cookie.setCookie('audio', 'played', 1);
         }
     }
 </script>

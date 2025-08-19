@@ -1,7 +1,7 @@
 @if($links->filter(fn($link) => $link['link'] === 'external')->isNotEmpty())
     <div
         id="tools"
-        data-id="6"
+        data-id="7"
         title="move me ↑ ↓"
         dir="rtl"
         @class([
@@ -10,7 +10,8 @@
          persol-farsi-font',
         'bg-[#1F2937]' => isDarkMode(),
       ])
-        x-data x-cloak>
+        x-data
+        x-cloak>
         {{--rubric--}}
         <div class="mb-5 w-1/2 md:w-1/4">
             <h2
@@ -33,8 +34,6 @@
                     <i class="fas fa-external-link-alt text-gray-400"></i>
                   </span>
             </h2>
-            <!-- Background Shapes -->
-            <x-user.bg-shapes/>
         </div>
         {{-- main body content--}}
         <div id="flush-collapseTwo"
@@ -47,6 +46,8 @@
              aria-labelledby="flush-headingOne"
              data-te-parent="#tools">
             <x-user.link.external.links :links="$links"/>
+            <!-- Background Shapes -->
+            <x-user.bg-shapes/>
         </div>
     </div>
 @endif

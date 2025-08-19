@@ -18,6 +18,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\DMS' => 'App\Policies\DMSPolicy',
         'App\Models\EnergyTest' => 'App\Policies\EnergyTestPolicy',
         'App\Models\FAQ' => 'App\Policies\FAQPolicy',
+        'App\Models\Feed' => 'App\Policies\FeedPolicy',
         'App\Models\Feedback' => 'App\Policies\FeedbackPolicy',
         'App\Models\InstantMessage' => 'App\Policies\InstantMessagePolicy',
         'App\Models\Job' => 'App\Policies\JobPolicy',

@@ -1,6 +1,6 @@
 <div
     id="personnel"
-    data-id="4"
+    data-id="5"
     title="move me ↑ ↓"
     dir="rtl"
     @class([
@@ -30,8 +30,6 @@
                  <i class="fa fa-users text-gray-400"></i>
               </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseStatus"
@@ -44,5 +42,7 @@
          data-te-parent="#personnel"
          aria-labelledby="flush-headingOne">
         <x-user.status.avatars :users="$users"/>
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>

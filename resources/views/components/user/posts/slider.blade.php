@@ -6,8 +6,8 @@
                 <img class="mx-auto mt-3 max-h-44 w-auto object-contain"
                      src="{{ $post->image }}"
                      alt="{{ strip_tags($post->title) }}"
-                     loading="lazy">
-
+                     loading="lazy"
+                     decoding="async">
                 <div class="p-4 pt-2">
                     <h3 class="card-link-text tracking-wider text-justify md:text-center">
                         <span class="text-sm font-normal">

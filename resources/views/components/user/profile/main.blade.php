@@ -30,8 +30,6 @@
                 <i class="fa fa-id-card-alt text-gray-400"></i>
               </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseProfile"
@@ -44,5 +42,7 @@
          aria-labelledby="flush-headingOne"
          data-te-parent="#profile">
         @livewire('profile-form')
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>

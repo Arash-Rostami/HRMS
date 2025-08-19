@@ -1,6 +1,7 @@
 class AudioPlayer {
     constructor(audioPath, playAudioButtonId, clockIconId) {
-        this.audio = new Audio(audioPath);
+        this.audioPath = audioPath;
+        this.audio = null;
         this.playAudioButton = document.getElementById(playAudioButtonId);
         this.clockIcon = document.getElementById(clockIconId);
         this.isPlaying = false;
@@ -18,18 +19,16 @@ class AudioPlayer {
             const timeDiff = this.calculateTimeDifference(targetTime);
 
             if (timeDiff > 0) {
-                // Timer is still valid; update UI and start timer
+                // Timer is still valid; update UI only
                 this.isPlaying = true;
                 this.updateUI(true);
                 this.startAudioTimer(targetTime);
             } else if (timeDiff <= 0 && timeDiff > -900000) {
-                // Timer has passed but is within the playback window
-                console.log('Playing audio after page refresh...');
-                this.audio.play();
-                this.updateUI(false); // Reset UI after playing
-                localStorage.removeItem('targetTime'); // Clear storage
+                // Timer passed but within window — do not auto play, only prepare
+                console.log('Audio is ready but will not autoplay after refresh.');
+                this.updateUI(false);
+                localStorage.removeItem('targetTime');
             } else {
-                // Timer is expired; clear storage and reset UI
                 localStorage.removeItem('targetTime');
                 this.updateUI(false);
             }
@@ -45,11 +44,7 @@ class AudioPlayer {
             isNaN(userMinute) || userMinute < 0 || userMinute > 59
         ) {
             const shouldRetry = confirm('Invalid time entered. Do you want to retry?');
-            if (shouldRetry) {
-                return this.getUserInputTime();
-            } else {
-                return null; // User cancelled entering time
-            }
+            return shouldRetry ? this.getUserInputTime() : null;
         }
 
         return { hour: userHour, minute: userMinute };
@@ -64,13 +59,13 @@ class AudioPlayer {
         const timeDiff = this.calculateTimeDifference(targetTime);
 
         if (timeDiff <= 0 && timeDiff > -900000) {
-            console.log('Audio is being played at the target time...');
+            console.log('Playing audio at target time...');
+            if (!this.audio) this.audio = new Audio(this.audioPath);
             this.audio.play();
             this.stopAudioTimer();
-            this.updateUI(false); // Reset UI after playing
-            localStorage.removeItem('targetTime'); // Clear storage
+            this.updateUI(false);
+            localStorage.removeItem('targetTime');
         } else if (timeDiff <= -900000) {
-            // If time is fully expired, reset
             console.log('Timer expired. Clearing localStorage...');
             this.stopAudioTimer();
             this.updateUI(false);
@@ -101,27 +96,30 @@ class AudioPlayer {
     toggleAudio() {
         if (this.isPlaying) {
             console.log('Timer stopped.');
-            this.audio.pause();
-            this.audio.currentTime = 0;
+            if (this.audio) {
+                this.audio.pause();
+                this.audio.currentTime = 0;
+            }
             this.stopAudioTimer();
             this.updateUI(false);
-            localStorage.removeItem('targetTime'); // Clear localStorage
+            localStorage.removeItem('targetTime');
         } else {
             console.log('Timer started.');
 
-            // Get user input and create a target time
-            const { hour, minute } = this.getUserInputTime();
+            const input = this.getUserInputTime();
+            if (!input) return;
+
+            const { hour, minute } = input;
             const targetTime = new Date();
             targetTime.setHours(hour, minute, 0, 0);
 
-            // Store the target time in localStorage
             localStorage.setItem('targetTime', targetTime);
 
-            // Start the timer
             this.startAudioTimer(targetTime);
-
-            // Update UI
             this.updateUI(true);
+
+            if (!this.audio) this.audio = new Audio(this.audioPath);
+
         }
         this.isPlaying = !this.isPlaying;
     }
@@ -131,5 +129,4 @@ class AudioPlayer {
     }
 }
 
-// Initialize AudioPlayer
 const audioPlayer = new AudioPlayer('/audio/rema.mp3', 'playAudioButton', 'clockIcon');

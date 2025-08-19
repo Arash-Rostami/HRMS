@@ -39,6 +39,8 @@ Route::match(['get', 'post'], '/otp', [UserPanelController::class, 'handleOtp'])
 
 // homepage +
 Route::get('welcome', [LoginController::class, 'index'])->name('landing.page');
+Route::post('/clear-setting', [LoginController::class, 'clearAppCache']);
+
 
 // Users' panel
 Route::middleware(['auth', 'questionnaire.completed'])->prefix('main')->group(function () {

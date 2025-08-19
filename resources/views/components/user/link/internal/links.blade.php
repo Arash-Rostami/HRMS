@@ -17,11 +17,15 @@
                    title="{{ $chunk->url_description }}">
                     <div class="card-link rounded links-thumbnails links-thumbnails-color bg-weekend">
                         <img class="border-solid border-b-2 border-gray-600"
+                             loading="lazy"
+                             decoding="async"
                              src="{{ $chunk->image }}"
                              alt="{{ $chunk->image_description }}">
                         <div class="card-link-text tracking-wider">
                             <p class="hidden md:block">{{ $chunk->url_title }}</p>
                             <img class="mt-5 md:hidden opacity-60 w-1/2 mx-auto"
+                                 loading="lazy"
+                                 decoding="async"
                                  src="{{ $chunk->icon }}"
                                  alt="{{ $chunk->icon_description }}">
                         </div>

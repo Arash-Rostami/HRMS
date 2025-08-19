@@ -1,6 +1,6 @@
 <div
     id="calendar"
-    data-id="1"
+    data-id="2"
     title="move me ↑ ↓"
     dir="rtl"
     @class([
@@ -9,7 +9,7 @@
      persol-farsi-font',
     'bg-[#1F2937]' => isDarkMode(),
   ])
-    x-data x-cloak>
+    x-data>
     {{-- Rubric --}}
     <div class="mb-5 w-full md:w-1/4">
         <h2
@@ -31,14 +31,12 @@
             <i class="far fa-calendar-alt text-gray-400"></i>
           </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- Main Body Content --}}
     <div
         id="flush-collapseCalender"
         @class([
-         'accordion-collapse collapse show border-0',
+         'accordion-collapse collapse show border-0 animate-[fade-in_1s_ease-in-out]',
          'text-gray-300 ' => isDarkMode(),
        ])
         data-te-collapse-item
@@ -47,5 +45,8 @@
         aria-labelledby="flush-collapseCalender"
     >
         @livewire('timetable')
+
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>

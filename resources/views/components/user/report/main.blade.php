@@ -1,7 +1,7 @@
 @if(count($reports) > 0)
     <div
         id="report"
-        data-id="5"
+        data-id="6"
         title="move me ↑ ↓"
         dir="rtl"
         @class([
@@ -10,7 +10,8 @@
              persol-farsi-font',
             'bg-[#1F2937]' => isDarkMode(),
           ])
-        x-data x-cloak>
+        x-data
+        x-cloak>
         {{--rubric--}}
         <div class="mb-5 w-1/2 md:w-1/4">
             <h2
@@ -46,6 +47,8 @@
              aria-labelledby="flush-headingReports"
              data-te-parent="#report">
             @include('components.user.report.table', ['reports' => $reports])
+            <!-- Background Shapes -->
+            <x-user.bg-shapes/>
         </div>
     </div>
 @endif

@@ -15,6 +15,7 @@ use App\Listeners\UpdateLastSeenListener;
 use App\Models\Delegation;
 use App\Models\DMS;
 use App\Models\FAQ;
+use App\Models\Feed;
 use App\Models\Job;
 use App\Models\Link;
 use App\Models\Photo;
@@ -23,14 +24,13 @@ use App\Models\Profile;
 use App\Models\Question;
 use App\Models\Report;
 use App\Models\Ticket;
-use App\Models\User;
 use App\Observers\DelegationObserver;
 use App\Observers\DmsFileObserver;
 use App\Observers\FAQObserver;
+use App\Observers\FeedObserver;
 use App\Observers\JobObserver;
 use App\Observers\LinkObserver;
 use App\Observers\PhotoObserver;
-use App\Observers\PinObserver;
 use App\Observers\PostObserver;
 use App\Observers\ProfileObserver;
 use App\Observers\QuestionObserver;
@@ -42,7 +42,6 @@ use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -82,6 +81,7 @@ class EventServiceProvider extends ServiceProvider
         DMS::observe(DmsFileObserver::class);
         Delegation::observe(DelegationObserver::class);
         FAQ::observe(FAQObserver::class);
+        Feed::observe(FeedObserver::class);
         Job::observe(JobObserver::class);
         Link::observe(LinkObserver::class);
         //Grouped

@@ -14,7 +14,7 @@
                 <div class="flex md:flex-row gap-4 mb-4">
                     @foreach($songChunk as $song)
                         <div class="w-1/2">
-                            <img src="{{ asset($song['image']) }}" alt="{{ $song['alt'] }}" loading="lazy"
+                            <img src="{{ asset($song['image']) }}" alt="{{ $song['alt'] }}" loading="lazy" decoding="async"
                                  class="md:w-2/3 mx-auto h-auto rounded-2xl thumbnail links-thumbnails links-thumbnails-color {{ $song['css'] ?? '' }}">
                             <div id="soundWave{{ $song['id'] }}"
                                  class="boxContainer scale-50 md:scale-100 relative right-1/3 md:right-1/2 bottom-16"

@@ -43,8 +43,6 @@
                 <i class="fas fa-battery-full text-gray-400"></i>
               </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseEnergyTest"
@@ -70,5 +68,7 @@
         <div :class="currentFontSizeClass">
             @livewire('energy-test')
         </div>
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>

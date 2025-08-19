@@ -11,6 +11,7 @@ use App\Filament\Resources\EnergyTestResource;
 use App\Filament\Resources\EventResource;
 use App\Filament\Resources\FAQResource;
 use App\Filament\Resources\FeedbackResource;
+use App\Filament\Resources\FeedResource;
 use App\Filament\Resources\InstantMessageResource;
 use App\Filament\Resources\JobResource;
 use App\Filament\Resources\LinkResource;
@@ -21,14 +22,12 @@ use App\Filament\Resources\PostResource;
 use App\Filament\Resources\ProfileResource;
 use App\Filament\Resources\QuestionResource;
 use App\Filament\Resources\ReportResource;
-use App\Filament\Resources\ResponseResource;
 use App\Filament\Resources\SeatResource;
 use App\Filament\Resources\SpotResource;
 use App\Filament\Resources\SuggestionProcessResource;
 use App\Filament\Resources\SurveyResource;
 use App\Filament\Resources\TicketResource;
 use App\Filament\Resources\UserResource;
-use App\Models\Permission;
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Navigation\NavigationGroup;
@@ -39,16 +38,6 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
-
     /**
      * Bootstrap any application services.
      *
@@ -87,6 +76,7 @@ class AppServiceProvider extends ServiceProvider
                         ...AppResource::getNavigationItems(),
                         ...EnergyTestResource::getNavigationItems(),
                         ...PhotoResource::getNavigationItems(),
+                        ...FeedResource::getNavigationItems(),
                         ...DelegationResource::getNavigationItems(),
                         ...DMSResource::getNavigationItems(),
                         ...QuestionResource::getNavigationItems(),
@@ -117,5 +107,15 @@ class AppServiceProvider extends ServiceProvider
             ]);
             return $builder;
         });
+    }
+
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
     }
 }

@@ -1,1 +1,272 @@
-function loadScript(e,t){const a=document.createElement("script");a.src=e,a.async=!0,a.onload=t,document.head.appendChild(a)}loadScript("https://code.jquery.com/jquery-3.6.3.min.js",(function(){console.log("jQuery v3.6.3 loaded"),loadScript("https://unpkg.com/persian-date@1.1.0/dist/persian-date.js",(function(){console.log("persian-date.js loaded"),loadScript("https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.js",(function(){console.log("persian-datepicker.js loaded"),$(document).ready((function(){let e,t,a,n,i,o,l,d;l=21,d=new persianDate,n=d.hour()<21?2:3,e=$("#to-time").persianDatepicker({initialValue:!1,calendar:{persian:{leapYearMode:"astronomical"}},format:"YYYY/MM/DD",navigator:{scroll:{enabled:!1}},altField:".to-time-alt",maxDate:(new Date).getTime()+86400*n*1e3,minDate:(new persianDate).subtract("day",0).valueOf(),navigator:{enabled:!0},monthPicker:{enabled:!1},yearPicker:{enabled:!1},timePicker:{enabled:!1,meridiem:{enabled:!1},minute:{enabled:!1,step:30},second:{enabled:!1}},toolbox:{calendarSwitch:{enabled:!1}},onSelect:function(a){if(e.touched=!0,t&&t.options&&t.options.maxDate!=a){var n=t.getState().selected.unixDate;t.options={maxDate:a};var i={date:e.getState().selected.date,hour:e.getState().selected.hour,month:e.getState().selected.month,minute:e.getState().selected.minute,year:e.getState().selected.year,unix:a};document.getElementById("to").value=JSON.stringify(i),t.touched&&t.setDate(n)}}}),t=$("#from-time").persianDatepicker({initialValue:!1,calendar:{persian:{leapYearMode:"astronomical"}},format:"YYYY/MM/DD",navigator:{scroll:{enabled:!1}},altField:".from-time-alt",maxDate:(new Date).getTime()+86400*n*1e3,minDate:(new persianDate).subtract("day",0).valueOf(),navigator:{enabled:!0},monthPicker:{enabled:!1},yearPicker:{enabled:!1},timePicker:{enabled:!1,meridiem:{enabled:!1},minute:{enabled:!1,step:30},second:{enabled:!1}},toolbox:{calendarSwitch:{enabled:!1}},altFormat:"LLLL",onSelect:function(n){if(t.touched=!0,e&&e.options&&e.options.minDate!=n){var i=e.getState().selected.unixDate;a=n,e.options={minDate:n};var o={date:t.getState().selected.date,hour:t.getState().selected.hour,month:t.getState().selected.month,minute:t.getState().selected.minute,year:t.getState().selected.year,unix:n};document.getElementById("from").value=JSON.stringify(o),e.touched&&e.setDate(i)}}}),i=$("#to-time-suspend").persianDatepicker({initialValue:!1,calendar:{persian:{leapYearMode:"astronomical"}},format:"YYYY/MM/DD",navigator:{scroll:{enabled:!1}},altField:".to-time-alt",maxDate:(new Date).getTime()+5184e5,minDate:(new persianDate).subtract("day",0).valueOf(),navigator:{enabled:!0},monthPicker:{enabled:!1},yearPicker:{enabled:!1},timePicker:{enabled:!1},toolbox:{calendarSwitch:{enabled:!1}},altFormat:"LLLL",onSelect:function(e){if(i.touched=!0,o&&o.options&&o.options.maxDate!=e){var t=o.getState().selected.unixDate;o.options={maxDate:e};var a={date:i.getState().selected.date,hour:i.getState().selected.hour,month:i.getState().selected.month,minute:i.getState().selected.minute,year:i.getState().selected.year,unix:e};document.getElementById("to-suspend").value=JSON.stringify(a),o.touched&&o.setDate(t)}}}),o=$("#from-time-suspend").persianDatepicker({initialValue:!1,calendar:{persian:{leapYearMode:"astronomical"}},format:"YYYY/MM/DD",navigator:{scroll:{enabled:!1}},altField:".from-time-alt",maxDate:(new Date).getTime()+5184e5,minDate:(new persianDate).subtract("day",0).valueOf(),navigator:{enabled:!0},monthPicker:{enabled:!1},yearPicker:{enabled:!1},timePicker:{enabled:!1},toolbox:{calendarSwitch:{enabled:!1}},onSelect:function(e){if(o.touched=!0,i&&i.options&&i.options.minDate!=e){var t=i.getState().selected.unixDate;a=e,i.options={minDate:e};var n={date:o.getState().selected.date,hour:o.getState().selected.hour,month:o.getState().selected.month,minute:o.getState().selected.minute,year:o.getState().selected.year,unix:e};document.getElementById("from-suspend").value=JSON.stringify(n),i.touched&&i.setDate(t)}}})}))}))}))}));
+function loadScript(src, callback) {
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.onload = callback;
+    document.head.appendChild(script);
+}
+
+//  jQuery
+loadScript("https://code.jquery.com/jquery-3.6.3.min.js", function () {
+    console.log("jQuery v3.6.3 loaded");
+    //  persian-date.js
+    loadScript("https://unpkg.com/persian-date@1.1.0/dist/persian-date.js", function () {
+        console.log("persian-date.js loaded");
+
+        //  persian-datepicker.js
+        loadScript("https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.js", function () {
+            console.log("persian-datepicker.js loaded");
+
+            // Datepicker controller
+            $(document).ready(function () {
+                let to, from, min, remainingDays, toSuspend, fromSuspend, openingHour, now;
+                // let remainingDays = (new Date()).getDay() == 6 ? 6 : (5 - (new Date()).getDay());
+                openingHour = 21; // 9 PM
+                now = new persianDate();
+                remainingDays = (now.hour() < openingHour) ? 2 : 3;
+
+                // reservation datepicker controller
+                to = $("#to-time").persianDatepicker({
+                    initialValue: false,
+                    calendar: {
+                        persian: {
+                            leapYearMode: 'astronomical'
+                        }
+                    },
+                    format: 'YYYY/MM/DD',
+                    navigator: {
+                        scroll: {
+                            enabled: false
+                        }
+                    },
+                    altField: '.to-time-alt',
+                    maxDate: (new Date()).getTime() + 60 * 60 * 24 * remainingDays * 1000,
+                    minDate: new persianDate().subtract('day', 0).valueOf(),
+                    navigator: {
+                        enabled: true
+                    },
+                    monthPicker: {
+                        enabled: false,
+                    },
+                    yearPicker: {
+                        enabled: false,
+                    },
+                    timePicker: {
+                        enabled: false,
+                        meridiem: {
+                            enabled: false
+                        },
+                        minute: {
+                            enabled: false,
+                            step: 30
+                        },
+                        second: {
+                            enabled: false
+                        }
+                    },
+                    toolbox: {
+                        calendarSwitch: {
+                            enabled: false
+                        }
+                    },
+                    // altFormat: 'LLLL',
+                    onSelect: function (unix) {
+                        to.touched = true;
+                        if (from && from.options && from.options.maxDate != unix) {
+                            var cachedValue = from.getState().selected.unixDate;
+                            from.options = {maxDate: unix};
+                            var select = {
+                                'date': to.getState().selected['date'],
+                                'hour': to.getState().selected['hour'],
+                                'month': to.getState().selected['month'],
+                                'minute': to.getState().selected['minute'],
+                                'year': to.getState().selected['year'],
+                                'unix': unix
+                            }
+                            document.getElementById('to').value = JSON.stringify(select);
+                            if (from.touched) {
+                                from.setDate(cachedValue);
+                            }
+                        }
+                    }
+                });
+                from = $("#from-time").persianDatepicker({
+                    initialValue: false,
+                    calendar: {
+                        persian: {
+                            leapYearMode: 'astronomical'
+                        }
+                    },
+                    format: 'YYYY/MM/DD',
+                    navigator: {
+                        scroll: {
+                            enabled: false
+                        }
+                    },
+                    altField: '.from-time-alt',
+                    maxDate: (new Date()).getTime() + 60 * 60 * 24 * remainingDays * 1000,
+                    minDate: new persianDate().subtract('day', 0).valueOf(),
+                    navigator: {
+                        enabled: true
+                    },
+                    monthPicker: {
+                        enabled: false,
+                    },
+                    yearPicker: {
+                        enabled: false,
+                    },
+                    timePicker: {
+                        enabled: false,
+                        meridiem: {
+                            enabled: false
+                        },
+                        minute: {
+                            enabled: false,
+                            step: 30
+                        },
+                        second: {
+                            enabled: false
+                        }
+                    },
+                    toolbox: {
+                        calendarSwitch: {
+                            enabled: false
+                        }
+                    },
+                    altFormat: 'LLLL',
+                    onSelect: function (unix) {
+                        from.touched = true;
+                        if (to && to.options && to.options.minDate != unix) {
+                            var cachedValue = to.getState().selected.unixDate;
+                            min = unix;
+                            to.options = {minDate: unix};
+                            var select = {
+                                'date': from.getState().selected['date'],
+                                'hour': from.getState().selected['hour'],
+                                'month': from.getState().selected['month'],
+                                'minute': from.getState().selected['minute'],
+                                'year': from.getState().selected['year'],
+                                'unix': unix
+                            }
+                            document.getElementById('from').value = JSON.stringify(select);
+                            if (to.touched) {
+                                to.setDate(cachedValue);
+                            }
+                        }
+                    }
+                });
+
+                // suspension datepicker controller
+                toSuspend = $("#to-time-suspend").persianDatepicker({
+                    initialValue: false,
+                    calendar: {
+                        persian: {
+                            leapYearMode: 'astronomical'
+                        }
+                    },
+                    format: 'YYYY/MM/DD',
+                    navigator: {
+                        scroll: {
+                            enabled: false
+                        }
+                    },
+                    altField: '.to-time-alt',
+                    maxDate: (new Date()).getTime() + 60 * 60 * 24 * 6 * 1000,
+                    minDate: new persianDate().subtract('day', 0).valueOf(),
+                    navigator: {
+                        enabled: true
+                    },
+                    monthPicker: {
+                        enabled: false,
+                    },
+                    yearPicker: {
+                        enabled: false,
+                    },
+                    timePicker: {
+                        enabled: false,
+                    },
+                    toolbox: {
+                        calendarSwitch: {
+                            enabled: false
+                        }
+                    },
+                    altFormat: 'LLLL',
+                    onSelect: function (unix) {
+                        toSuspend.touched = true;
+                        if (fromSuspend && fromSuspend.options && fromSuspend.options.maxDate != unix) {
+                            var cachedValue = fromSuspend.getState().selected.unixDate;
+                            fromSuspend.options = {maxDate: unix};
+                            var select = {
+                                'date': toSuspend.getState().selected['date'],
+                                'hour': toSuspend.getState().selected['hour'],
+                                'month': toSuspend.getState().selected['month'],
+                                'minute': toSuspend.getState().selected['minute'],
+                                'year': toSuspend.getState().selected['year'],
+                                'unix': unix
+                            };
+                            document.getElementById('to-suspend').value = JSON.stringify(select);
+                            if (fromSuspend.touched) {
+                                fromSuspend.setDate(cachedValue);
+                            }
+                        }
+                    }
+                });
+                fromSuspend = $("#from-time-suspend").persianDatepicker({
+                    initialValue: false,
+                    calendar: {
+                        persian: {
+                            leapYearMode: 'astronomical'
+                        }
+                    },
+                    format: 'YYYY/MM/DD',
+                    navigator: {
+                        scroll: {
+                            enabled: false
+                        }
+                    },
+                    altField: '.from-time-alt',
+                    maxDate: (new Date()).getTime() + 60 * 60 * 24 * 6 * 1000,
+                    minDate: new persianDate().subtract('day', 0).valueOf(),
+                    navigator: {
+                        enabled: true
+                    },
+                    monthPicker: {
+                        enabled: false,
+                    },
+                    yearPicker: {
+                        enabled: false,
+                    },
+                    timePicker: {
+                        enabled: false,
+                    },
+                    toolbox: {
+                        calendarSwitch: {
+                            enabled: false
+                        }
+                    },
+                    // altFormat: 'LLLL',
+                    onSelect: function (unix) {
+                        fromSuspend.touched = true;
+                        if (toSuspend && toSuspend.options && toSuspend.options.minDate != unix) {
+                            var cachedValue = toSuspend.getState().selected.unixDate;
+                            min = unix;
+                            toSuspend.options = {minDate: unix};
+                            var select = {
+                                'date': fromSuspend.getState().selected['date'],
+                                'hour': fromSuspend.getState().selected['hour'],
+                                'month': fromSuspend.getState().selected['month'],
+                                'minute': fromSuspend.getState().selected['minute'],
+                                'year': fromSuspend.getState().selected['year'],
+                                'unix': unix
+                            };
+                            document.getElementById('from-suspend').value = JSON.stringify(select);
+                            if (toSuspend.touched) {
+                                toSuspend.setDate(cachedValue);
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    });
+});

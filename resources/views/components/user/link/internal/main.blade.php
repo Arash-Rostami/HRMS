@@ -1,6 +1,6 @@
 <div
     id="links"
-    data-id="7"
+    data-id="8"
     title="move me ↑ ↓"
     dir="rtl"
     @class([
@@ -9,7 +9,9 @@
          persol-farsi-font',
         'bg-[#1F2937]' => isDarkMode(),
       ])
-    x-data x-cloak>
+    x-data
+    x-cloak>
+
     {{--rubric--}}
     <div class="mb-5 w-1/2 md:w-1/4">
         <h2
@@ -31,8 +33,6 @@
                     <i class="fas fa-link text-gray-400"></i>
             </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseThree"
@@ -45,6 +45,8 @@
          aria-labelledby="flush-headingOne"
          data-bs-parent="#links">
         <x-user.link.internal.links :links="$links"/>
+        <!-- Background Shapes -->
+        <x-user.bg-shapes/>
     </div>
 </div>
 

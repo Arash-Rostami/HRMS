@@ -7,12 +7,12 @@ use Livewire\Component;
 
 class GalleryTimeline extends Component
 {
-    public $photos;
+    public $photos, $hasMorePages;
+
+    public $perPage = 1, $page = 1;
+
     public bool $isLoading = false;
 
-    public $perPage = 1;
-    public $page = 1;
-    public $hasMorePages;
 
     /**
      * Increment the page and load more photos when the user scrolls
@@ -33,14 +33,10 @@ class GalleryTimeline extends Component
      */
     public function loadPhotos()
     {
-        $userDepartment = optional(auth()->user()->profile)->department ?? null;
+        $dept = optional(auth()->user()->profile)->department ?? null;
 
         $photos = Photo::orderBy('event_date', 'desc')
-            ->where(function ($query) use ($userDepartment) {
-                $query->whereNull('department')
-                    ->orWhere('department', '')
-                    ->orWhere('department', $userDepartment);
-            })
+            ->where(fn($q) => $q->whereNull('department')->orWhere('department', '')->orWhere('department', $dept))
             ->paginate($this->perPage, ['*'], 'page', $this->page);
 
         $this->hasMorePages = $photos->hasMorePages();

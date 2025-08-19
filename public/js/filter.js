@@ -3,6 +3,10 @@ class Filter {
         this.filterInput = document.getElementById(filterInputId);
         this.filterElements = document.getElementsByClassName(filterElementsClass);
         this.filterFunction = filterFunction;
+        if (!this.filterInput) {
+            console.error(`Filter Error: Input element with ID "${filterInputId}" not found.`);
+            return;
+        }
         this.filterInput.addEventListener('input', this.filterElementsList.bind(this));
     }
 

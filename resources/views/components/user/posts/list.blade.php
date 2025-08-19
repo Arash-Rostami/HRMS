@@ -12,6 +12,8 @@
                          class="mx-auto max-h-[450px] object-cover"
                          src="{{ $pin->image }}"
                          alt="post"
+                         loading="lazy"
+                         decoding="async"
                          x-data="{ isLandscape: false, ready: false }"
                          x-on:load="isLandscape = $el.naturalWidth > $el.naturalHeight; ready = true;"
                          :class="{ 'w-full': ready && isLandscape }"

@@ -49,6 +49,8 @@
                        href="{{ $product['href'] }}" title="{{ $product['title'] }}">
                         <div class="card-link thumbnail product-thumbnails product-thumbnails-color">
                             <img class="mx-auto product-img object-contain"
+                                 loading="lazy"
+                                 decoding="async"
                                  src="{{ $product['img'] }}"
                                  alt="{{ $product['alt'] }}">
                             <div class="card-link-text tracking-wider">

@@ -13,7 +13,7 @@
                     <h1 class="mx-auto font-semibold text-lg text-white">⇅</h1>
                 </div>
                 <div
-                    class='links-thumbnails links-thumbnails-color order-1 w-5/12 rounded-lg bg-weekend px-6 py-4 shadow-xl'>
+                    class='links-thumbnails links-thumbnails-color order-1 w-5/12 rounded-lg bg-weekend px-6 py-4 shadow-xl animate-[fade-in-down_1s_ease-in-out]'>
                     <div class="w-1/3 bg-main-mode text-white text-center px-4 py-1 rounded text-sm font-semibold tracking-wide
                                 shadow-lg mr-auto mb-4">
                         {{ jdate($photo->event_date)->format('%d %B %Y') }}
@@ -35,10 +35,11 @@
                                    data-fancybox="gallery-{{ $photo->id }}"
                                    class="absolute h-32 w-32 cursor-pointer overflow-hidden rounded-lg shadow-xl transition-all duration-500 ease-in-out hover:z-30 hover:scale-110
                                           {{ $transforms[$index]['z'] }}  {{ $transforms[$index]['rotate'] }} {{ $transforms[$index]['hover'] }}"
-                                >
+                                  >
                                     <img src="{{ asset($imagePath) }}"
                                          alt="{{ $photo->title }}"
                                          loading="lazy"
+                                         decoding="async"
                                          class="h-full w-full border-2 border-white object-cover dark:border-slate-700">
                                 </a>
                             @endforeach
@@ -64,12 +65,10 @@
             </div>
         @endforelse
         @if ($hasMorePages)
-            <div x-data x-intersect.window="$wire.loadMore()">
-                <div class="flex items-center justify-center gap-3 p-4">
-                    <span>بارگزاری بیشتر ...</span>
-                    <div class="h-6 w-6 animate-spin rounded-full border-2 border-main border-t-transparent"></div>
-                </div>
-            </div>
+            <button x-on:click="$wire.loadMore()"
+                    class="flex items-center justify-center gap-2 w-full p-4 bg-transparent text-main-mode hover:text-opacity-80 transition-colors duration-200">
+                <span> بیشتر</span>
+            </button>
         @endif
     </div>
 </div>
@@ -109,7 +108,6 @@
             });
         }
 
-        initFancybox();
         document.addEventListener('livewire:load', function () {
             Livewire.hook('message.processed', (message, component) => {
                 initFancybox();
