@@ -15,17 +15,7 @@
         allDepsSelected: {'HR':'منابع انسانی','AS':'اداری و پشتیبانی','PR':'روابط عمومی و مسئولیت اجتماعی','VC':'سرمایه‌گذاری','FP':'بازرگانی مواد غذایی','CM':'بازرگانی (واردات و خرید داخلی)','CP':'فروش فراورده‌های سلولزی','AC':'مالی','PS':'برنامه‌ریزی و بهبود سیستم‌ها','WP':'فروش فراورده های چوب','SA':'واحد(های) فروش','MK':'واحد بازاریابی','PO':'فروش محصولات پلیمری','CH':'فروش فراورده های شیمیایی و پلیمری','SP':'پلتفرم فروش','CX':'بازرگانی (صادرات)','BD':'توسعه کسب و کار','MG':'مدیریت'},
        typeWriter() {
             let description = $refs.description;
-            description.textContent = this.selectedRecord.description || this.selectedRecord.comments ||
-                'For a reason unknown, an error occurred; please contact the developer concerned!';
-            let opacity = 0;
-            function animate() {
-                opacity += 0.015;
-                description.style.opacity = opacity;
-                if (opacity < 1) {
-                    requestAnimationFrame(animate);
-                }
-            }
-            animate();
+            description.textContent = this.selectedRecord.description || this.selectedRecord.comments || 'فاقد شرح یا توضیح!';
         }
     }"
         x-init="$watch('suggestionBox', (value) => {

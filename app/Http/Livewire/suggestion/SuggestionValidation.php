@@ -5,18 +5,6 @@ namespace App\Http\Livewire\suggestion;
 class SuggestionValidation
 {
 
-    public static function rules(): array
-    {
-        return [
-            'suggestion.title' => 'required|string|min:2',
-            'suggestion.description.self' => 'required|string|min:6',
-            'suggestion.purpose' => 'required', 'suggestion.rule' => 'required',
-            'suggestion.description.*' => 'required_if:suggestion.selfFill,true',
-            'suggestion.feedback.*' => 'required_if:suggestion.selfFill,true',
-            'suggestion.attachment' => 'max:2500'
-        ];
-    }
-
     public static function messages(): array
     {
         return [
@@ -30,12 +18,25 @@ class SuggestionValidation
             'suggestion.rule.required' => '* حداقل یکی از قواعد انتخاب شود.',
             'suggestion.attachment.mimes' => '* فرمت مجاز PDF و JPG می باشد.',
             'suggestion.attachment.max' => '* سایز فایل بیش از حد مجاز است.',
+            'suggestion.description.ceo-departments.required_if' => '* حداقل نظر برای پیگیری به یکی از واحد ها ارسال شود.',
             'suggestion.description.*.required_if' => '* فیلد بازخورد می بایست پر شود.',
             'suggestion.feedback.*.required_if' => '* یکی از موارد می بایست گزیتش شود.',
-            'suggestion.feedback.ceo' => '* حداقل یکی از موارد انتخاب شود.',
-            'suggestion.departments-ceo.required_if' => '* حداقل نظر برای پیگیری به یکی از واحد ها ارسال شود.',
+            'suggestion.feedback.ceo.required' => '* حداقل یکی از موارد انتخاب شود.',
+            'suggestion.feedback.nonceo.required' => '* حداقل یکی از موارد انتخاب شود.',
             'suggestion.description.nonceo.required' => '* فیلد بازخورد می بایست پر شود.'
 
+        ];
+    }
+
+    public static function rules(): array
+    {
+        return [
+            'suggestion.title' => 'required|string|min:2',
+            'suggestion.description.self' => 'required|string|min:6',
+            'suggestion.purpose' => 'required', 'suggestion.rule' => 'required',
+            'suggestion.description.*' => 'required_if:suggestion.selfFill,true',
+            'suggestion.feedback.*' => 'required_if:suggestion.selfFill,true',
+            'suggestion.attachment' => 'max:2500'
         ];
     }
 
@@ -59,6 +60,7 @@ class SuggestionValidation
     {
         return [
             'suggestion.description.nonceo' => 'required',
+            'suggestion.feedback.nonceo' => 'required',
         ];
     }
 

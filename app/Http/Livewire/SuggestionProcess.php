@@ -9,7 +9,6 @@ use App\Http\Livewire\suggestion\SuggestionSubmission;
 use App\Http\Livewire\suggestion\SuggestionValidation;
 use App\Models\Review;
 use App\Models\Suggestion;
-use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -62,12 +61,10 @@ class SuggestionProcess extends Component
         $this->suggestionData->showResponseBox($this->suggestion, $suggestionId);
     }
 
-
     public function mount(SuggestionData $suggestionData)
     {
         $suggestionData->initialize($this->suggestion);
     }
-
 
     public function render()
     {
@@ -82,6 +79,11 @@ class SuggestionProcess extends Component
         $this->resetErrorBag();
     }
 
+    public function resetSuggestions()
+    {
+        $this->suggestion['confirmBox'] = false;
+        $this->suggestion['response'] = false;
+    }
 
     public function selectReview($id, $private = null)
     {

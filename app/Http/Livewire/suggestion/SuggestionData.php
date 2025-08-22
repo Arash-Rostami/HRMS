@@ -143,7 +143,7 @@ class SuggestionData
             $query->orderBy('created_at', 'desc');
         }
 
-        return $query->simplePaginate(3);
+        return $query->simplePaginate(4);
     }
 
     public static function getAllDepartmentsReviewed($suggestionId)

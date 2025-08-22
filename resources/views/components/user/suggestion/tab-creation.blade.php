@@ -1,4 +1,4 @@
-<div class="flex flex-col"
+<div class="flex flex-col @if(isDarkMode()) hover:bg-gray-900/20 @else hover:bg-gray-200  @endif"
      x-show="activeTab === 'new'"
      x-transition:enter="transition ease-out duration-500"
      x-transition:enter-start="opacity-0"
