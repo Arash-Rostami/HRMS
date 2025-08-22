@@ -3,13 +3,13 @@
     $tdBase = 'py-2 px-4 border-b border-dotted border-b-main cursor-help';
 
     $headers = [
-        ['icon' => 'fas fa-ticket-alt',      'label' => 'شناسه تیکت'],
-        ['icon' => 'fas fa-info-circle',     'label' => 'وضعیت'],
-        ['icon' => 'fas fa-layer-group',     'label' => 'حوزه درخواست'],
-        ['icon' => 'fas fa-tag',             'label' => 'موضوع'],
-        ['icon' => 'fas fa-user-check',      'label' => 'مسئول'],
-        ['icon' => 'fas fa-star',            'label' => 'رضایت'],
-        ['icon' => 'fas fa-calendar-check',  'label' => 'تاریخ تکمیل'],
+        ['icon' => 'fas fa-ticket-alt',      'label' => 'شناسه تیکت', 'visible' => 'hidden md:table-cell'],
+        ['icon' => 'fas fa-info-circle',     'label' => 'وضعیت','visible' => ''],
+        ['icon' => 'fas fa-layer-group',     'label' => 'حوزه درخواست','visible' => ''],
+        ['icon' => 'fas fa-tag',             'label' => 'موضوع','visible' => 'hidden md:table-cell'],
+        ['icon' => 'fas fa-user-check',      'label' => 'مسئول','visible' => 'hidden md:table-cell'],
+        ['icon' => 'fas fa-star',            'label' => 'رضایت','visible' => 'hidden md:table-cell'],
+        ['icon' => 'fas fa-calendar-check',  'label' => 'تاریخ تکمیل','visible' => 'hidden md:table-cell']
     ];
 
     $priorityMap = [
@@ -24,12 +24,12 @@
     ];
 @endphp
 
-<div class="overflow-x-auto rounded-lg shadow-md ticket-div">
+<div class="overflow-x-auto rounded-lg shadow-md ticket-div @if(isDarkMode()) hover:bg-gray-900/20 @else hover:bg-gray-200  @endif">
     <table class="ticket-table min-w-full">
         <thead class="bg-gray-400 text-gray-700 text-right">
         <tr>
             @foreach($headers as $h)
-                <th class="{{ $thClass }}">
+                <th class="{{ $thClass }} {{ $h['visible'] }}">
                     <i class="{{ $h['icon'] }} ml-1"></i>
                     {{ $h['label'] }}
                 </th>
@@ -51,7 +51,7 @@
                         'hover:bg-gray-200'    => !isDarkMode(),
                     ])>
                 {{-- Priority + ID --}}
-                <td class="py-2 px-4 flex items-center cursor-help">
+                <td class="py-2 px-4 flex items-center cursor-help hidden lg:table-cell">
                     @if($prio)
                         <i class="fas fa-exclamation-triangle {{ $prio['color'] }} ml-2"
                            title="{{ $prio['title'] }}"></i>
@@ -74,23 +74,23 @@
                 </td>
 
                 {{-- Subject & tooltip description --}}
-                <td class="{{ $tdBase }}" title="{{ $descr }}">
+                <td class="{{ $tdBase }} hidden lg:table-cell" title="{{ $descr }}">
                     {{ $subj }}
                 </td>
 
                 {{-- Assignee --}}
-                <td class="{{ $tdBase }}">
+                <td class="{{ $tdBase }} hidden lg:table-cell">
                     {{ $ticket->assignee->full_name ?? 'در انتظار' }}
                 </td>
 
                 {{-- Satisfaction stars --}}
-                <td class="{{ $tdBase }}">
+                <td class="{{ $tdBase }} hidden lg:table-cell">
                     {!! str_repeat('✮', number_format($ticket->satisfaction_score, 0)) !!}
                 </td>
 
                 {{-- Completion date --}}
                 <td @class([
-                            "$tdBase ltr-direction",
+                            "$tdBase ltr-direction hidden lg:table-cell",
                             'text-green-500' => $ticket->completion_date,
                             'text-gray-500'  => !$ticket->completion_date,
                         ])
@@ -110,7 +110,7 @@
         </tbody>
     </table>
 </div>
-<div class="rounded-xl px-3">
+<div class="rounded-xl px-3" dir="ltr">
     <div class="mt-4"
          x-data="{
             applyTheme() {
@@ -121,7 +121,7 @@
          x-init="applyTheme()"
          x-effect="applyTheme()"
     >
-        {{ $tickets->links() }}
+        {{ $tickets->links('vendor.livewire.simple-tailwind') }}
     </div>
 </div>
 @include('components.user.ths.tab-modal')

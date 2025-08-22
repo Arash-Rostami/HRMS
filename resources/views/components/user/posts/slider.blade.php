@@ -1,10 +1,11 @@
 @foreach($posts as $post)
-    <article class="w-1/2 p-1">
+    <article class="p-1">
         <div class="card-link rounded links-thumbnails links-thumbnails-color bg-weekend
-                    flex flex-col justify-between h-full min-h-[450px] md:min-h-[470px]">
+                    flex flex-col justify-evenly h-full min-h-[450px] md:min-h-[470px]">
             <header class="flex-grow">
-                <img class="mx-auto mt-3 max-h-44 w-auto object-contain"
-                     src="{{ $post->image }}"
+                <img
+                    class="rounded-2xl p-2 mx-auto mt-3 max-h-44 w-auto object-cover transform transition duration-500 ease-in-out hover:scale-[1.02] hover:brightness-110 hover:saturate-125"
+                    src="{{ $post->image }}"
                      alt="{{ strip_tags($post->title) }}"
                      loading="lazy"
                      decoding="async">
@@ -53,7 +54,3 @@
         </div>
     </article>
 @endforeach
-
-<nav class="m-2 w-full pagination pagination-posts" style="direction: ltr !important;">
-    {{ $posts->links() }}
-</nav>

@@ -1,66 +1,62 @@
-const audioElements = [];
+document.addEventListener("DOMContentLoaded", () => {
+    window.playSong = (id, state) => {
+        const audio = document.getElementById(`audio${id}`);
 
-for (let i = 1; i <= 30; i++) {
-    const audioElement = {
-        id: `audio${i}`,
-        playButtonId: `playButton${i}`,
-        pauseButtonId: `pauseButton${i}`,
-        soundWaveId: `soundWave${i}`,
-        muteButtonId: `muteButton${i}`,
-        volumeUpButtonId: `volumeUpButton${i}`,
-        volumeDownButtonId: `volumeDownButton${i}`,
+        if (!audio.src) {
+            audio.src = audio.dataset.src;
+        }
+
+        document.querySelectorAll("audio").forEach(el => {
+            if (el !== audio) {
+                el.pause();
+                el.currentTime = 0;
+                let otherState = el.closest("[x-data]")?.__x?.$data;
+                if (otherState) otherState.playing = false;
+
+                const otherWave = document.getElementById(`soundWave${el.id.replace("audio","")}`);
+                if (otherWave) otherWave.style.display = "none";
+            }
+        });
+
+        // play current
+        audio.play();
+        state.playing = true;
+
+        // 🎶 show wave
+        const wave = document.getElementById(`soundWave${id}`);
+        if (wave) wave.style.display = "block";
+
+        // when ended, reset
+        audio.onended = () => {
+            state.playing = false;
+
+            if (wave) wave.style.display = "none";
+        };
     };
 
-    audioElements.push(audioElement);
-}
+    window.pauseSong = (id, state) => {
+        const audio = document.getElementById(`audio${id}`);
+        audio.pause();
+        state.playing = false;
 
-document.addEventListener("DOMContentLoaded", function () {
-    audioElements.forEach((audioElement) => {
-        setupAudioControls(audioElement.id, audioElement.playButtonId, audioElement.pauseButtonId, audioElement.soundWaveId,
-            audioElement.muteButtonId, audioElement.volumeUpButtonId, audioElement.volumeDownButtonId);
-    });
+        // 🎶 hide wave
+        const wave = document.getElementById(`soundWave${id}`);
+        if (wave) wave.style.display = "none";
+    };
+
+    window.toggleMute = (id, state) => {
+        const audio = document.getElementById(`audio${id}`);
+        audio.muted = !audio.muted;
+        state.muted = audio.muted;
+    };
+
+    window.volumeUp = (id) => {
+        const audio = document.getElementById(`audio${id}`);
+        if (audio.volume < 1) audio.volume = Math.min(1, audio.volume + 0.1);
+    };
+
+    window.volumeDown = (id) => {
+        const audio = document.getElementById(`audio${id}`);
+        if (audio.volume > 0) audio.volume = Math.max(0, audio.volume - 0.1);
+    };
 });
-
-function setupAudioControls(audioId, playButtonId, pauseButtonId, soundWaveId, muteButtonId, volumeUpButtonId, volumeDownButtonId) {
-    let soundWave = document.getElementById(soundWaveId);
-    let audioElement = document.getElementById(audioId);
-    let playButton = document.getElementById(playButtonId);
-    let pauseButton = document.getElementById(pauseButtonId);
-    let muteButton = document.getElementById(muteButtonId);
-    let volumeUpButton = document.getElementById(volumeUpButtonId);
-    let volumeDownButton = document.getElementById(volumeDownButtonId);
-
-    playButton.addEventListener("click", function () {
-        audioElement.play();
-        playButton.style.visibility = "hidden";
-        pauseButton.style.display = "block";
-        soundWave.style.display = "flex";
-    });
-
-    pauseButton.addEventListener("click", function () {
-        audioElement.pause();
-        playButton.style.visibility = "visible";
-        pauseButton.style.display = "none";
-        setTimeout(function () {
-            soundWave.style.display = "none";
-        }, 500)
-    });
-
-    audioElement.addEventListener("ended", function () {
-        playButton.style.visibility = "visible";
-        pauseButton.style.display = "none";
-        soundWave.style.display = "none";
-    });
-
-    muteButton.addEventListener("click", function () {
-        audioElement.muted = !audioElement.muted;
-    });
-
-    volumeUpButton.addEventListener("click", function () {
-        audioElement.volume += 0.1;
-    });
-
-    volumeDownButton.addEventListener("click", function () {
-        audioElement.volume -= 0.1;
-    });
-}

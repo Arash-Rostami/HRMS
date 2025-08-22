@@ -117,7 +117,7 @@ class Music
         [
             'id' => 13,
             'image' => '/img/user/relaxingGuitar.jpg',
-            'audio' => 'https://ia902703.us.archive.org/31/items/classic-guitar_202308/classic-guitar.mp3',
+            'audio' => 'https://ia801409.us.archive.org/10/items/classic-guitar_202308/classic-guitar.mp3',
             'alt' => 'Relaxing Guitar',
             'theme' => '<i class="fas fa-bullseye" title="Focus tunes"></i>',
             'css' => 'mb-4 scale-x-90',
@@ -126,7 +126,7 @@ class Music
         [
             'id' => 14,
             'image' => '/img/user/classicalMusic.jpg',
-            'audio' => 'https://ia902708.us.archive.org/3/items/classic-piano/classic-piano.mp3',
+            'audio' => 'https://ia600606.us.archive.org/6/items/classic-piano/classic-piano.mp3',
             'alt' => 'Classical Piano',
             'theme' => '<i class="fas fa-bullseye" title="Focus tunes"></i>',
             'css' => 'scale-90 mb-0 relative bottom-1',

@@ -43,8 +43,6 @@
                 <i class="fas fa-headphones text-gray-400"></i>
               </span>
         </h2>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
     {{-- main body content--}}
     <div id="flush-collapseWorkOut"
@@ -59,7 +57,9 @@
          data-te-parent="#music">
         <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'music']) "/>
         <x-user.music.tunes></x-user.music.tunes>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
+
     </div>
+    <!-- Background Shapes -->
+    <x-user.bg-shapes/>
+    <x-user.bg-shapes/>
 </div>

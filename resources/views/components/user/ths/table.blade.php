@@ -38,17 +38,20 @@
         <div class="p-0 md:p-3">
             @if($ticketToRate)
                 {{-- Tab for Ticket Rating --}}
-                <div x-show="activeTab === 'rate'">
+                <div class="animate-[fade-in_0.3s_both]"
+                     x-show="activeTab === 'rate'">
                     @include('components.user.ths.tab-rating')
                 </div>
             @else
                 {{-- Tab for Ticket Creation --}}
-                <div x-show="activeTab === 'new'">
+                <div class="animate-[fade-in_0.3s_both]"
+                     x-show="activeTab === 'new'">
                     @include('components.user.ths.tab-creation')
                 </div>
             @endif
             {{-- Tab for Ticket History --}}
-            <div x-show="activeTab === 'log'">
+            <div class="animate-[fade-in_0.3s_both]"
+                 x-show="activeTab === 'log'">
                 @include('components.user.ths.tab-log')
             </div>
         </div>

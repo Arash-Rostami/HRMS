@@ -24,6 +24,16 @@ class Feed extends Model
         'poll_options' => 'array',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($feed) {
+            $feed->comments()->delete();
+            $feed->reactions()->delete();
+        });
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class)->latest();

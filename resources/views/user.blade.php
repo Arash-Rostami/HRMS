@@ -13,12 +13,15 @@
          }"
          x-cloak>
         <div>
+            {{--                 Radio Nudge/Section --}}
+            <x-user.music.radio/>
             {{-- Main Dashboard Components --}}
             @if ( showMainDashboardComponents() )
                 {{--   Icon and Slogan Positioned on the Right Corner --}}
                 <x-user.navbar.nav></x-user.navbar.nav>
                 {{--                 CEO Monthly Question Section --}}
                 <x-user.question.main :questions="$questions"></x-user.question.main>
+
 
                 <div id="sortMe">
                     {{-- NEW: Feed Section --}}

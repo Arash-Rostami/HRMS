@@ -7,18 +7,19 @@
                 «
             </span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" title="<<"
-               class="relative inline-flex items-center px-3 py-1.5 text-white bg-main-mode shadow-lg rounded persol-font hover:opacity-75">
+            <button wire:click="previousPage" wire:loading.attr="disabled"
+                    class="relative inline-flex items-center px-3 py-1.5 text-white bg-main-mode shadow-lg rounded persol-font hover:opacity-75">
                 «
-            </a>
+            </button>
         @endif
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" rel="next" title=">>"
-               class="relative inline-flex items-center px-3 py-1.5 text-white bg-main-mode shadow-lg rounded persol-font hover:opacity-75">
+            <button wire:click="nextPage" wire:loading.attr="disabled"
+                    class="relative inline-flex items-center px-3 py-1.5 text-white bg-main-mode shadow-lg rounded persol-font hover:opacity-75">
+
                 »
-            </a>
+            </button>
         @else
             <span title="no next" style="cursor: no-drop"
                   class="relative inline-flex items-center px-3 py-1.5 text-white bg-main-mode shadow-lg rounded persol-font hover:opacity-75">

@@ -14,19 +14,18 @@ class THS extends Component
 {
     use WithFileUploads, WithPagination;
 
+    public $stats = null;
+    public $ticketToRate = null;
+    public ?array $selectedTicket = null;
+    public string $activeTab = 'request';
+    public array $requestAreas = [];
+    public array $fileInputs = [];
+    public array $files = [];
+    public ?int $satisfactionScore = null;
+    public ?string $satisfactionComment = null;
 
-    public $stats;
-    public $selectedTicket = [];
-    public $activeTab = 'request';
-    public $requestAreas = [];
-    public $fileInputs = [];
-    public $files = [];
-    public $ticketToRate;
-    public $satisfactionScore;
-    public $satisfactionComment;
 
-
-    public $ticket = [
+    public array $ticket = [
         'requester' => '',
         'department' => '',
         'requestType' => 'support',
@@ -36,51 +35,29 @@ class THS extends Component
         'description' => '',
     ];
 
-    public function getFormattedTicketId($ticket)
+    public function addFileInput(): void
     {
-        return 'PS-T-' . Carbon::parse($ticket['created_at'])->format('Y-m') . '-' . str_pad($ticket['id'], 4, '0', STR_PAD_LEFT);
+        $this->fileInputs[] = uniqid('', true);
     }
 
-    public function getFormattedTimeStamp($ticket, $col)
+    public function getFormattedTicketId($ticket): string
+    {
+        return sprintf(
+            'PS-T-%s-%04d',
+            Carbon::parse($ticket['created_at'])->format('Y-m'),
+            (int)$ticket['id']
+        );
+    }
+
+    public function getFormattedTimeStamp($ticket, $col): string
     {
         return Carbon::parse($ticket[$col])->diffForHumans();
     }
 
-    public function getRequestAreaLabel($requestType, $requestArea)
+    public function getRequestAreaLabel($requestType, $requestArea): string
     {
-        if (!isset(Ticket::$requestAreaOptions[$requestType]) || !isset(Ticket::$requestAreaOptions[$requestType][$requestArea])) {
-            return 'Not Found';
-        }
-        return Ticket::$requestAreaOptions[$requestType][$requestArea];
-    }
-
-
-    public function mount()
-    {
-        $this->ticket['department'] = auth()->user() && auth()->user()->profile && auth()->user()->profile->department
-            ? DepartmentDetails::getName(auth()->user()->profile->department)
-            : 'N/A';;
-
-        $this->addFileInput();
-        $this->loadRequestAreas();
-        $this->ticketToRate = $this->loadTicketToRate();
-
-        if ($this->ticketToRate) {
-            $this->activeTab = 'rate';
-        }
-    }
-
-    public function addFileInput()
-    {
-        $this->fileInputs[] = uniqid();
-    }
-
-    public function removeFileInput($key)
-    {
-        unset($this->files[$key]);
-        $this->fileInputs = array_filter($this->fileInputs, function ($input) use ($key) {
-            return $input !== $key;
-        });
+        return (Ticket::$requestAreaOptions[$requestType] ?? [])[$requestArea]
+            ?? 'Not Found';
     }
 
     public function loadRequestAreas()
@@ -92,51 +69,40 @@ class THS extends Component
     {
         return Ticket::where('requester_id', auth()->id())
             ->orderByRaw("FIELD(status, 'open', 'in-progress', 'closed')")
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->orderByDesc('created_at')
+            ->simplePaginate(10);
     }
 
-    public function updatedTicketRequestType($value)
+    public function mount(): void
     {
-        $this->requestAreas = Ticket::$requestAreaOptions[$value] ?? [];
+        $dept = data_get(auth()->user(), 'profile.department');
+
+        $this->ticket['department'] = $dept
+            ? DepartmentDetails::getName($dept)
+            : 'N/A';
+
+        $this->addFileInput();
+        $this->loadRequestAreas();
+        $this->ticketToRate = $this->loadTicketToRate();
+
+        if ($this->ticketToRate) {
+            $this->activeTab = 'rate';
+        }
     }
 
-    public function submitTicket()
+    public function rate($score): void
     {
-        $validatedData = $this->validateTicket();
-
-        $filePaths = $this->storeAttachment();
-
-        $this->persistTicket($validatedData['ticket'], $filePaths);
-
-        showFlash("success", "درخواست با موفقیت ثبت شد.");
-
-        return redirect()->route('user.panel');
+        $this->satisfactionScore = (int)$score;
     }
 
-    public function rate($score)
+    public function removeFileInput($key): void
     {
-        $this->satisfactionScore = $score;
-    }
+        unset($this->files[$key]);
 
-
-    public function submitRating()
-    {
-        $this->validateRate();
-
-        $this->persistRate();
-
-        $this->activeTab = 'request';
-
-        showFlash('success', 'از بازخورد شما سپاسگزاریم.');
-        return redirect()->route('user.panel');
-    }
-
-
-    public function viewTicket($ticketId)
-    {
-        $ticket = Ticket::with('assignee')->find($ticketId);
-        $this->selectedTicket = $ticket ? $ticket->toArray() : [];
+        $this->fileInputs = array_values(array_filter(
+            $this->fileInputs,
+            fn($input) => $input !== $key
+        ));
     }
 
     public function render()
@@ -148,45 +114,60 @@ class THS extends Component
         ]);
     }
 
-
-    protected function validateTicket()
+    public function submitRating()
     {
-        $rules = [
-            'ticket.requestType' => 'required|string',
-            'ticket.requestArea' => 'required|string',
-            'ticket.priority' => 'required|string',
-            'ticket.subject' => 'required|string|max:255',
-            'ticket.description' => 'required|string',
-            'files' => 'array',
-            'files.*' => 'file|max:4096|mimes:jpeg,png,gif,bmp,svg,webp,pdf,doc,docx,xls,xlsx,ods,odt'
-        ];
-        $messages = [
-            'ticket.requestType.required' => 'نوع درخواست را انتخاب کنید.',
-            'ticket.requestArea.required' => 'حوزه درخواست را انتخاب کنید.',
-            'ticket.priority.required' => 'اولویت را انتخاب کنید.',
-            'ticket.subject.required' => 'موضوع تیکت را وارد کنید.',
-            'ticket.subject.max' => 'حداکثر طول مجاز برای موضوع ۲۵۵ کاراکتر است.',
-            'ticket.description.required' => 'توضیحات تیکت را وارد کنید.',
-            'files.*.file' => 'فایل ضمیمه باید یک فایل معتبر باشد.',
-            'files.*.max' => 'حجم هر فایل نباید بیشتر از ۴ مگابایت باشد.',
-            'files.*.mimes' => 'فرمت فایل مجاز نیست.',
-        ];
-        return $this->validate($rules, $messages);
+        $this->validateRate();
+        $this->persistRate();
+
+        $this->activeTab = 'request';
+        showFlash('success', 'از بازخورد شما سپاسگزاریم.');
+        return redirect()->route('user.panel');
+    }
+
+    public function submitTicket()
+    {
+        $data = $this->validateTicket();
+        $paths = $this->storeAttachment();
+        $this->persistTicket($data['ticket'], $paths);
+
+        showFlash('success', 'درخواست با موفقیت ثبت شد.');
+        return redirect()->route('user.panel');
+    }
+
+    public function updatedTicketRequestType($value)
+    {
+        $this->requestAreas = Ticket::$requestAreaOptions[$value] ?? [];
+    }
+
+    public function viewTicket($ticketId)
+    {
+        $ticket = Ticket::with('assignee')->find($ticketId);
+        $this->selectedTicket = $ticket ? $ticket->toArray() : [];
+    }
+
+    protected function loadTicketToRate()
+    {
+        return Ticket::where('requester_id', auth()->id())
+            ->where('status', 'closed')
+            ->where('satisfaction_score', 0)
+            ->first();
     }
 
     /**
-     * @return array|null
+     * @return void
      */
-    protected function storeAttachment(): ?array
+    protected function persistRate(): void
     {
-        $filePaths = [];
-        foreach ($this->files as $file) {
-            $fileName = Admin::forgeNameOfFile($file);
-            $filePath = $file->storeAs('files/ths/requester', $fileName, 'filament');
-            $filePaths[] = ['file' => $filePath];
-        }
+        $existingExtra = $this->ticketToRate->extra ?? [];
 
-        return $filePaths;
+        $updatedExtra = array_merge($existingExtra, [
+            'satisfaction_comment' => $this->satisfactionComment,
+        ]);
+
+        $this->ticketToRate->update([
+            'satisfaction_score' => $this->satisfactionScore,
+            'extra' => $updatedExtra,
+        ]);
     }
 
     /**
@@ -208,15 +189,17 @@ class THS extends Component
         ]);
     }
 
-    /**
-     * @return mixed
-     */
-    protected function loadTicketToRate()
+    protected function storeAttachment(): array
     {
-        return Ticket::where('requester_id', auth()->user()->id)
-            ->where('status', 'closed')
-            ->where('satisfaction_score', 0)
-            ->first();
+        if (empty($this->files)) return [];
+
+        $paths = [];
+        foreach ($this->files as $file) {
+            $name = Admin::forgeNameOfFile($file);
+            $paths[] = ['file' => $file->storeAs('files/ths/requester', $name, 'filament')];
+        }
+
+        return $paths;
     }
 
     /**
@@ -236,20 +219,26 @@ class THS extends Component
         ]);
     }
 
-    /**
-     * @return void
-     */
-    protected function persistRate(): void
+    protected function validateTicket()
     {
-        $existingExtra = $this->ticketToRate->extra ?? [];
-
-        $updatedExtra = array_merge($existingExtra, [
-            'satisfaction_comment' => $this->satisfactionComment,
-        ]);
-
-        $this->ticketToRate->update([
-            'satisfaction_score' => $this->satisfactionScore,
-            'extra' => $updatedExtra,
+        return $this->validate([
+            'ticket.requestType' => 'required|string',
+            'ticket.requestArea' => 'required|string',
+            'ticket.priority' => 'required|string',
+            'ticket.subject' => 'required|string|max:255',
+            'ticket.description' => 'required|string',
+            'files' => 'array',
+            'files.*' => 'file|max:4096|mimes:jpeg,png,gif,bmp,svg,webp,pdf,doc,docx,xls,xlsx,ods,odt'
+        ], [
+            'ticket.requestType.required' => 'نوع درخواست را انتخاب کنید.',
+            'ticket.requestArea.required' => 'حوزه درخواست را انتخاب کنید.',
+            'ticket.priority.required' => 'اولویت را انتخاب کنید.',
+            'ticket.subject.required' => 'موضوع تیکت را وارد کنید.',
+            'ticket.subject.max' => 'حداکثر طول مجاز برای موضوع ۲۵۵ کاراکتر است.',
+            'ticket.description.required' => 'توضیحات تیکت را وارد کنید.',
+            'files.*.file' => 'فایل ضمیمه باید یک فایل معتبر باشد.',
+            'files.*.max' => 'حجم هر فایل نباید بیشتر از ۴ مگابایت باشد.',
+            'files.*.mimes' => 'فرمت فایل مجاز نیست.',
         ]);
     }
 }
