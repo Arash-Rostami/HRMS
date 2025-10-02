@@ -10,32 +10,54 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\HtmlString;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class Admin
 {
+    /**
+     * @return SelectFilter
+     * @throws \Exception
+     */
+    public static function filterByAppName(): SelectFilter
+    {
+        return SelectFilter::make('app_name')
+            ->label('App Name')
+            ->multiple()
+            ->options(fn() => App::query()
+                ->distinct()
+                ->orderBy('app_name')
+                ->pluck('app_name', 'app_name')
+            )
+            ->searchable();
+    }
+
+    /**
+     * @return SelectFilter
+     * @throws \Exception
+     */
+    public static function filterByUser(): SelectFilter
+    {
+        return SelectFilter::make('user_id')
+            ->label('User')
+            ->multiple()
+            ->options(function () {
+                return User::query()
+                    ->where('status', 'active')
+                    ->where('forename', 'not like', 'guest%')
+                    ->where('surname', 'not like', 'guest%')
+                    ->orderBy('forename')
+                    ->orderBy('surname')
+                    ->get()
+                    ->pluck('full_name', 'id');
+            })
+            ->searchable();
+    }
+
     public static function getAppName()
     {
         return TextInput::make('app_name')
             ->label('App Name')
-            ->required();
-    }
-
-    /**
-     * @return Select
-     */
-    public static function getUser(): Select
-    {
-        return Select::make('user_id')
-            ->label('User')
-            ->relationship('user', 'full_name', function ($query) {
-                return $query
-                    ->where('forename', 'not like', 'guest%')
-                    ->where('status', 'active')
-                    ->orderBy('forename')
-                    ->orderBy('surname');
-            })
-            ->searchable(['forename', 'surname'])
-            ->getOptionLabelFromRecordUsing(fn($record) => $record->full_name)
             ->required();
     }
 
@@ -67,16 +89,6 @@ class Admin
     /**
      * @return TextInput
      */
-    public static function getUserName(): TextInput
-    {
-        return TextInput::make('username')
-            ->label('Username')
-            ->required();
-    }
-
-    /**
-     * @return TextInput
-     */
     public static function getPassword(): TextInput
     {
         return TextInput::make('password')
@@ -86,17 +98,33 @@ class Admin
             ->suffix(fn() => new HtmlString('<span class="whitespace-nowrap text-gray-400"><button type="button" onclick="(function(b){const i=b.closest(\'.filament-forms-text-input-component\').querySelector(\'input\');const p=i.type===\'password\';i.type=p?\'text\':\'password\';b.textContent=p?\'Hide\':\'Show\'})(this)">Show</button></span>'));
     }
 
+    /**
+     * @return Select
+     */
+    public static function getUser(): Select
+    {
+        return Select::make('user_id')
+            ->label('User')
+            ->relationship('user', 'full_name', function ($query) {
+                return $query
+                    ->where('forename', 'not like', 'guest%')
+                    ->where('status', 'active')
+                    ->orderBy('forename')
+                    ->orderBy('surname');
+            })
+            ->searchable(['forename', 'surname'])
+            ->getOptionLabelFromRecordUsing(fn($record) => $record->full_name)
+            ->required();
+    }
 
     /**
-     * @return TextColumn
+     * @return TextInput
      */
-    public static function showUser(): TextColumn
+    public static function getUserName(): TextInput
     {
-        return TextColumn::make('user.full_name')
-            ->label('User')
-            ->sortable()
-            ->searchable()
-            ->wrap();
+        return TextInput::make('username')
+            ->label('Username')
+            ->required();
     }
 
     /**
@@ -109,17 +137,6 @@ class Admin
             ->sortable()
             ->searchable()
             ->wrap();
-    }
-
-    /**
-     * @return TextColumn
-     */
-    public static function showUserName(): TextColumn
-    {
-        return TextColumn::make('username')
-            ->label('Username')
-            ->sortable()
-            ->searchable();
     }
 
     /**
@@ -147,41 +164,25 @@ class Admin
     }
 
     /**
-     * @return SelectFilter
-     * @throws \Exception
+     * @return TextColumn
      */
-    public static function filterByUser(): SelectFilter
+    public static function showUser(): TextColumn
     {
-        return SelectFilter::make('user_id')
-            ->label('User')
-            ->multiple()
-            ->options(function () {
-                return User::query()
-                    ->where('status', 'active')
-                    ->where('forename', 'not like', 'guest%')
-                    ->where('surname', 'not like', 'guest%')
-                    ->orderBy('forename')
-                    ->orderBy('surname')
-                    ->get()
-                    ->pluck('full_name', 'id');
-            })
-            ->searchable();
+        return TextColumn::make('user.fullname')
+            ->label('Name')
+            ->sortable(['forename'])
+//            ->searchable(['forename', 'surname'])
+            ->size('sm');
     }
 
     /**
-     * @return SelectFilter
-     * @throws \Exception
+     * @return TextColumn
      */
-    public static function filterByAppName(): SelectFilter
+    public static function showUserName(): TextColumn
     {
-        return SelectFilter::make('app_name')
-            ->label('App Name')
-            ->multiple()
-            ->options(fn() => App::query()
-                ->distinct()
-                ->orderBy('app_name')
-                ->pluck('app_name', 'app_name')
-            )
+        return TextColumn::make('username')
+            ->label('Username')
+            ->sortable()
             ->searchable();
     }
 }

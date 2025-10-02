@@ -3,12 +3,12 @@
         --main: #718096;
         --bg-main: #1B232E;
         @if((Cookie::get('theme')))
-                       --main: {{Cookie::get('theme')}};
+                          --main: {{Cookie::get('theme')}};
         @endif
         @if((Cookie::get('mode')))
-                      --bg-main: {{Cookie::get('mode')}};
+                         --bg-main: {{Cookie::get('mode')}};
         @endif
-                    --red: #C82348;
+                       --red: #C82348;
         --blue: #1785FF;
         --purple: #673AB7;
         --green: #acf9a7;
@@ -86,50 +86,6 @@
 
     #navContainer {
         -webkit-overflow-scrolling: touch;
-    }
-
-    @media screen and (max-width: 767px) {
-        #mainNav::before,
-        #mainNav::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 1rem;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        #mainNav::before {
-            left: 0;
-            background: linear-gradient(to right, rgb(255 255 255 / 1), rgb(255 255 255 / 0));
-        }
-
-        #mainNav::after {
-            right: 0;
-            background: linear-gradient(to left, rgb(255 255 255 / 1), rgb(255 255 255 / 0));
-        }
-
-
-        @if(isDarkMode())
-
-         #mainNav::before {
-            background: linear-gradient(to right, rgb(43 49 57 / 1), rgb(43 49 57 / 0));
-        }
-
-        #navContainer::before {
-            background: linear-gradient(to right, rgb(43 49 57 / 1), rgb(43 49 57 / 0));
-        }
-
-        #navContainer::after {
-            background: linear-gradient(to left, rgb(43 49 57 / 1), rgb(43 49 57 / 0));
-        }
-
-    @endif
-
-
-
-
     }
 
     /*to be edited in the css file*/

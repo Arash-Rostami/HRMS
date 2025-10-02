@@ -39,6 +39,11 @@ class Feed extends Model
         return $this->hasMany(Comment::class)->latest();
     }
 
+    public static function getTodayCount(): int
+    {
+        return self::whereDate('created_at', today())->count();
+    }
+
     public function reactions(): HasMany
     {
         return $this->hasMany(Reaction::class);

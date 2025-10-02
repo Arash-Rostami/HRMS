@@ -2,7 +2,7 @@
     @once
         <script>
             function energyChart() {
-                const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6'];
+                const colors = ['#3e2f24', '#52585b', '#1f2933', '#7a5a48', '#000000'];
                 const bgColors = colors.map(c => c + 'B3');
                 const font = {family: 'persol-font, Tahoma, Arial'};
                 const statusLabels = {0: 'عالی', 4: 'متوسط', 8: 'ضعیف', 12: 'خطرناک', 16: 'بحرانی'};

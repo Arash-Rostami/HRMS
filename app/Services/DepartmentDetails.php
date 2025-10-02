@@ -4,31 +4,33 @@ namespace App\Services;
 
 class DepartmentDetails
 {
+
+    // UserStatistics should also be updated with any changes here
     public static $departments = [
-        'HR' => [
-            'name' => 'Human Resources',
-            'code' => 'HR',
-            'description' => 'منابع انسانی',
+        'AC' => [
+            'name' => 'Accounting',
+            'code' => 'AC',
+            'description' => 'مالی',
         ],
         'AS' => [
             'name' => 'Administration & Support',
             'code' => 'AS',
             'description' => 'اداری و پشتیبانی',
         ],
-        'PR' => [
-            'name' => 'Public Relations',
-            'code' => 'PR',
-            'description' => 'روابط عمومی و مسئولیت اجتماعی',
+        'BD' => [
+            'name' => 'Business Development',
+            'code' => 'BD',
+            'description' => 'توسعه کسب و کار',
         ],
-        'VC' => [
-            'name' => 'Investment',
-            'code' => 'VC',
-            'description' => 'سرمایه‌گذاری',
+        'BS' => [
+            'name' => 'Business Systems',
+            'code' => 'BS',
+            'description' => 'سیستم های کسب وکار',
         ],
-        'FP' => [
-            'name' => 'Food Products',
-            'code' => 'FP',
-            'description' => 'بازرگانی مواد غذایی',
+        'CH' => [
+            'name' => 'Chemical and Polymer Products',
+            'code' => 'CH',
+            'description' => 'فروش فراورده های شیمیایی و پلیمری',
         ],
         'CM' => [
             'name' => 'Commercial Import Operation',
@@ -40,81 +42,86 @@ class DepartmentDetails
             'code' => 'CP',
             'description' => 'فروش فراورده‌های سلولزی',
         ],
-        'AC' => [
-            'name' => 'Accounting',
-            'code' => 'AC',
-            'description' => 'مالی',
-        ],
-        'PS' => [
-            'name' => 'Planning & System',
-            'code' => 'PS',
-            'description' => 'برنامه‌ریزی و بهبود سیستم‌ها',
-        ],
-        'WP' => [
-            'name' => 'Wood Products',
-            'code' => 'WP',
-            'description' => 'فروش فراورده های چوب',
-        ],
-        'SA' => [
-            'name' => 'Sales',
-            'code' => 'SA',
-            'description' => 'واحد(های) فروش',
-        ],
-        'MK' => [
-            'name' => 'Marketing',
-            'code' => 'MK',
-            'description' => 'واحد بازاریابی',
-        ],
-        'PO' => [
-            'name' => 'Polymer Products',
-            'code' => 'PO',
-            'description' => 'فروش محصولات پلیمری',
-        ],
-        'CH' => [
-            'name' => 'Chemical and Polymer Products',
-            'code' => 'CH',
-            'description' => 'فروش فراورده های شیمیایی و پلیمری',
-        ],
-        'SP' => [
-            'name' => 'Sales Platform',
-            'code' => 'SP',
-            'description' => 'پلتفرم فروش',
-        ],
         'CX' => [
             'name' => 'Commercial Export Operation',
             'code' => 'CX',
             'description' => 'بازرگانی (صادرات)',
         ],
-        'BD' => [
-            'name' => 'Business Development',
-            'code' => 'BD',
-            'description' => 'توسعه کسب و کار',
-        ],
-        'MG' => [
-            'name' => 'Management (deprecated)',
-            'code' => 'MG',
-            'description' => 'مدیریت',
-        ],
-        'MA' => [
-            'name' => 'Management',
-            'code' => 'MA',
-            'description' => 'مدیریت (جدید)',
+        'FP' => [
+            'name' => 'Food Products',
+            'code' => 'FP',
+            'description' => 'بازرگانی مواد غذایی',
         ],
         'HC' => [
             'name' => 'Human Capital',
             'code' => 'HC',
             'description' => 'سرمایه انسانی',
         ],
-        'SO' => [
-            'name' => 'Solar Panels',
-            'code' => 'SO',
-            'description' => 'پنل خورشیدی',
+        'HR' => [
+            'name' => 'Human Resources',
+            'code' => 'HR',
+            'description' => 'منابع انسانی',
+        ],
+        'MA' => [
+            'name' => 'Management',
+            'code' => 'MA',
+            'description' => 'مدیریت (جدید)',
+        ],
+        'MG' => [
+            'name' => 'Management (deprecated)',
+            'code' => 'MG',
+            'description' => 'مدیریت',
+        ],
+        'MK' => [
+            'name' => 'Marketing',
+            'code' => 'MK',
+            'description' => 'واحد بازاریابی',
         ],
         'PERSORE' => [
             'name' => 'Persore',
             'code' => 'PERSORE',
             'description' => 'پرسور',
-        ]
+        ],
+        'PO' => [
+            'name' => 'Polymer Products',
+            'code' => 'PO',
+            'description' => 'فروش محصولات پلیمری',
+        ],
+        'PR' => [
+            'name' => 'Public Relations',
+            'code' => 'PR',
+            'description' => 'روابط عمومی و مسئولیت اجتماعی',
+        ],
+        'PS' => [
+            'name' => 'Planning & System (deprecated)',
+            'code' => 'PS',
+            'description' => 'برنامه‌ریزی و بهبود سیستم‌ها',
+        ],
+        'SA' => [
+            'name' => 'Sales',
+            'code' => 'SA',
+            'description' => 'واحد(های) فروش',
+        ],
+        'SO' => [
+            'name' => 'Solar Panels',
+            'code' => 'SO',
+            'description' => 'پنل خورشیدی',
+        ],
+        'SP' => [
+            'name' => 'Sales Platform',
+            'code' => 'SP',
+            'description' => 'پلتفرم فروش',
+        ],
+        'VC' => [
+            'name' => 'Investment',
+            'code' => 'VC',
+            'description' => 'سرمایه‌گذاری',
+        ],
+        'WP' => [
+            'name' => 'Wood Products',
+            'code' => 'WP',
+            'description' => 'فروش فراورده های چوب',
+        ],
     ];
 
     public static function getName($department)

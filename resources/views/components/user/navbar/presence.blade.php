@@ -1,6 +1,6 @@
-<div class="overlay-content w-2/3 md:w-[35%] persol-farsi-font"
-     x-show="presence"
-     dir="rtl">
+<div x-show="presence"
+     dir="rtl"
+     class="overlay-content w-2/3 md:w-[35%] persol-farsi-font">
     <a href="{{ route('user.presence', ['status' => 'onsite']) }}">
         در دفتر
         <i class="fa fa-building text-success-400 m-2"></i>

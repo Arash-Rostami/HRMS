@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\suggestion;
+namespace App\Http\Livewire\Suggestion;
 
 use App\Models\Profile;
 use App\Models\Review;

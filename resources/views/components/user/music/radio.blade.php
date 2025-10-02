@@ -1,5 +1,16 @@
 @props(['id' => 'jazz-radio'])
-
+@section('css')
+    <style>
+        @keyframes eq {
+            0%, 100% {
+                transform: scaleY(.3)
+            }
+            50% {
+                transform: scaleY(1)
+            }
+        }
+    </style>
+@endsection
 <div x-data="jazzRadio('{{ $id }}')" x-init="init()" class="persol-farsi-font" dir="rtl">
     <!-- Nudge Modal -->
     <div x-show="uiState === 'nudge'" x-transition
@@ -66,10 +77,15 @@
              @click="restore"
              @mouseenter="tooltipVisible = true"
              @mouseleave="tooltipVisible = false"
-             class="fixed top-1/2 right-0 w-8 h-8 md:w-10 md:h-10 bg-main-mode text-white flex group
+             class="fixed top-3/4 right-0 w-8 h-8 md:w-10 md:h-10 bg-main-mode text-white flex group
                     justify-center items-center rounded-l hover:w-40 cursor-pointer transition-all duration-300 z-[999]">
-            <i class="fa fa-music transition duration-300 ease-in-out transform text-xl"
-               :class="playing ? 'relative top-1 animate-bounce' : ''"></i>
+            <div x-show="playing" class="inline-flex items-end h-4 gap-0.5">
+                <template x-for="d in [0,120,240,360,480]" :key="d">
+                        <span :style="`animation-delay:${d}ms`"
+                              class="w-0.5 h-3 bg-current rounded origin-bottom animate-[eq_1s_ease-in-out_infinite]"></span>
+                </template>
+            </div>
+            <i x-show="!playing" class="fa fa-music transition duration-300 ease-in-out transform text-xl"></i>
             <span
                 class="hidden transition duration-300 ease-in-out mr-2 delay-500 transform font-medium uppercase tracking-wider group-hover:inline-block"
                 x-text="status"></span>
@@ -107,13 +123,34 @@
                                   d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/>
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-lg {{ isDarkMode() ? 'text-white' : 'text-gray-900' }}"
-                            x-text="`رادیو ${currentGenreLabel}`"></h3>
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
-                              :class="statusClass" x-text="status"></span>
+
+                    <!-- title + status + EQ grouped -->
+                    <div class="flex items-center gap-3">
+                        <div>
+                            <h3 class="font-bold text-lg {{ isDarkMode() ? 'text-white' : 'text-gray-900' }}"
+                                x-text="`رادیو ${currentGenreLabel}`"></h3>
+
+                            <div class="flex items-center gap-2 mt-1">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
+                  :class="statusClass" x-text="status"></span>
+
+                                <!-- EQ: inherits color from text-main-mode/text-white -->
+                                <div x-show="playing"
+                                     role="status"
+                                     aria-label="در حال پخش"
+                                     class="{{ isDarkMode() ? 'text-white/90' : 'text-main-mode' }} inline-flex items-end gap-1 p-0.5">
+                                    <template x-for="(d,i) in [0,90,180,270,360]" :key="i">
+                <span
+                    :style="`animation:eq ${800 + i*80}ms cubic-bezier(.2,.9,.2,.9) infinite; animation-delay:${d}ms`"
+                    class="w-1.5 md:w-2 rounded-full origin-bottom bg-current h-3 md:h-4"></span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- action buttons -->
                 <div class="flex items-center space-x-2">
                     <button @click="minimize"
                             class="p-2 {{ isDarkMode() ? 'text-gray-400 hover:text-white hover:bg-gray-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }} rounded-lg transition-all duration-200">
@@ -121,6 +158,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                         </svg>
                     </button>
+
                     <button @click="dismissFor('day')"
                             class="p-2 {{ isDarkMode() ? 'text-gray-400 hover:text-white hover:bg-gray-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }} rounded-lg transition-all duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,14 +279,20 @@
 @push('scripts')
     <script>
         function jazzRadio(id) {
-            const KEYWORDS = {
-                jazz: ['smooth jazz on radio', 'christmas n radio', '977 smooth jazz', 'greatest jazz loungebar', 'online radio', 'online radio handel', 'airport lounge radio', 'armstrong', '181.fm', 'jazz', 'smooth'],
-                classical: ['classical', 'symphony', 'concerto', 'mozart', 'bach', 'beethoven', 'chopin', 'vivaldi', 'handel', 'schubert', 'wqxr', 'wcrb'],
-                lofi: ['lofi', 'lo-fi', 'chillhop', 'study', 'relax', 'sleep', 'coffee', 'chill', 'calm', 'beats', 'instrumental hip hop', 'isekoi', 'astrayyouth', 'bgmvibes', 'jazzhop'],
-                pop: ['pop', 'hits', 'top 40', 'charts', 'hot 100', 'kiis', 'z100', 'capital', 'party', 'mix', 'now', 'powerhitz'],
-                electronic: ['electronic', 'house', 'techno', 'trance', 'edm', 'dance', 'club', 'dj', 'remix', 'ministry of sound', 'ibiza', 'sunshine live', 'di.fm']
-            };
             const DURATIONS = {day: 86400000, week: 604800000};
+            const API_SERVERS = [
+                'https://de2.api.radio-browser.info/json',
+                'https://de1.api.radio-browser.info/json',
+                'https://nl1.api.radio-browser.info/json',
+                'https://fr1.api.radio-browser.info/json'
+            ];
+            const FALLBACK_STATIONS = {
+                jazz: [{ name: 'Jazz24', url_resolved: 'https://jazz24.org/streams/high.mp3', stationuuid: 'fallback-jazz-1' }],
+                classical: [{ name: 'WCRB Classical', url_resolved: 'https://streams.wgbh.org/wcrb.mp3', stationuuid: 'fallback-classical-1' }],
+                pop: [{ name: 'Capital UK', url_resolved: 'https://media-ssl.musicradio.com/CapitalUK', stationuuid: 'fallback-pop-1' }],
+                electronic: [{ name: 'DI.FM - House', url_resolved: 'https://listen.di.fm/public/3/house.mp3', stationuuid: 'fallback-electronic-1' }],
+                lofi: [{ name: 'Lofi Girl', url_resolved: 'https://stream.lofi.co/lofi', stationuuid: 'fallback-lofi-1' }]
+            };
             const STATUS_CLASSES = {
                 'در حال پخش': 'bg-green-100 text-green-800 {{ isDarkMode() ? "!bg-green-900/30 !text-green-400" : "" }}',
                 'در حال بافر...': 'bg-yellow-100 text-yellow-800 {{ isDarkMode() ? "!bg-yellow-900/30 !text-yellow-400" : "" }}',
@@ -276,6 +320,7 @@
                     {value: 'electronic', label: 'الکترونیک'},
                     {value: 'lofi', label: 'لو-فای'}
                 ],
+                currentServerIndex: 0,
 
                 _getStorage: (key, defaultValue = {}) => JSON.parse(localStorage.getItem(`${id}_${key}`) || JSON.stringify(defaultValue)),
                 _setStorage: (key, value) => localStorage.setItem(`${id}_${key}`, JSON.stringify(value)),
@@ -291,14 +336,24 @@
                 get currentGenreLabel() {
                     return this.genres.find(g => g.value === this.currentGenre)?.label || 'جاز';
                 },
-
                 async init() {
+                    const openHandler = () => {
+                        const pref = this._getStorage('preference');
+                        if (!pref.accepted) {
+                            this.acceptNudge();
+                            return;
+                        }
+                        this.uiState = 'player';
+                        this.saveState();
+                        this.fetchStations().catch(()=>{});
+                    };
+                    window.addEventListener('openJazzRadio', openHandler);
+
                     const pref = this._getStorage('preference');
                     if (pref.dismiss === 'forever' || (pref.dismissUntil && Date.now() < pref.dismissUntil)) {
                         this.uiState = 'hidden';
                         return;
                     }
-
                     if (pref.accepted) {
                         const state = this._getStorage('state', {minimized: true});
                         this.uiState = state.minimized ? 'minimized' : 'player';
@@ -311,7 +366,13 @@
 
                     this.$watch('currentStationUrl', newUrl => this.handleStationChange(newUrl));
                     this.$watch('currentGenre', (newGenre, oldGenre) => newGenre !== oldGenre && this.fetchStations(true));
-                    window.addEventListener('beforeunload', () => this.saveState());
+
+                    const unloadHandler = () => {
+                        this.saveState();
+                        window.removeEventListener('openJazzRadio', openHandler);
+                        window.removeEventListener('beforeunload', unloadHandler);
+                    };
+                    window.addEventListener('beforeunload', unloadHandler);
                 },
 
                 handleStationChange(newUrl) {
@@ -341,48 +402,57 @@
 
                 async fetchStations(forceRefetch = false) {
                     if (this.stations.length > 0 && !forceRefetch) return;
-
                     if (forceRefetch) {
                         this.stations = [];
                         this.currentStationUrl = '';
-                        if (this.audio?.playing) this.audio.pause();
+                        if (this.playing) this.audio.pause();
                     }
-
                     this.isLoading = true;
                     this.status = 'در حال تنظیم...';
-                    try {
-                        const res = await fetch(`https://de1.api.radio-browser.info/json/stations/bytag/${this.currentGenre}`);
-                        if (!res.ok) throw new Error('Network response was not ok');
-                        const data = await res.json();
 
-                        const baseFiltered = data.filter(s => s.url_resolved && s.codec.toLowerCase() === 'mp3' && s.lastcheckok === 1);
-                        const keywords = KEYWORDS[this.currentGenre];
-                        const keywordFiltered = baseFiltered.filter(s => keywords.some(k => s.name.toLowerCase().includes(k)));
+                    let fetchedStations = [];
+                    for (let i = 0; i < API_SERVERS.length; i++) {
+                        const server = API_SERVERS[this.currentServerIndex];
+                        try {
+                            const endpoints = [`/stations/bytag/${this.currentGenre}`, `/stations/search?name=${this.currentGenre}&limit=100`];
+                            for (const endpoint of endpoints) {
+                                const res = await fetch(server + endpoint, { signal: AbortSignal.timeout(5000) });
+                                if (!res.ok) continue;
+                                const data = await res.json();
+                                const filtered = data.filter(s => s.url_resolved && s.codec.toLowerCase() === 'mp3' && s.lastcheckok === 1 && s.bitrate > 64);
+                                if (filtered.length > 0) {
+                                    fetchedStations = filtered;
+                                    break;
+                                }
+                            }
+                            if (fetchedStations.length > 0) break;
+                        } catch (e) {
+                            console.error(`Failed to fetch from ${server}:`, e);
+                            this.currentServerIndex = (this.currentServerIndex + 1) % API_SERVERS.length;
+                        }
+                    }
 
-                        const uniqueStations = Array.from(
-                            new Map(keywordFiltered.map(s => [s.name.trim().toLowerCase(), s])).values()
-                        );
-
+                    if (fetchedStations.length > 0) {
+                        const uniqueStations = Array.from(new Map(fetchedStations.map(s => [s.name.trim().toLowerCase(), s])).values());
                         this.stations = uniqueStations.map(s => ({
                             ...s,
                             name: s.name.length > 40 ? s.name.substring(0, 40) + '...' : s.name
                         }));
-
-                        if (this.stations.length) {
-                            if (!this.currentStationUrl || forceRefetch) {
-                                this.$nextTick(() => this.currentStationUrl = this.stations[0].url_resolved);
-                            }
-                            this.setupAudio();
-                            this.status = 'آماده';
-                        } else {
-                            this.status = 'آفلاین';
-                        }
-                    } catch (e) {
-                        console.error('Failed to fetch stations:', e);
-                        this.status = 'خطا';
-                    } finally {
-                        this.isLoading = false;
+                    } else {
+                        console.warn("All API servers failed, loading fallback stations.");
+                        this.stations = FALLBACK_STATIONS[this.currentGenre] || [];
                     }
+
+                    if (this.stations.length) {
+                        if (!this.currentStationUrl || forceRefetch) {
+                            this.$nextTick(() => this.currentStationUrl = this.stations[0].url_resolved);
+                        }
+                        this.setupAudio();
+                        this.status = 'آماده';
+                    } else {
+                        this.status = 'آفلاین';
+                    }
+                    this.isLoading = false;
                 },
 
                 setupAudio() {

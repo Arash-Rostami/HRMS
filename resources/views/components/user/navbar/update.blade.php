@@ -1,588 +1,434 @@
-<div x-show="version" class="p-10 mb-10 w-full text-center" dir="ltr">
-    <table class="w-3/4">
-        <thead>
-        <tr class="border-b-2 pb-">
-            <th class="py-2">Versions</th>
-            <th class="py-2 text-left">Features</th>
-        </tr>
-        </thead>
-        <tbody class="rounded">
-        <tr >
-            <td class="py-2">Version 4.6 (October 24, 2024)</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">DMS feature</li>
-                            <li class="pl-4">Fall Effect feature</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Suggestion procedure overhaul</li>
-                                    <li class="pl-4">- Suggestion module performance optimization</li>
-                                    <li class="pl-4">- Redirection management</li>
-                                    <li class="pl-4">- Module auto-load</li>
-                                    <li class="pl-4">- Seasonal Auto-Change feature</li>
-                                    <li class="pl-4">- User Panel UI upgrade</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">DMS feature</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- QoM overhaul</li>
-                                    <li class="pl-4">- Admin panel performance optimization</li>
-                                    <li class="pl-4">- Admin Panel (light mode) UI upgrade</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Database update and backup</li>
-                </ul>
-            </td>
-        </tr>
-        <tr class="bg-gray-300 rounded @if ( isDarkMode()) bg-gray-900 @endif">
-            <td class="py-2">Version 4.5 (June 13, 2024)</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">Authorities feature</li>
-                            <li class="pl-4">SARV CRM API feature</li>
-                            <li class="pl-4">Spring Effect feature</li>
-                            <li class="pl-4">Summer Effect feature</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Seasonal Auto-Change feature</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Authorities feature</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- SMS Numbers</li>
-                                    <li class="pl-4">- Profile end-date format change</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Database update and backup</li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td class="py-2">Version 4.4 (January 8, 2023)</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">Question of Month feature</li>
-                            <li class="pl-4">Seasonal target feature</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">Login page wintry design</li>
-                                    <li class="pl-4">Cache update for user panel</li>
-                                    <li class="pl-4">Layout design (fullscreen mode and ...)</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Question of Month feature</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">SMS number update for daily reports</li>
-                                    <li class="pl-4">Security update</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Database update and backup</li>
-                </ul>
-            </td>
-        </tr>
-        <tr class="bg-gray-300 rounded @if ( isDarkMode()) bg-gray-900 @endif">
-            <td class="py-2">Version 4.3 (December 13, 2023)</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">Suggestion process feature</li>
-                            <li class="pl-4">Toolbox feature</li>
-                            <li class="pl-4">Daily parking report feature</li>
-                            <li class="pl-4">Daily office report feature</li>
-                            <li class="pl-4">Auto daily SMS task for reservation</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Modern scrollbar design</li>
-                                    <li class="pl-4">- Communiqué layout design</li>
-                                    <li class="pl-4">- Light and dark mode optimization</li>
-                                    <li class="pl-4">- SMS limitation for Calender</li>
-                                    <li class="pl-4">- Change of the login pattern for inactive users</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Suggestion process feature</li>
-                            <li class="pl-4">Suggestion process Stats</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Parking spot card addition</li>
-                                    <li class="pl-4">- Auto-activate/-deactivate user from Profile</li>
-                                    <li class="pl-4">- Profile start-, end-date, and birthday format change</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Database update and backup</li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td class="py-2">Version 4.2 (October 25, 2023)</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">Calendar feature</li>
-                            <li class="pl-4">Kavenegar SMS API connection to Calendar</li>
-                            <li class="pl-4">Kavenegar SMS API connection to Status (presence) feature</li>
-                            <li class="pl-4">Admin time setter for daily music</li>
-                            <li class="pl-4">Suggestion timeline scheduler</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Suggestion enhancement</li>
-                                    <li class="pl-4">- Status feature enhancement</li>
-                                    <li class="pl-4">- Post cache enhancement</li>
-                                    <li class="pl-4">- Job linking enhancement</li>
-                                    <li class="pl-4">- Presence / Status enhancement</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Event feature</li>
-                        </ul>
-                    </li>
-                    <li>Database update and backup</li>
-                </ul>
-            </td>
-        </tr>
-        <tr class="bg-gray-300 @if ( isDarkMode()) bg-gray-900 @endif">
-            <td class="py-2">Version 4.1 (September 25, 2023)</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">Analytics / Statistics feature</li>
-                            <li class="pl-4">ETS API connection to Leave feature</li>
-                            <li class="pl-4">ETS API connection to Timesheet feature</li>
-                            <li class="pl-4">Birthday & Anniversary feature</li>
-                            <li class="pl-4">Confetti feature (Users' birthday or employment start date)</li>
-                            <li class="pl-4">Auto update task for Leave</li>
-                            <li class="pl-4">Auto update task for Timesheet</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Page loader (loading design)</li>
-                                    <li class="pl-4">- Communiqué cache update</li>
-                                    <li class="pl-4">- Job ads links</li>
-                                    <li class="pl-4">- Profile data inputs</li>
-                                    <li class="pl-4">- Celebration timing</li>
-                                    <li class="pl-4">- Music/playlist addition/modification</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Permission feature</li>
-                            <li class="pl-4">Dashboard Management Analytics
-                                <ul>
-                                    <li class="pl-4">- Total & Avg. working hrs.</li>
-                                    <li class="pl-4">- Age & Gender</li>
-                                    <li class="pl-4">- Education & Experience</li>
-                                    <li class="pl-4">- Gender & Marital Status</li>
-                                    <li class="pl-4">- Leaves number</li>
-                                    <li class="pl-4">- Leaves duration</li>
-                                    <li class="pl-4">- Leaves types based on age</li>
-                                    <li class="pl-4">- Position & Gender</li>
-                                </ul>
-                            </li>
-                            <li class="pl-4">SARV CRM API access through HRMS</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Users access level based on Role</li>
-                                    <li class="pl-4">- Dashboard signups</li>
-                                    <li class="pl-4">- Dashboard reservation timeline</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Database update and backup</li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td class="py-2">Version 3.9</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">ETS API connection to Status (presence) feature</li>
-                            <li class="pl-4">Status|Presence auto-update (cron jobs)</li>
-                            <li class="pl-4">Status|Presence busy mode</li>
-                            <li class="pl-4">Birthday and working days displays</li>
-                            <li class="pl-4">Confetti feature (Users' birthday or employment start date)</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Navbar tweaks & cellphone display enhancement</li>
-                                    <li class="pl-4">- Post feature pagination</li>
-                                    <li class="pl-4">- Post feature design</li>
-                                    <li class="pl-4">- Coloring scheme (versions)</li>
-                                    <li class="pl-4">- Onboarding feature - standalone module</li>
-                                    <li class="pl-4">- Music/playlist feature - addition</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Reports email</li>
-                        </ul>
-                    </li>
-                    <li>Database update and backup</li>
-                </ul>
-            </td>
-        </tr>
-        <tr class="bg-gray-300 @if ( isDarkMode()) bg-gray-900 @endif">
-            <td class="py-2">Version 3.8</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">Profile feature</li>
-                            <li class="pl-4">Report feature</li>
-                            <li class="pl-4">Music/Playlist feature</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Form stepper</li>
-                                    <li class="pl-4">- Slogan countdown timer</li>
-                                    <li class="pl-4">- Admin panel link</li>
-                                    <li class="pl-4">- External links IP switch</li>
-                                    <li class="pl-4">- Office & Parking search</li>
-                                    <li class="pl-4">- Display working days</li>
-                                    <li class="pl-4">- Modal upgrade</li>
-                                    <li class="pl-4">- Suggestion change</li>
-                                    <li class="pl-4">- Post links highlight</li>
-                                    <li class="pl-4">- Post view tweak</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Profile feature</li>
-                            <li class="pl-4">Report feature</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Document upload</li>
-                                    <li class="pl-4">- Profile statistics</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Database update</li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td class="py-2">Version 3.6</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">Slogan icon & modal</li>
-                            <li class="pl-4">FAQ feature</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Search box</li>
-                                    <li class="pl-4">- Filter tags</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">FAQ feature</li>
-                        </ul>
-                    </li>
-                    <li>Login page:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Responsive design tweaks</li>
-                                    <li class="pl-4">- Background transition</li>
-                                    <li class="pl-4">- Oak color addition</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </td>
-        </tr>
-        <tr class="bg-gray-300   @if ( isDarkMode()) bg-gray-900 @endif">
-            <td class="py-2">Version 3.5</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>Login page:
-                        <ul class="ml-4">
-                            <li class="pl-4">SSL certificate</li>
-                        </ul>
-                    </li>
-                    <li>User panel:
-                        <ul class="ml-4 list-square">
-                            <li class="pl-4">Personnel status feature</li>
-                            <li class="pl-4">Users' systems - Python standalone script</li>
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Google translate notification</li>
-                                    <li class="pl-4">- Sortable components</li>
-                                    <li class="pl-4">- Status change</li>
-                                    <li class="pl-4">- Icon change</li>
-                                    <li class="pl-4">- Speed optimization</li>
-                                    <li class="pl-4">- Total status count</li>
-                                    <li class="pl-4">- Versioning system</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Update features:
-                                <ul>
-                                    <li class="pl-4">- Post emails</li>
-                                    <li class="pl-4">- Job emails</li>
-                                    <li class="pl-4">- Direction modification</li>
-                                    <li class="pl-4">- Survey image reconfiguration</li>
-                                    <li class="pl-4">- Change in servers gallery location</li>
-                                    <li class="pl-4">- Profile table</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Database update</li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td class="py-2">Version 3.3</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>Login page:
-                        <ul class="ml-4">
-                            <li>Update feature:
-                                <ul>
-                                    <li class="pl-4">- Color combo</li>
-                                    <li class="pl-4">- Logo</li>
-                                    <li class="pl-4">- Redirecting routes</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>User panel:
-                        <ul class="ml-4">
-                            <li>Update features:
-                                <ul>
-                                    <li class="pl-4">- Dark mode</li>
-                                    <li class="pl-4">- Background</li>
-                                    <li class="pl-4">- Weather forecast</li>
-                                    <li class="pl-4">- Link shortcuts</li>
-                                    <li class="pl-4">- Music playlist</li>
-                                    <li class="pl-4">- UI & UX improvement</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li>Update features:
-                                <ul>
-                                    <li class="pl-4">- Statistics</li>
-                                    <li class="pl-4">- Language support</li>
-                                    <li class="pl-4">- UI & UX improvement</li>
-                                    <li class="pl-4">- Icon packs</li>
-                                    <li class="pl-4">- Changing menu orders</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Database update</li>
-                </ul>
-            </td>
-        </tr>
-        <tr class="bg-gray-300   @if ( isDarkMode()) bg-gray-900 @endif">
-            <td class="py-2">Version 3.2</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Job ads feature</li>
-                            <li class="pl-4">Quick messaging feature</li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="pl-4">Jobs feature</li>
-                            <li class="pl-4">Message feature</li>
-                        </ul>
-                    </li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td class="py-2">Version 3.1</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="ml-4">
-                            <li class="ml-4">HR communique feature</li>
-                            <li class="ml-4">Google translate feature</li>
-                            <li class="ml-4">Update features:
-                                <ul class="ml-4">
-                                    <li>- Validation</li>
-                                    <li>- Playlist update</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Reservation panel:
-                        <ul class="ml-4">
-                            <li class="ml-4">Update features:
-                                <ul>
-                                    <li class="ml-4">- Policy changes</li>
-                                    <li class="ml-4">- Real-time search</li>
-                                    <li class="ml-4">- Desk and spot legends</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="ml-4">
-                            <li class="ml-4">Post countdown</li>
-                            <li class="ml-4">Update features:
-                                <ul>
-                                    <li class="ml-4">- Excel output</li>
-                                    <li class="ml-4">- Filter</li>
-                                    <li class="ml-4">- Search</li>
-                                    <li class="ml-4">- Sort</li>
-                                    <li class="ml-4">- Detail</li>
-                                    <li class="ml-4">- Toggle</li>
-                                    <li class="ml-4">- Desk extensions</li>
-                                    <li class="ml-4">- Real-time</li>
-                                    <li class="ml-4">- Order</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </td>
-        </tr>
-        <tr class="bg-gray-300   @if ( isDarkMode()) bg-gray-900 @endif">
-            <td class="py-2">Version 3.0</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>User panel:
-                        <ul class="pl-4">
-                            <li class="ml-4">Initial features:
-                                <ul>
-                                    <li class="ml-4">- Navigation feature</li>
-                                    <li class="ml-4">- Onboarding feature</li>
-                                    <li class="ml-4">- Office tools</li>
-                                    <li class="ml-4">- Persol links feature</li>
-                                    <li class="ml-4">- Surveys feature</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Admin panel:
-                        <ul class="pl-4">
-                            <li class="ml-4">Initial features:
-                                <ul>
-                                    <li class="ml-4">- Onboarding feature feature</li>
-                                    <li class="ml-4">- Links feature feature</li>
-                                    <li class="ml-4">- Suggestion feature feature</li>
-                                    <li class="ml-4">- Users feature feature</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Reservation panel:
-                        <ul class="pl-4">
-                            <li class="ml-4">Cancellation feature for users</li>
-                            <li class="ml-4">Update features:
-                                <ul>
-                                    <li class="ml-4">- Remaining days</li>
-                                    <li class="ml-4">- Popup legends</li>
-                                    <li class="ml-4">- Removing hourly booking</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td class="py-2">Version 2.0</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>Admin panel for reservation</li>
-                    <li>Cancellation feature for admin</li>
-                    <li>Initial features:
-                        <ul>
-                            <li class="ml-4">- Parks</li>
-                            <li class="ml-4">- Desks</li>
-                            <li class="ml-4">- Cancellation</li>
-                            <li class="ml-4">- Users</li>
-                            <li class="ml-4">- Seats</li>
-                            <li class="ml-4">- Spots</li>
-                        </ul>
-                    </li>
-                    <li>Update features:
-                        <ul>
-                            <li class="ml-4">- Period</li>
-                            <li class="ml-4">- Display</li>
-                            <li class="ml-4">- Search</li>
-                            <li class="ml-4">- Clock check</li>
-                            <li class="ml-4">- Navigation links</li>
-                        </ul>
-                    </li>
-                </ul>
+<div class="w-1/2 space-y-8 mx-auto py-6" dir="ltr">
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.11</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">October 2, 2025</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Smart Responsive Navbar and Menu</strong> feature.</li>
+                        <li>New <strong>Smart Badge Counter</strong> for notifications.</li>
+                        <li>Update features:
+                            <ul class="list-['-_'] list-inside mt-1 pl-6 space-y-1 text-sm @if(isDarkMode()) text-gray-400 @else text-gray-600 @endif">
+                                <li>Enhanced color-coding for Energy Test module analytics.</li>
+                                <li>Attached Persol Hierarchy Tree to Energy Test for manager overviews.</li>
+                                <li>Changed Document Attachment in Onboarding Module for download and preview.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>Complete <strong>overhaul of the Authority Module</strong> to reflect new changes.</li>
+                        <li>Deactivation and sorting features for IM, Survey, and Questionnaires.</li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
 
-            </td>
-        </tr>
-        <tr class="bg-gray-300   @if ( isDarkMode()) bg-gray-900 @endif">
-            <td class="py-2">Version 1.0</td>
-            <td class="py-2 text-left">
-                <ul class="list-disc">
-                    <li>Reservation panel:
-                        <ul>
-                            <li class="ml-4">Parking space feature</li>
-                            <li class="ml-4">Office desk feature</li>
-                        </ul>
-                    </li>
-                </ul>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <br><br>
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.10</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">September 15, 2025</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Feed Module</strong> with comments and reactions (Text, Image, Video).</li>
+                        <li>New <strong>Gallery Module</strong> with collage view and public/private modes.</li>
+                        <li>New <strong>Online Radio Module</strong>.</li>
+                        <li>Update features:
+                            <ul class="list-['-_'] list-inside mt-1 pl-6 space-y-1 text-sm @if(isDarkMode()) text-gray-400 @else text-gray-600 @endif">
+                                <li>Optimized Feed Module reaction effects and placement.</li>
+                                <li>General UI/UX improvements and policy updates for Profile Data.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Feed Module</strong> management (List, Filters, Edit).</li>
+                        <li>New <strong>Gallery Module</strong> management (Table, Edit, Delete, Filters).</li>
+                    </ul>
+                </li>
+                <li>General:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New unified <strong>Error Handling Module</strong> across all platforms.</li>
+                        <li>Massive script optimization for User & Reservation Panels.</li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.9</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">August 10, 2025</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Energy Questionnaire Module</strong> with wizard and policies.</li>
+                        <li>New <strong>Energy Chart Module</strong> for company and departmental comparisons.</li>
+                        <li>Update features:
+                            <ul class="list-['-_'] list-inside mt-1 pl-6 space-y-1 text-sm @if(isDarkMode()) text-gray-400 @else text-gray-600 @endif">
+                                <li>Added mandatory/optional monthly policies for Energy Test.</li>
+                                <li>Customized password and username policies in the App module.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Energy Chart Module</strong> with graphical analytics, smart filters, and stats.
+                        </li>
+                    </ul>
+                </li>
+                <li>General:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>Developed the core rating system and database structure for the Energy Test feature.</li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.8</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">July 3, 2025</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>Major <strong>Onboarding Module overhaul</strong> with new features:
+                            <ul class="list-['-_'] list-inside mt-1 pl-6 space-y-1 text-sm @if(isDarkMode()) text-gray-400 @else text-gray-600 @endif">
+                                <li>Personnel Document Upload feature.</li>
+                                <li>Organizational Account creation for new users.</li>
+                                <li>In-app Guide feature.</li>
+                                <li>PorsLine Questionnaire linkage.</li>
+                                <li>Guides and Booklets section.</li>
+                            </ul>
+                        </li>
+                        <li>New <strong>Persol Anniversary Countdown</strong> feature.</li>
+                        <li>Developed and improved <strong>SARV CRM</strong> features (Add/Edit records).</li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>Management for new Organizational Accounts.</li>
+                        <li>Upgrades to Ticketing & Document Management modules.</li>
+                    </ul>
+                </li>
+                <li>General:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li><strong>Launched and deployed the new Farsi version of the HRMS App.</strong></li>
+                        <li>General UI/UX improvements to Profile, Navbar, Occasion, and other core modules.</li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.7</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">February 27, 2025</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New experimental <strong>AI Chatbot</strong> feature.</li>
+                        <li>New <strong>AI Guide</strong> and <strong>AI Podcast</strong> modules integrated.</li>
+                        <li>New integration with PS Enterprise Architecture (EA) files.</li>
+                    </ul>
+                </li>
+                <li>General:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>Enhanced security measures for DMS file viewing.</li>
+                        <li>General UI/UX updates and workflow fine-tuning.</li>
+                        <li>Server configuration updates and error resolution.</li>
+                        <li>Reconfigured database and applied essential updates.</li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.6</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">October 24, 2024</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>DMS (Document Management System)</strong> feature.</li>
+                        <li>New <strong>Authorities</strong> feature.</li>
+                        <li>New <strong>SARV CRM API</strong> feature.</li>
+                        <li>Added seasonal "Spring," "Summer," and "Fall" UI effects.</li>
+                        <li>Update features:
+                            <ul class="list-['-_'] list-inside mt-1 pl-6 space-y-1 text-sm @if(isDarkMode()) text-gray-400 @else text-gray-600 @endif">
+                                <li>Complete <strong>Suggestion procedure overhaul</strong>.</li>
+                                <li>Performance optimization for the Suggestion module.</li>
+                                <li>Enhanced redirection management and module auto-loading.</li>
+                                <li>Seasonal auto-change feature.</li>
+                                <li>General User Panel UI/UX upgrade.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>DMS</strong> feature for administrators.</li>
+                        <li>New <strong>Authorities</strong> feature management.</li>
+                        <li>Update features:
+                            <ul class="list-['-_'] list-inside mt-1 pl-6 space-y-1 text-sm @if(isDarkMode()) text-gray-400 @else text-gray-600 @endif">
+                                <li>Complete <strong>overhaul of the QoM (Question of the Month)</strong> module.</li>
+                                <li>Optimized overall Admin Panel performance.</li>
+                                <li>Profile end-date format change and SMS number updates.</li>
+                                <li>Upgraded the Admin Panel UI (Light Mode).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.5</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">January 8, 2024</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Question of the Month</strong> feature.</li>
+                        <li>New <strong>Suggestion Process</strong> feature.</li>
+                        <li>New <strong>Toolbox</strong> feature.</li>
+                        <li>New <strong>Daily Parking & Office Report</strong> features.</li>
+                        <li>Update features:
+                            <ul class="list-['-_'] list-inside mt-1 pl-6 space-y-1 text-sm @if(isDarkMode()) text-gray-400 @else text-gray-600 @endif">
+                                <li>Added wintry design theme and seasonal targeting.</li>
+                                <li>Modern scrollbar design.</li>
+                                <li>Optimized light and dark modes.</li>
+                                <li>Changed login pattern for inactive users.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Question of the Month</strong> management.</li>
+                        <li>New Suggestion Process management and stats.</li>
+                        <li>Update features:
+                            <ul class="list-['-_'] list-inside mt-1 pl-6 space-y-1 text-sm @if(isDarkMode()) text-gray-400 @else text-gray-600 @endif">
+                                <li>Auto-activate/deactivate user from Profile.</li>
+                                <li>Profile date format changes.</li>
+                                <li>Security updates.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.4</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">October 25, 2023</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Calendar & Events</strong> feature.</li>
+                        <li>Integrated Kavenegar SMS API for Calendar and Status updates.</li>
+                        <li>New Suggestion timeline scheduler.</li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Event Management</strong> feature.</li>
+                    </ul>
+                </li>
+                <li>General:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>Major enhancements to Suggestion, Status, Post, and Job Linking modules.</li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.3</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">September 25, 2023</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Analytics / Statistics</strong> feature.</li>
+                        <li>New Birthday & Anniversary celebration feature with confetti effect.</li>
+                        <li>Integrated ETS API for Leave and Timesheet data.</li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Dashboard Management Analytics</strong> with charts.</li>
+                        <li>New Permission feature for role-based access.</li>
+                        <li>Integrated SARV CRM API access.</li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.2</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">August 1, 2023</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New <strong>Profile</strong> feature.</li>
+                        <li>New <strong>Report</strong> submission feature.</li>
+                        <li>New Music/Playlist feature.</li>
+                        <li>New <strong>Personnel Status</strong> feature with ETS API integration and auto-updates.
+                        </li>
+                        <li>New <strong>FAQ</strong> feature.</li>
+                        <li>New <strong>Job Ads</strong> and <strong>Quick Messaging</strong> features.</li>
+                        <li>New HR Communique and Google Translate features.</li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>New Profile and Report management.</li>
+                        <li>New FAQ, Jobs, and Message management.</li>
+                    </ul>
+                </li>
+                <li>General:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>Major UI/UX overhaul, including <strong>Dark Mode</strong>, new backgrounds, and improved
+                            navigation.
+                        </li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version3.0</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">June 1, 2023</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>User panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li><strong>Initial release of the User Panel (HRMS)</strong>.</li>
+                        <li>Core features: Navigation, Onboarding, Office Tools, Persol Links, and Surveys.</li>
+                    </ul>
+                </li>
+                <li>Admin panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>Management features for Onboarding, Links, Suggestions, and Users.</li>
+                    </ul>
+                </li>
+                <li>Routine database maintenance, updates, and backup.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif ">
+                Version2.0</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">April 1, 2023</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>Reservation Admin Panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li><strong>Initial release of the Admin Panel for the Reservation System</strong>.</li>
+                        <li>Core features: Management of Parks, Desks, Seats, Spots, Users, and Cancellations.</li>
+                    </ul>
+                </li>
+                <li>Reservation User Panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li>Added cancellation feature for users.</li>
+                        <li>General UI/UX improvements.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
+        <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">
+            <h2 class="text-xl font-semibold @if(isDarkMode()) text-white @else text-gray-800 @endif">Version1.0</h2>
+            <p class="text-sm @if(isDarkMode()) text-gray-400 @else text-gray-500 @endif">February 1, 2023</p>
+        </div>
+        <div class="p-6 text-left @if(isDarkMode()) text-gray-300 @else text-gray-700 @endif">
+            <ul class="list-disc list-inside space-y-3">
+                <li>Reservation Panel:
+                    <ul class="list-square list-inside mt-2 pl-6 space-y-1">
+                        <li><strong>Initial release of the Reservation System</strong>.</li>
+                        <li>Core features: Parking Space reservation and Office Desk reservation.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>

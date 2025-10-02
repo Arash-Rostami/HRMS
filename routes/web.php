@@ -17,15 +17,70 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/clear-cache', function () {
+    if (!auth()->check()) {
+        abort(403, 'Unauthorized');
+    }
+
     Artisan::call('cache:clear');
     Artisan::call('config:clear');
     Artisan::call('route:clear');
     Artisan::call('view:clear');
     Artisan::call('optimize:clear');
 
-    return 'Cache cleared successfully.';
+    return response()->json([
+        'message' => 'Caches cleared and rebuilt successfully!',
+        'timestamp' => now()->toDateTimeString()
+    ]);
 });
 
+Route::get('/set-cache', function () {
+    if (!auth()->check()) {
+        abort(403, 'Unauthorized');
+    }
+    Artisan::call('route:cache');
+    Artisan::call('view:cache');
+
+    return response()->json([
+        'message' => 'Caches cleared and rebuilt successfully!',
+        'timestamp' => now()->toDateTimeString()
+    ]);
+});
+
+
+//Route::get('/test-cdr-debug', function () {
+//    $base = 'http://192.168.4.200:30015/api/CdrDetail';
+//    $qs = http_build_query([
+//        'fromDateTime' => '2025-08-15 00:00:00',
+//        'toDateTime'   => '2025-09-01 15:00:00',
+//        'page'         => 0,
+//        'recordCount'  => 2,
+//    ]);
+//    $url = $base . '?' . $qs;
+//
+//    try {
+//        $response = Http::withoutVerifying()
+//            ->withBasicAuth('samanapiuser', 'D96C78F6-B6DD-4DBC-8510-DD67C579077E')
+//            ->acceptJson()
+//            ->timeout(30)
+//            ->get($url);
+//
+//        return response()->json([
+//            'response' => $response,
+//            'requested_url' => $url,
+//            'status'        => $response->status(),
+//            'ok'            => $response->ok(),
+//            'headers'       => $response->headers(),
+//            'body_raw'      => $response->body(),
+//            'body_json'     => $response->json(),
+//        ], 200);
+//    } catch (\Throwable $e) {
+//        return response()->json([
+//            'error'   => true,
+//            'class'   => get_class($e),
+//            'message' => $e->getMessage(),
+//        ], 500);
+//    }
+//});
 
 // Parking daily live view/report +
 Route::get('daily-report-{type}', [ReservationController::class, 'list']);
@@ -125,10 +180,10 @@ Route::prefix('crm')
 // import login/signup/...
 require __DIR__ . '/auth.php';
 // default error page +
-Route::get('/error-page', function () {
-    return view('errors.default');
-})->name('error.page');
-
-Route::fallback(function () {
-    return view('errors.default');
-});
+//Route::get('/error-page', function () {
+//    return view('errors.default');
+//})->name('error.page');
+//
+//Route::fallback(function () {
+//    return view('errors.default');
+//});

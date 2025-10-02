@@ -7,7 +7,7 @@
 <body class="antialiased container-scrollbar custom-scrollbar">
 <div class="loading-line"></div>
 <!--customized menu of user panel -->
-<x-user.navbar.main/>
+<x-user.navbar.main :hasActiveModule="$hasActiveModule"/>
 <!-- Page Content -->
 <main>
     @yield('content')

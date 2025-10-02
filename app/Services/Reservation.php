@@ -65,20 +65,6 @@ class Reservation
         return 0;
     }
 
-//    /**
-//     * @param $space
-//     * @param $column
-//     * @return array
-//     */
-//    public static function filterReserves($space, $column): array
-//    {
-//        $reservedIds = array_flip(array_column(session('area')->toArray(), $column));
-//
-//        // Filter only those not in reserved IDs
-//        return $space->all()->filter(function ($value) use ($reservedIds) {
-//            return !isset($reservedIds[$value->id]);
-//        })->all();
-//    }
 
     public static function getReservationId()
     {
@@ -197,14 +183,27 @@ class Reservation
         return $modelClass::betweenStartAndEndDate($number);
     }
 
+
     public static function showUntakenSeats()
     {
-        return self::getUntakenEntities(Seat::class, 'seat_id');
+        static $seats = null;
+
+        if ($seats === null) {
+            $seats = self::getUntakenEntities(Seat::class, 'seat_id');
+        }
+
+        return $seats;
     }
 
     public static function showUntakenSpots()
     {
-        return self::getUntakenEntities(Spot::class, 'spot_id');
+        static $spots = null;
+
+        if ($spots === null) {
+            $spots = self::getUntakenEntities(Spot::class, 'spot_id');
+        }
+
+        return $spots;
     }
 
     private static function getUntakenEntities($model, $sessionColumn)
@@ -213,7 +212,8 @@ class Reservation
             $reservedIds = array_column(session('area')->toArray(), $sessionColumn);
             return $model::whereNotIn('id', $reservedIds)->get();
         }
+        return [];
 
-        return $model::all();
+//        return $model::all();
     }
 }

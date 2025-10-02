@@ -1,4 +1,5 @@
 <div
+    x-cloak
     id="feed"
     data-id="1"
     title="Move me ↑ ↓"
@@ -8,13 +9,20 @@
      bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel persol-farsi-font',
     'bg-[#1F2937]' => isDarkMode(),
   ])
-    x-data
-    x-cloak
+    x-data="{
+        currentFontSizeIndex: 0,
+        fontSizes : ['text-base', 'text-lg', 'text-xl'],
+        currentFontSizeClass() {
+            return this.fontSizes[this.currentFontSizeIndex];
+        },
+        adjustFontSize(direction) {
+            const newIndex = this.currentFontSizeIndex + direction;
+            if (newIndex >= 0 && newIndex < this.fontSizes.length) {
+                this.currentFontSizeIndex = newIndex;
+            }
+        }
+    }"
 >
-        <span
-            class="absolute top-0 -left-4 -rotate-12 bg-green-500 text-white text-xs px-1 py-1 rounded-full animate-pulse">
-            جدید
-        </span>
     {{-- Rubric / Header --}}
     <div class="mb-5 w-full md:w-1/4">
         <h2
@@ -48,8 +56,11 @@
         data-te-parent="#feed"
         aria-labelledby="flush-collapseFeed"
     >
-        @livewire('feed-timeline')
+        <div :class="currentFontSizeClass">
+            <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'feed']) "/>
+            @livewire('feed-timeline')
 
+        </div>
         <!-- Background Shapes -->
         <x-user.bg-shapes/>
     </div>

@@ -1,6 +1,6 @@
 @php
     $errorMessages = [
-        'required' => 'فیلد نظر را پر کنید.',
+        'required' => '',
         'string' => 'نظر باید متن باشد.',
         'characters' => 'نظر نمی‌تواند بیشتر از ۱۰۰۰ کاراکتر باشد.'
     ];
@@ -80,7 +80,7 @@
                         'bg-gray-700' => isDarkMode(),
                     ])>
                         <div class="flex justify-between items-center">
-                            <span class="text-xs">
+                            <span class="text-xs ltr-direction">
                                     <i> {{ $comment->created_at->diffForHumans() }} </i>
                                     <x-heroicon-o-clock class="inline-block h-3 ml-1"/>
                             </span>

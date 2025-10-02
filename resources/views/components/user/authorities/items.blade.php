@@ -29,7 +29,7 @@
         </h1>
     </div>
     {{-- Filter by selecting departments --}}
-    <div class="flex flex-row flex-wrap ml-auto px-3 pb-6 gap-1">
+    <div class="flex flex-row flex-wrap ml-auto px-3 pb-6 gap-2">
         @foreach(getPersianNamesOfDepts() as $department)
                 <?php $departmentCode = getCodesOfDepts($department); ?>
             <button
@@ -41,25 +41,26 @@
             </button>
         @endforeach
     </div>
+
     {{-- Collapse & Expand All duties --}}
     <div class="flex flex-row mx-4">
         <button @click="expandAll()" class="bg-main-mode hover:opacity-50  text-white m-2 p-1 rounded"
                 title=" باز کردن نوارها">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                 stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 13l-7 7-7-7m14-8l-7 7-7-7"/>
             </svg>
         </button>
         <button @click="collapseAll()" class="bg-main-mode hover:opacity-50  text-white m-2 p-1 rounded"
                 title="بستن توارها">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                 stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 11l7-7 7 7M5 19l7-7 7 7"/>
             </svg>
         </button>
     </div>
 </div>
-<div id="accordionDelegations" class="rtl-direction persol-farsi-font">
+<div id="accordionDelegations" class="rtl-direction persol-farsi-font space-y-2">
     @foreach($delegations as $delegation)
         @php
             $icon = getExecutionProcedureIcon($delegation->details['execution_procedure']);
@@ -101,7 +102,7 @@
                     </span>
                 </button>
             </h2>
-            <div class="!visible all-items"
+            <div class="!visible hidden all-items"
                  id="collapse{{$delegation->id}}"
                  x-transition
                  x-transition.duration.500ms
@@ -110,12 +111,13 @@
                  aria-labelledby="heading{{$delegation->id}}"
                  data-te-parent="#accordionDelegation">
                 <div class="px-5 py-4 delegation-search">
-                    <div class="flex flex-wrap justify-around rounded-lg shadow @if (isDarkMode()) bg-[#1F2937] @endif">
+                    <div
+                        class="flex flex-wrap justify-around rounded-lg scale-90 @if (isDarkMode()) bg-[#1F2937] @endif">
                         @if(auth()->user()->profile->position == "manager")
                             {{--execution_procedure--}}
                             <div class="p-4 mx-1 shadow-lg rounded-lg">
                                 <div class="flex flex-col items-center">
-                                    <img src="{{ $icon['src'] }}" alt="{{ $icon['alt'] }}" class="w-12 h-12">
+                                    <img src="{{ $icon['src'] }}" alt="{{ $icon['alt'] }}" class="w-10 h-10">
                                     <p class="m-auto font-semibold pt-5">
                                         <span class="text-main"> روش اجرایی (فرایند) مصوب </span>
                                         {{ translateExecutionProcedure($delegation->details['execution_procedure']) }}
@@ -125,7 +127,7 @@
                             {{--repeat_frequency--}}
                             <div class="p-4 mx-1 shadow-lg rounded-lg">
                                 <div class="flex flex-col items-center">
-                                    <img src="/img/user/times_icon.png" alt="times" class="w-12 h-12">
+                                    <img src="/img/user/times_icon.png" alt="times" class="w-10 h-10">
                                     <p class="m-auto font-semibold pt-5">
                                         <span class="text-main">فراوانی تکرار</span>
                                         {{ translateRepeatFrequency($delegation->details['repeat_frequency']) }}
@@ -135,8 +137,7 @@
                             {{--impact_score--}}
                             <div class="p-4 mx-1 shadow-lg rounded-lg">
                                 <div class="flex flex-col items-center">
-                                    <img src="/img/user/rocket_icon.png" alt="urgency"
-                                         class="w-12 h-12">
+                                    <img src="/img/user/rocket_icon.png" alt="urgency" class="w-10 h-10">
                                     <p class="m-auto font-semibold pt-5">
                                         <span class="text-main"> شاخص اثر </span>
                                         {{ translateImpactScore($delegation->details['impact_score']) }}
@@ -146,8 +147,7 @@
                             {{--proposed_delegation--}}
                             <div class="p-4 mx-1 shadow-lg rounded-lg">
                                 <div class="flex flex-col items-center">
-                                    <img src="/img/user/puzzle_icon.png" alt="proposed_delegation"
-                                         class="w-12 h-12">
+                                    <img src="/img/user/puzzle_icon.png" alt="proposed_delegation" class="w-10 h-10">
                                     <p class="m-auto font-semibold pt-5">
                                         <span class="text-main">  سطح تفویض پیشنهادی</span>
                                         {{ translateDelegationLevel($delegation->details['proposed_delegation']) }}
@@ -169,8 +169,7 @@
                         {{--co_delegate--}}
                         <div class="p-4 mx-1 shadow-lg rounded-lg">
                             <div class="flex flex-col items-center">
-                                <img src="/img/user/handshake_icon.png" alt="co_delegate"
-                                     class="w-12 h-12">
+                                <img src="/img/user/handshake_icon.png" alt="co_delegate" class="w-10 h-10">
                                 <p class="m-auto font-semibold pt-5">
                                     <span class="text-main">  تفویض مشترک با </span>
                                     {{ !empty($delegation->details['co_delegate']) ? $delegation->details['co_delegate'] : 'کسی ذکر نشده!' }}

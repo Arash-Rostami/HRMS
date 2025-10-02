@@ -346,4 +346,5 @@ class User extends Authenticatable implements FilamentUser, HasName
         return $this->hasManyThrough(Timesheet::class, Profile::class,
             'user_id', 'employee_code', 'id', 'personnel_id');
     }
+
 }

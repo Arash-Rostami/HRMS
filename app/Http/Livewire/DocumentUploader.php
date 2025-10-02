@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
@@ -21,13 +22,13 @@ class DocumentUploader extends Component
 
 
     private const DOCUMENT_DEFINITIONS = [
-        ['key' => 'shenasnameh',       'title' => 'تمام صفحات شناسنامه',          'icon' => 'fa-id-card'],
-        ['key' => 'national_id',      'title' => 'پشت و روی کارت ملی',           'icon' => 'fa-address-card'],
-        ['key' => 'diploma',          'title' => 'آخرین مدرک تحصیلی',             'icon' => 'fa-graduation-cap'],
-        ['key' => 'military_service', 'title' => 'کارت پایان خدمت یا معافیت',    'icon' => 'fa-user-shield'],
-        ['key' => 'photo',            'title' => 'عکس 3x4 پرسنلی',               'icon' => 'fa-user-tie'],
-        ['key' => 'insurance_record', 'title' => 'سوابق بیمه‌ای تلفیقی',         'icon' => 'fa-file-invoice'],
-        ['key' => 'bank_account',     'title' => 'شماره حساب یا کارت بانکی',      'icon' => 'fa-landmark'],
+        ['key' => 'shenasnameh', 'title' => 'تمام صفحات شناسنامه', 'icon' => 'fa-id-card'],
+        ['key' => 'national_id', 'title' => 'پشت و روی کارت ملی', 'icon' => 'fa-address-card'],
+        ['key' => 'diploma', 'title' => 'آخرین مدرک تحصیلی', 'icon' => 'fa-graduation-cap'],
+        ['key' => 'military_service', 'title' => 'کارت پایان خدمت یا معافیت', 'icon' => 'fa-user-shield'],
+        ['key' => 'accumulated_insurance', 'title' => 'سابقه بیمه تلفیقی', 'icon' => 'fa-user-tie', 'help_text' => 'راهنمای دریافت سوابق بیمهٔ تأمین اجتماعی در بالای صفحه مطالعه کنید.'],
+        ['key' => 'insurance_record', 'title' => 'کلیه سوابق بیمه‌', 'icon' => 'fa-file-invoice', 'help_text' => 'راهنمای دریافت سوابق بیمهٔ تأمین اجتماعی در بالای صفحه مطالعه کنید.'],
+        ['key' => 'bank_account', 'title' => 'شماره حساب یا کارت بانکی', 'icon' => 'fa-landmark', 'help_text' => 'نیازی به ارسال عکس کارت بانکی خود ندارید. لطفا شماره را خوانا روی کاغذ نوشته و از آن عکس گرفته و سپس آپلود کنید.'],
     ];
 
 
@@ -129,7 +130,7 @@ class DocumentUploader extends Component
         $matchedPath = collect($allPaths)->last(fn ($path) => str_contains($path, "-{$key}-"));
 
         if (!$matchedPath) {
-            return ['uploaded' => false, 'fileName' => null, 'uploadedTime' => null];
+            return ['uploaded' => false, 'fileName' => null, 'uploadedTime' => null, 'file_url' => null];
         }
 
         $fileName = basename($matchedPath);
@@ -146,6 +147,8 @@ class DocumentUploader extends Component
             'uploaded'     => true,
             'fileName'     => $fileName,
             'uploadedTime' => $uploadedTime,
+            'file_url'     => Storage::disk('filament')->url($matchedPath),
+
         ];
     }
 

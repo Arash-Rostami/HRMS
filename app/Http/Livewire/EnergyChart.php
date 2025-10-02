@@ -5,24 +5,30 @@ namespace App\Http\Livewire;
 use App\Http\Livewire\Energy\Test;
 use App\Models\EnergyTest;
 use App\Models\User;
+use App\Services\TeamData;
 use Livewire\Component;
 
 class EnergyChart extends Component
 {
     /**
-     * This is a computed property, caching the result for the lifecycle of the request.
-     */
-    public function getUserProperty()
-    {
-        return auth()->user();
-    }
-
-    /**
      * This is a computed property.
      */
-    public function getIsManagerProperty(): bool
+    public function getCompanyAveragesProperty(): array
     {
-        return $this->user?->profile?->position === 'manager';
+        $cutoff = now()->subMonths(18);
+
+        return EnergyTest::query()
+            ->where('user_id', '!=', $this->user->id)
+            ->where(fn($q) => $q->where('completed_at', '>=', $cutoff)->orWhere('created_at', '>=', $cutoff))
+            ->selectRaw('
+                    COALESCE(AVG(mind_score), 0) as mind,
+                    COALESCE(AVG(emotion_score), 0) as emotion,
+                    COALESCE(AVG(physique_score), 0) as physique,
+                    COALESCE(AVG(soul_score), 0) as soul,
+                    COALESCE(AVG(overall_score), 0) as overall
+                ')
+            ->first()
+            ->toArray();
     }
 
     /**
@@ -51,22 +57,14 @@ class EnergyChart extends Component
     /**
      * This is a computed property.
      */
-    public function getCompanyAveragesProperty(): array
+    public function getIsManagerProperty(): bool
     {
-        $cutoff = now()->subMonths(18);
+        return $this->user?->profile?->position === 'manager';
+    }
 
-        return EnergyTest::query()
-            ->where('user_id', '!=', $this->user->id)
-            ->where(fn($q) => $q->where('completed_at', '>=', $cutoff)->orWhere('created_at', '>=', $cutoff))
-            ->selectRaw('
-                    COALESCE(AVG(mind_score), 0) as mind,
-                    COALESCE(AVG(emotion_score), 0) as emotion,
-                    COALESCE(AVG(physique_score), 0) as physique,
-                    COALESCE(AVG(soul_score), 0) as soul,
-                    COALESCE(AVG(overall_score), 0) as overall
-                ')
-            ->first()
-            ->toArray();
+    public function getSectionsProperty(): array
+    {
+        return app(Test::class)->getQuestions()['sections'];
     }
 
     /**
@@ -78,15 +76,17 @@ class EnergyChart extends Component
             return [];
         }
 
-        return User::query()
-            ->whereHas('profile', fn($q) => $q->where('department', $this->user->profile->department))
+        $query = User::query()
             ->where('id', '!=', $this->user->id)
-            ->with(['profile:user_id,department', 'latestEnergyTest'])
+            ->where('status', 'active')
+            ->whereHas('latestEnergyTest');
+
+        resolve(TeamData::class)->applyRules($query, $this->user);
+
+        return $query
+            ->with(['profile:user_id,department,position', 'latestEnergyTest'])
             ->get()
             ->map(function (User $member) {
-                if (!$member->latestEnergyTest) {
-                    return null;
-                }
                 return [
                     'name' => $member->full_name,
                     'scores' => [
@@ -98,14 +98,16 @@ class EnergyChart extends Component
                     ]
                 ];
             })
-            ->filter()
             ->values()
             ->toArray();
     }
 
-    public function getSectionsProperty(): array
+    /**
+     * This is a computed property, caching the result for the lifecycle of the request.
+     */
+    public function getUserProperty()
     {
-        return app(Test::class)->getQuestions()['sections'];
+        return auth()->user();
     }
 
     public function render()

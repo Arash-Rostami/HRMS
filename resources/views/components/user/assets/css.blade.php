@@ -12,3 +12,5 @@
 @if(trim($__env->yieldContent('css')))
     @yield('css')
 @endif
+@stack('styles')
+

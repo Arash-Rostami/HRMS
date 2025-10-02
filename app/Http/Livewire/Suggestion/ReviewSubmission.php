@@ -1,18 +1,12 @@
 <?php
 
-namespace App\Http\Livewire\suggestion;
+namespace App\Http\Livewire\Suggestion;
 
 use App\Models\Review;
 use Illuminate\Support\Facades\DB;
 
 class ReviewSubmission
 {
-//
-//    public static function checkReview(mixed $department, $suggestionId)
-//    {
-//        return Review::where('department', $department)->where('suggestion_id', $suggestionId)->exists();
-//    }
-
     public function create(&$suggestion)
     {
         $referral = isset($suggestion['description']['ceo-departments']) ? json_encode($suggestion['description']['ceo-departments']) : null;

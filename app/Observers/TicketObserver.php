@@ -6,7 +6,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\NotifyUsersTicketAssigned;
 use App\Notifications\NotifyUsersTicketCreated;
-use App\Notifications\NotifyUsersTicketStatusChanged;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -36,10 +36,46 @@ class TicketObserver
             return;
         }
 
+
+        $notificationService = app(NotificationService::class);
         $ccRecipients = $this->getTeamMembers($psUsers, $primaryRecipient);
-        $primaryRecipient->notify(new NotifyUsersTicketCreated($ticket, $ccRecipients));
+        $notification = new NotifyUsersTicketCreated($ticket, $ccRecipients);
+
+        $notificationService->sendWithRetry($primaryRecipient, $notification, 'Ticket creation notification');
     }
 
+    /**
+     * Handle the Ticket "deleted" event.
+     *
+     * @param \App\Models\Ticket $ticket
+     * @return void
+     */
+    public function deleted(Ticket $ticket)
+    {
+        $this->deleteRelatedFiles($ticket);
+    }
+
+    /**
+     * Handle the Ticket "force deleted" event.
+     *
+     * @param \App\Models\Ticket $ticket
+     * @return void
+     */
+    public function forceDeleted(Ticket $ticket)
+    {
+        //
+    }
+
+    /**
+     * Handle the Ticket "restored" event.
+     *
+     * @param \App\Models\Ticket $ticket
+     * @return void
+     */
+    public function restored(Ticket $ticket)
+    {
+        //
+    }
 
     /**
      * Handle the Ticket "updated" event.
@@ -50,12 +86,16 @@ class TicketObserver
     public function updated(Ticket $ticket)
     {
         if ($ticket->wasChanged('assigned_to')) {
+
+
             $newAssignee = User::find($ticket->assigned_to);
             $requester = $ticket->requester;
 
             if ($newAssignee && $requester) {
-                $newAssignee->notify(new NotifyUsersTicketAssigned($ticket, $requester->email));
-                Log::channel('cache_operations')->info("Notification sent to assignee {$newAssignee->email} with requester {$requester->email} in CC.");
+                $notificationService = app(NotificationService::class);
+
+                $notification = new NotifyUsersTicketAssigned($ticket, $requester->email);
+                $notificationService->sendWithRetry($newAssignee, $notification, 'Ticket assignment notification');
             }
         }
 
@@ -85,37 +125,48 @@ class TicketObserver
         $this->handleFileDeletion($ticket);
     }
 
-    /**
-     * Handle the Ticket "deleted" event.
-     *
-     * @param \App\Models\Ticket $ticket
-     * @return void
-     */
-    public function deleted(Ticket $ticket)
+    protected function deleteRelatedFiles(Ticket $ticket)
     {
-        $this->deleteRelatedFiles($ticket);
+        $requesterFiles = $ticket->requester_files ?? [];
+        foreach ($this->extractFilePaths($requesterFiles) as $file) {
+            if (File::exists(public_path($file))) {
+                File::delete(public_path($file));
+            }
+        }
+
+        $assigneeFiles = $ticket->assignee_files ?? [];
+        foreach ($this->extractFilePaths($assigneeFiles) as $file) {
+            if (File::exists(public_path($file))) {
+                File::delete(public_path($file));
+            }
+        }
+    }
+
+    protected function extractFilePaths($files): array
+    {
+        return array_filter(array_map(function ($item) {
+            return is_array($item) && isset($item['file']) ? $item['file'] : null;
+        }, $files));
     }
 
     /**
-     * Handle the Ticket "restored" event.
-     *
-     * @param \App\Models\Ticket $ticket
-     * @return void
+     * @param mixed $oldFiles
+     * @param array $newFiles
+     * @return array
      */
-    public function restored(Ticket $ticket)
+    protected function extractFiles(mixed $oldFiles, array $newFiles): array
     {
-        //
-    }
+        $oldFilePaths = array_map(function ($item) {
+            return is_array($item) && isset($item['file']) ? $item['file'] : null;
+        }, $oldFiles);
 
-    /**
-     * Handle the Ticket "force deleted" event.
-     *
-     * @param \App\Models\Ticket $ticket
-     * @return void
-     */
-    public function forceDeleted(Ticket $ticket)
-    {
-        //
+        $newFilePaths = array_map(function ($item) {
+            return is_array($item) && isset($item['file']) ? $item['file'] : null;
+        }, $newFiles);
+
+        $oldFilePaths = array_filter($oldFilePaths);
+        $newFilePaths = array_filter($newFilePaths);
+        return array($oldFilePaths, $newFilePaths);
     }
 
     /**
@@ -153,23 +204,6 @@ class TicketObserver
         })->pluck('email')->toArray();
     }
 
-    /**
-     * @param Ticket $ticket
-     * @param float|int $timeToCloseInSeconds
-     * @return void
-     */
-    protected function unloopAndStore(Ticket $ticket, float|int $timeToCloseInSeconds): void
-    {
-        $dispatcher = Ticket::getEventDispatcher();
-
-        Ticket::unsetEventDispatcher();
-
-        $ticket->extra = array_merge($ticket->extra ?? [], ['timeToCloseInSeconds' => $timeToCloseInSeconds]);
-        $ticket->save();
-
-        Ticket::setEventDispatcher($dispatcher);
-    }
-
     protected function handleFileDeletion(Ticket $ticket)
     {
         if ($ticket->isDirty('requester_files')) {
@@ -200,48 +234,20 @@ class TicketObserver
         }
     }
 
-    protected function deleteRelatedFiles(Ticket $ticket)
-    {
-        $requesterFiles = $ticket->requester_files ?? [];
-        foreach ($this->extractFilePaths($requesterFiles) as $file) {
-            if (File::exists(public_path($file))) {
-                File::delete(public_path($file));
-            }
-        }
-
-        $assigneeFiles = $ticket->assignee_files ?? [];
-        foreach ($this->extractFilePaths($assigneeFiles) as $file) {
-            if (File::exists(public_path($file))) {
-                File::delete(public_path($file));
-            }
-        }
-    }
-
-
     /**
-     * @param mixed $oldFiles
-     * @param array $newFiles
-     * @return array
+     * @param Ticket $ticket
+     * @param float|int $timeToCloseInSeconds
+     * @return void
      */
-    protected function extractFiles(mixed $oldFiles, array $newFiles): array
+    protected function unloopAndStore(Ticket $ticket, float|int $timeToCloseInSeconds): void
     {
-        $oldFilePaths = array_map(function ($item) {
-            return is_array($item) && isset($item['file']) ? $item['file'] : null;
-        }, $oldFiles);
+        $dispatcher = Ticket::getEventDispatcher();
 
-        $newFilePaths = array_map(function ($item) {
-            return is_array($item) && isset($item['file']) ? $item['file'] : null;
-        }, $newFiles);
+        Ticket::unsetEventDispatcher();
 
-        $oldFilePaths = array_filter($oldFilePaths);
-        $newFilePaths = array_filter($newFilePaths);
-        return array($oldFilePaths, $newFilePaths);
-    }
+        $ticket->extra = array_merge($ticket->extra ?? [], ['timeToCloseInSeconds' => $timeToCloseInSeconds]);
+        $ticket->save();
 
-    protected function extractFilePaths($files): array
-    {
-        return array_filter(array_map(function ($item) {
-            return is_array($item) && isset($item['file']) ? $item['file'] : null;
-        }, $files));
+        Ticket::setEventDispatcher($dispatcher);
     }
 }

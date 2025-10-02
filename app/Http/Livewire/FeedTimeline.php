@@ -12,9 +12,61 @@ class FeedTimeline extends Component
 {
     private const FEED_RELATIONS = ['user.profile', 'comments.user.profile', 'reactions.user.profile'];
 
-    public $feeds, $newComments = [], $editingCommentId, $editingContent = '';
-    public int $page = 1, $perPage = 1;
+    public array $feedIds = [];
+    public array $loadedDates = [];
+    public array $newComments = [];
+    public $editingCommentId;
+    public $editingContent = '';
     public bool $hasMorePages = false;
+
+    public function mount()
+    {
+        $this->loadMore();
+    }
+
+    public function loadMore()
+    {
+        $nextDateToLoad = Feed::query()
+            ->whereNotIn(DB::raw('DATE(created_at)'), $this->loadedDates)
+            ->latest('created_at')
+            ->select(DB::raw('DATE(created_at) as feed_date'))
+            ->first();
+
+        if (!$nextDateToLoad) {
+            $this->hasMorePages = false;
+            return;
+        }
+
+        $date = $nextDateToLoad->feed_date;
+
+        $newFeeds = Feed::whereDate('created_at', $date)->latest()->get(['id']);
+
+        $this->feedIds = array_unique(array_merge($this->feedIds, $newFeeds->pluck('id')->toArray()));
+        $this->loadedDates[] = $date;
+
+        $this->hasMorePages = Feed::whereNotIn(DB::raw('DATE(created_at)'), $this->loadedDates)->exists();
+    }
+
+    public function render()
+    {
+        $feeds = collect();
+        if (!empty($this->feedIds)) {
+            $feeds = Feed::with(self::FEED_RELATIONS)
+                ->whereIn('id', $this->feedIds)
+                ->orderByRaw('FIELD(id, ' . implode(',', $this->feedIds) . ')')
+                ->get();
+        }
+
+        foreach ($feeds as $feed) {
+            if (!isset($this->newComments[$feed->id])) {
+                $this->newComments[$feed->id] = '';
+            }
+        }
+
+        return view('components.user.feed.timeline', [
+            'feeds' => $feeds,
+        ]);
+    }
 
     public function addComment($feedId)
     {
@@ -27,49 +79,28 @@ class FeedTimeline extends Component
         ]);
 
         $this->newComments[$feedId] = '';
-        $this->refreshFeed($feedId);
     }
-
 
     public function deleteComment($commentId)
     {
         $comment = Comment::find($commentId);
-        if (!$comment) return;
-
-        $feedId = $comment->feed_id;
-        $comment->delete();
-
-        $this->refreshFeed($feedId);
+        if ($comment) {
+            $comment->delete();
+        }
     }
 
-    public function loadFeeds()
+    public function toggleReaction(int $feedId, string $emoji): void
     {
-        $feeds = Feed::with(self::FEED_RELATIONS)
-            ->latest()
-            ->paginate($this->perPage, ['*'], 'page', $this->page);
+        DB::transaction(function () use ($feedId, $emoji) {
+            $attrs = ['feed_id' => $feedId, 'user_id' => auth()->id()];
+            $reaction = Reaction::where($attrs)->first();
 
-        $this->hasMorePages = $feeds->hasMorePages();
-        $newFeeds = $feeds->getCollection();
-        $this->feeds = $this->page > 1 ? $this->feeds->concat($newFeeds) : $newFeeds;
-        $this->newComments = $this->feeds->mapWithKeys(fn($feed) => [$feed->id => $this->newComments[$feed->id] ?? ''])->all();
-    }
-
-    public function loadMore()
-    {
-        if (!$this->hasMorePages) return;
-        $this->page++;
-        $this->loadFeeds();
-    }
-
-    public function mount()
-    {
-        $this->feeds = collect();
-        $this->loadFeeds();
-    }
-
-    public function render()
-    {
-        return view('components.user.feed.timeline');
+            if ($reaction && $reaction->emoji === $emoji) {
+                $reaction->delete();
+            } else {
+                Reaction::updateOrCreate($attrs, ['emoji' => $emoji]);
+            }
+        });
     }
 
     public function startEditing($commentId)
@@ -81,20 +112,6 @@ class FeedTimeline extends Component
         $this->editingContent = $comment->content;
     }
 
-    public function toggleReaction(int $feedId, string $emoji): void
-    {
-        DB::transaction(function () use ($feedId, $emoji) {
-            $attrs = ['feed_id' => $feedId, 'user_id' => auth()->id()];
-            $reaction = Reaction::where($attrs)->first();
-
-            $reaction && $reaction->emoji === $emoji
-                ? $reaction->delete()
-                : Reaction::updateOrCreate($attrs, ['emoji' => $emoji]);
-        });
-
-        $this->refreshFeed($feedId);
-    }
-
     public function updateComment(): void
     {
         $commentId = (int)$this->editingCommentId;
@@ -104,29 +121,16 @@ class FeedTimeline extends Component
             $this->validate(['editingContent' => 'string|max:1000']);
         }
 
-        $feedId = DB::transaction(function () use ($commentId, $content) {
-            $comment = Comment::whereKey($commentId)
-                ->where('user_id', auth()->id())
-                ->lockForUpdate()
-                ->first();
+        $comment = Comment::whereKey($commentId)->where('user_id', auth()->id())->first();
 
-            if (!$comment) return null;
+        if ($comment) {
+            if ($content === '') {
+                $comment->delete();
+            } else {
+                $comment->update(['content' => $content]);
+            }
+        }
 
-            $feedId = $comment->feed_id;
-            $content === '' ? $comment->delete() : $comment->update(['content' => $content]);
-
-            return $feedId;
-        });
-
-        if ($feedId !== null) $this->refreshFeed($feedId);
         $this->reset(['editingCommentId', 'editingContent']);
-    }
-
-    protected function refreshFeed($feedId)
-    {
-        $updatedFeed = Feed::with(self::FEED_RELATIONS)->find($feedId);
-        if (!$updatedFeed) return;
-
-        $this->feeds = $this->feeds->map(fn($feed) => $feed->id === $updatedFeed->id ? $updatedFeed : $feed)->values();
     }
 }

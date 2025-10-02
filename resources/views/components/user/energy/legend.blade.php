@@ -2,7 +2,7 @@
     $interpretations = [
         [
             'title' => 'شاخص هر بُعد (احساس، ذهن، جسم، روح)',
-            'title_color' => 'text-blue-700',
+            'title_color' => 'text-gray-700',
             'scores' => [
                 ['range' => '۰ – عالی 😍', 'description' => 'پرانرژی و آماده برای ادامه مسیر. همین روند رو حفظ کن و از خودت مراقبت کن.', 'color' => 'text-green-600'],
                 ['range' => '۱ – خوب 🙂', 'description' => 'شرایط خوبه، فقط گاهی کمی به خودت استراحت بده تا همین انرژی رو نگه داری.', 'color' => 'text-blue-600'],
@@ -13,7 +13,7 @@
         ],
         [
             'title' => 'مجموع شاخص کل (تصویر کلی وضعیت انرژی)',
-            'title_color' => 'text-purple-700',
+            'title_color' => 'text-gray-700',
             'scores' => [
                 ['range' => '۰ تا ۲ – عالی 😍', 'description' => 'تعادل کامل بین کار و استراحت، الگوی عالی برای بقیه.', 'color' => 'text-green-600'],
                 ['range' => '۳ تا ۵ – خوب 🙂', 'description' => 'وضعیت خوبه، با کمی تغییر مثبت می‌تونی به بهترین حالت برسی.', 'color' => 'text-blue-600'],

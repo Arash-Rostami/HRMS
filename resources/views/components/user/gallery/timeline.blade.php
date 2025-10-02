@@ -1,4 +1,4 @@
-<div class="max-h-[500px] overflow-y-auto custom-scrollbar">
+<div class="max-h-[500px] overflow-y-auto custom-scrollbar" id="gallery-container">
     <div class="relative wrap overflow-hidden h-full">
         <div class="border-2-2 absolute border-opacity-20 border-gray-700 h-full border left-1/2"></div>
         @forelse ($photos as $photo)
@@ -14,7 +14,7 @@
                 </div>
                 <div
                     class='links-thumbnails links-thumbnails-color order-1 w-5/12 rounded-lg bg-weekend px-6 py-4 shadow-xl animate-[fade-in-down_1s_ease-in-out]'>
-                    <div class="w-1/3 bg-main-mode text-white text-center px-4 py-1 rounded text-sm font-semibold tracking-wide
+                    <div class="w-full md:w-1/3 bg-main-mode text-white text-center px-4 py-1 rounded text-sm font-semibold tracking-wide
                                 shadow-lg mr-auto mb-4">
                         {{ jdate($photo->event_date)->format('%d %B %Y') }}
                     </div>
@@ -29,13 +29,20 @@
                             $visibleImages = array_slice($photo->path, 0, 3);
                             $hiddenImageCount = count($photo->path) - count($visibleImages);
                         @endphp
+                        {{-- Hidden images for Fancybox --}}
+                        @foreach (array_slice($photo->path, 3) as $imagePath)
+                            <a href="{{ $imagePath }}" data-fancybox="gallery-{{ $photo->id }}" class="hidden"></a>
+                        @endforeach  {{-- Hidden images for Fancybox --}}
+                        @foreach (array_slice($photo->path, 3) as $imagePath)
+                            <a href="{{ $imagePath }}" data-fancybox="gallery-{{ $photo->id }}" class="hidden"></a>
+                        @endforeach
                         <div class="group relative my-3 flex min-h-[170px] w-full items-center justify-center p-4">
                             @foreach ($visibleImages as $index => $imagePath)
                                 <a href="{{ $imagePath }}"
                                    data-fancybox="gallery-{{ $photo->id }}"
                                    class="absolute h-32 w-32 cursor-pointer overflow-hidden rounded-lg shadow-xl transition-all duration-500 ease-in-out hover:z-30 hover:scale-110
                                           {{ $transforms[$index]['z'] }}  {{ $transforms[$index]['rotate'] }} {{ $transforms[$index]['hover'] }}"
-                                  >
+                                >
                                     <img src="{{ asset($imagePath) }}"
                                          alt="{{ $photo->title }}"
                                          loading="lazy"
@@ -65,16 +72,41 @@
             </div>
         @endforelse
         @if ($hasMorePages)
-            <button x-on:click="$wire.loadMore()"
+            <button x-on:click="$wire.loadMore().then(() => {
+                       setTimeout(() => {
+                           const c = document.getElementById('gallery-container');
+                           smoothScroll(c, c.scrollTop + 400);
+                       }, 100);
+                   })"
+                    wire:loading.attr="disabled"
+                    wire:target="loadMore"
                     class="flex items-center justify-center gap-2 w-full p-4 bg-transparent text-main-mode hover:text-opacity-80 transition-colors duration-200">
                 <span> بیشتر</span>
             </button>
+            <svg wire:loading
+                 wire:target="loadMore"
+                 class="animate-spin h-5 w-5"
+                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                        stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
         @endif
     </div>
 </div>
 
 @push('scripts')
     <script>
+        const smoothScroll = (el, target, dur = 800) => {
+            const start = el.scrollTop, change = target - start, t0 = performance.now();
+            const animate = t => {
+                const p = Math.min((t - t0) / dur, 1);
+                el.scrollTop = start + change * (1 - Math.pow(1 - p, 4));
+                p < 1 && requestAnimationFrame(animate);
+            };
+            requestAnimationFrame(animate);
+        };
+
         function initFancybox() {
             Fancybox.bind("[data-fancybox]", {
                 Toolbar: {

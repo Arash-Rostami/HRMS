@@ -31,11 +31,11 @@
         </div>
         <div class="flex">
             {{--nav links--}}
-            <x-user.survey-nav></x-user.survey-nav>
+{{--            <x-user.survey-nav></x-user.survey-nav>--}}
             <div class="tab-content w-full @if( isDarkMode()) text-gray-300 @endif" id="tabs-tabContentVertical">
                 {{--nav section--}}
-                <x-user.recruitment-questionaire></x-user.recruitment-questionaire>
-                <x-user.onboarding-questionaire></x-user.onboarding-questionaire>
+{{--                <x-user.recruitment-questionaire></x-user.recruitment-questionaire>--}}
+                {{--                <x-user.onboarding-questionaire></x-user.onboarding-questionaire>--}}
                 {{--                            <x-user.suggestion-questionaire></x-user.suggestion-questionaire>--}}
             </div>
         </div>

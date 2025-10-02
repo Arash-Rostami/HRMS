@@ -38,7 +38,7 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 -translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-2"
-        class="custom-tooltip absolute -top-12 left-1/2 -translate-x-1/2 min-w-max bg-gray-800 text-white text-sm rounded-md px-3 py-1.5 shadow-lg"
+        class="custom-tooltip absolute -top-12 left-28 -translate-x-1/2 min-w-max bg-gray-800 text-white text-sm rounded-md px-3 py-1.5 shadow-lg"
         x-cloak
     ></div>
 </div>

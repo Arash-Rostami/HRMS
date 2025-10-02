@@ -43,30 +43,29 @@ class Utility
         return '<div class="w-2 h-2 rounded-full m-auto  ' . $color . '" title="' . $title . '"></div>';
     }
 
+
     public static function hasOffice(): array
     {
-        if (auth()->user()->hasOffice()) {
-            return ['css' => 'text-[#14532d]', 'title' => 'ON'];
-        }
-        return ['css' => ' ', 'title' => 'OFF'];
-    }
+        static $result = null;
 
+        if ($result === null) {
+            $result = auth()->user()->hasOffice()
+                ? ['css' => 'text-[#14532d]', 'title' => 'ON']
+                : ['css' => ' ', 'title' => 'OFF'];
+        }
+        return $result;
+    }
 
     public static function hasParking(): array
     {
-        if (auth()->user()->hasParking()) {
-            return ['css' => 'text-[#14532d]', 'title' => 'ON'];
+        static $result = null;
+
+        if ($result === null) {
+            $result = auth()->user()->hasParking()
+                ? ['css' => 'text-[#14532d]', 'title' => 'ON']
+                : ['css' => ' ', 'title' => 'OFF'];
         }
-        return ['css' => ' ', 'title' => 'OFF'];
-    }
-
-
-    /**
-     * @return bool
-     */
-    public static function isAdminPage(): bool
-    {
-        return str_contains(url()->current(), 'admin');
+        return $result;
     }
 
 
@@ -78,7 +77,6 @@ class Utility
     {
         return $user->role == 'admin' or $user->role == 'developer';
     }
-
 
     /**
      * @param $user
@@ -92,37 +90,41 @@ class Utility
     /**
      * @return bool
      */
-    public static function isDarkMode(): bool
+    public static function isAdminPage(): bool
     {
+        static $isAdminPage = null;
 
-        $mode = Cookie::get('mode');
-
-        // Check if cookie value is empty or null
-        if (empty($mode) || $mode === null) {
-            // Cookie value is empty or not set, return false
-            return false;
+        if ($isAdminPage === null) {
+            $isAdminPage = str_contains(url()->current(), 'admin');
         }
-
-        // Check if cookie value is equal to "#1B232E"
-        return ($mode === "#1B232E");
+        return $isAdminPage;
     }
 
+    public static function isCalenderSet($input, $request)
+    {
+        return isset(json_decode($request->$input, true)['year']);
+    }
 
     /**
      * @return bool
      */
-    public static function isLightMode(): bool
+    public static function isDarkMode(): bool
     {
+        static $isDark = null;
 
-        // Check if the 'mode' cookie exists
-        if (!Cookie::has('mode')) {
-            return false;
+        if ($isDark !== null) {
+            return $isDark;
         }
 
-        // Get the value of the 'mode' cookie
         $mode = Cookie::get('mode');
 
-        return ($mode == "#F1F1F1");
+        if (empty($mode) || $mode === null) {
+            $isDark = false;
+            return $isDark;
+        }
+
+        $isDark = ($mode === "#1B232E");
+        return $isDark;
     }
 
     /**
@@ -131,15 +133,6 @@ class Utility
     public static function isDashboardTypeNotGiven(): bool
     {
         return parse_url(url()->previous(), PHP_URL_QUERY) == '';
-    }
-
-    /**
-     * @param $url
-     * @return bool
-     */
-    public static function isParking($url): bool
-    {
-        return (strpos($url, "parking") !== false);
     }
 
     /**
@@ -160,12 +153,73 @@ class Utility
     }
 
     /**
+     * @param $input
+     * @param $request
+     * @return bool
+     */
+    public static function isHourNotSet($input, $request): bool
+    {
+        return makeDoubleDigit(json_decode($request->$input, true)['hour']) == '12';
+    }
+
+    /**
+     * @param $day
+     * @return bool
+     */
+    public static function isInitialDaysOfMonth($day): bool
+    {
+        $currentDay = Date::getFarsiDay();
+        return ($currentDay >= 27 and $currentDay <= 31) and ($day >= 1 and $day <= 4);
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isLightMode(): bool
+    {
+        static $isLight = null;
+
+        if ($isLight !== null) {
+            return $isLight;
+        }
+
+        if (!Cookie::has('mode')) {
+            $isLight = false;
+            return $isLight;
+        }
+
+        $mode = Cookie::get('mode');
+        $isLight = ($mode == "#F1F1F1");
+
+        return $isLight;
+    }
+
+    /**
+     * @param $input
+     * @param $request
+     * @return bool
+     */
+    public static function isMinuteNotSet($input, $request): bool
+    {
+        return makeDoubleDigit(json_decode($request->$input, true)['minute']) == '00';
+    }
+
+    /**
      * @param $mode
      * @return bool
      */
     public static function isMode($mode): bool
     {
         return strpos($mode, 'mode') !== false;
+    }
+
+    /**
+     * @param $url
+     * @return bool
+     */
+    public static function isParking($url): bool
+    {
+        return (strpos($url, "parking") !== false);
     }
 
     /**
@@ -191,7 +245,12 @@ class Utility
      */
     public static function isUserPanel(): bool
     {
-        return basename(request()->path()) == 'main';
+        static $isUserPanel = null;
+
+        if ($isUserPanel === null) {
+            $isUserPanel = basename(request()->path()) == 'main';
+        }
+        return $isUserPanel;
     }
 
     public static function isWeekend(string $dateString): bool
@@ -204,68 +263,6 @@ class Utility
         return Carbon::createFromFormat('Y-m-d H:i:s',
             Date::convertIntoLatin(self::makeString($input, $request)) . ' ' . self::makeHour($input, $request)
         )->timestamp;
-    }
-
-    public static function makeString($input, $request)
-    {
-        if (!self::isCalenderSet($input, $request)) abort(500, 'Date was not properly selected or given; please try again :(');
-
-        $date = json_decode($request->$input, true);
-        return sprintf('%s-%s-%s', $date['year'], makeDoubleDigit($date['month']), makeDoubleDigit($date['date']));
-    }
-
-    public static function isCalenderSet($input, $request)
-    {
-        return isset(json_decode($request->$input, true)['year']);
-    }
-
-    /**
-     * @param $input
-     * @param $request
-     * @return string
-     * prepare the format of hour for DB
-     */
-    public static function makeHour($input, $request): string
-    {
-        if (self::isHourNotSet($input, $request) && self::isMinuteNotSet($input, $request)) {
-            return '00:00:00';
-        }
-
-        $date = json_decode($request->$input, true);
-        return sprintf('%s:%s:00', makeDoubleDigit($date['hour']), makeDoubleDigit($date['minute']));
-    }
-
-    /**
-     * @param $input
-     * @param $request
-     * @return bool
-     */
-    public static function isHourNotSet($input, $request): bool
-    {
-        return makeDoubleDigit(json_decode($request->$input, true)['hour']) == '12';
-    }
-
-    /**
-     * @param $input
-     * @param $request
-     * @return bool
-     */
-    public static function isMinuteNotSet($input, $request): bool
-    {
-        return makeDoubleDigit(json_decode($request->$input, true)['minute']) == '00';
-    }
-
-    public static function makePreciseDate($input, $request, $isEndDate = false)
-    {
-        $dateString = self::makeString($input, $request);
-
-        $carbonDate = Carbon::createFromFormat('Y-m-d', Date::convertIntoLatin($dateString), 'Asia/Tehran');
-
-        ($isEndDate)
-            ? $carbonDate->startOfDay()->subSecond()
-            : $carbonDate->startOfDay();
-
-        return $carbonDate->timestamp;
     }
 
     /**
@@ -294,20 +291,16 @@ class Utility
      * @param $input
      * @param $request
      * @return string
+     * prepare the format of hour for DB
      */
-    public static function makeMonth($input, $request): string
+    public static function makeHour($input, $request): string
     {
-        return self::makeDoubleDigit(json_decode($request->$input, true)['month']);
-    }
+        if (self::isHourNotSet($input, $request) && self::isMinuteNotSet($input, $request)) {
+            return '00:00:00';
+        }
 
-    /**
-     * @param $input
-     * @param $request
-     * @return int
-     */
-    public static function makeYear($input, $request): int
-    {
-        return json_decode($request->$input, true)['year'];
+        $date = json_decode($request->$input, true);
+        return sprintf('%s:%s:00', makeDoubleDigit($date['hour']), makeDoubleDigit($date['minute']));
     }
 
     /**
@@ -315,9 +308,22 @@ class Utility
      * @param $request
      * @return string
      */
-    public static function makeTime($input, $request): string
+    public static function makeMonth($input, $request): string
     {
-        return json_decode($request->$input, true)['hour'];
+        return self::makeDoubleDigit(json_decode($request->$input, true)['month']);
+    }
+
+    public static function makePreciseDate($input, $request, $isEndDate = false)
+    {
+        $dateString = self::makeString($input, $request);
+
+        $carbonDate = Carbon::createFromFormat('Y-m-d', Date::convertIntoLatin($dateString), 'Asia/Tehran');
+
+        ($isEndDate)
+            ? $carbonDate->startOfDay()->subSecond()
+            : $carbonDate->startOfDay();
+
+        return $carbonDate->timestamp;
     }
 
     public static function makePreciseHour($input, $request, $isEndHour = false): string
@@ -336,6 +342,34 @@ class Utility
         }
 
         return sprintf('%s:%s:00', $hour, $minute);
+    }
+
+    public static function makeString($input, $request)
+    {
+        if (!self::isCalenderSet($input, $request)) abort(500, 'Date was not properly selected or given; please try again :(');
+
+        $date = json_decode($request->$input, true);
+        return sprintf('%s-%s-%s', $date['year'], makeDoubleDigit($date['month']), makeDoubleDigit($date['date']));
+    }
+
+    /**
+     * @param $input
+     * @param $request
+     * @return string
+     */
+    public static function makeTime($input, $request): string
+    {
+        return json_decode($request->$input, true)['hour'];
+    }
+
+    /**
+     * @param $input
+     * @param $request
+     * @return int
+     */
+    public static function makeYear($input, $request): int
+    {
+        return json_decode($request->$input, true)['year'];
     }
 
     /**
@@ -364,13 +398,36 @@ class Utility
     }
 
     /**
-     * @param $day
-     * @return bool
+     * @return string
      */
-    public static function isInitialDaysOfMonth($day): bool
+    public static function showDateDivider(): string
     {
-        $currentDay = Date::getFarsiDay();
-        return ($currentDay >= 27 and $currentDay <= 31) and ($day >= 1 and $day <= 4);
+        return '-';
+    }
+
+    /**
+     * @param $type
+     * @param $message
+     */
+    public static function showFlash($type, $message)
+    {
+        session()->flash($type, $message);
+    }
+
+    /**
+     * @param $text
+     * @param $number
+     * @return string
+     */
+    public static function showInitialPersinaWords($text, $number)
+    {
+        return Str::limit($text, $number, '...');
+    }
+
+    public static function showOnlyNumber($spot)
+    {
+        $number = $spot['number'];
+        return (preg_match('/[a-zA-Z]/i', $number)) ? substr($number, 0, -1) : $number;
     }
 
     public static function showOtherDashboard()
@@ -383,47 +440,12 @@ class Utility
     }
 
     /**
-     * @return string
-     */
-    public static function showDateDivider(): string
-    {
-        return '-';
-    }
-
-    /**
      * @param $reservation
      */
     public static function showPopUpDetails($reservation)
     {
         echo "<i class='fas fa-user-alt'></i> {$reservation->user->fullname} <hr> <i class='fas fa-clock'></i>"
             . "<span class='p-2'>" . convertTimeStamp($reservation->end_date) . "</span>";
-    }
-
-
-    public static function showOnlyNumber($spot)
-    {
-        $number = $spot['number'];
-        return (preg_match('/[a-zA-Z]/i', $number)) ? substr($number, 0, -1) : $number;
-    }
-
-    /**
-     * @param $type
-     * @param $message
-     */
-    public static function showFlash($type, $message)
-    {
-        session()->flash($type, $message);
-    }
-
-
-    /**
-     * @param $text
-     * @param $number
-     * @return string
-     */
-    public static function showInitialPersinaWords($text, $number)
-    {
-        return Str::limit($text, $number, '...');
     }
 
     /**

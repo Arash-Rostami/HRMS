@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProfileResource\Pages;
 
 use App\Services\Date;
+use App\Services\DepartmentDetails;
 use Carbon\Carbon;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
@@ -22,6 +23,14 @@ use Morilog\Jalali\Jalalian;
 class Admin
 {
 
+
+    public static function filterDepartment(): SelectFilter
+    {
+        $departmentCodes = array_keys(DepartmentDetails::$departments);
+
+        return SelectFilter::make('department')
+            ->options(array_combine($departmentCodes, $departmentCodes));
+    }
 
     public static function filterEmploymentStatus(): SelectFilter
     {
@@ -43,314 +52,13 @@ class Admin
             ]);
     }
 
-    public static function filterDepartment(): SelectFilter
-    {
-        return SelectFilter::make('department')
-            ->options([
-                'MG' => 'MG',
-                'HR' => 'HR',
-                'MA' => 'MA',
-                'AS' => 'AS',
-                'CM' => 'CM',
-                'CP' => 'CP',
-                'AC' => 'AC',
-                'PS' => 'PS',
-                'WP' => 'WP',
-                'MK' => 'MK',
-                'CH' => 'CH',
-                'SP' => 'SP',
-                'CX' => 'CX',
-                'BD' => 'BD',
-                'HC' => 'HC',
-                'SO' => 'SO',
-                'PERSORE' => 'PERSORE'
-            ]);
-    }
-
-
     /**
-     * @return array[]
+     * @return MarkdownEditor
      */
-    public static function getDaysMonthsYears(): array
+    public static function getAccessibility(): MarkdownEditor
     {
-        $currentYear = Jalalian::now()->getYear();
-        $birthYear = [];
-        $years = [];
-        $months = [];
-        $days = [];
-
-
-        for ($day = 1; $day <= 31; $day++) {
-            $days[$day] = (string)$day;
-        }
-
-        for ($month = 1; $month <= 12; $month++) {
-            $months[$month] = (string)$month;
-        }
-
-        for ($year = 1330; $year <= $currentYear; $year++) {
-            $birthYear[$year] = (string)$year;
-        }
-
-        for ($year = 1375; $year <= $currentYear; $year++) {
-            $years[$year] = (string)$year;
-        }
-        return array($birthYear, $years, $months, $days);
-    }
-
-    /**
-     * @return Select
-     */
-    public static function getUser(): Select
-    {
-        return Select::make('user_id')
-            ->label('User')
-            ->required()
-            ->autofocus()
-            ->relationship('user', 'id', fn(Builder $query) => $query->where('forename', 'not like', 'Guest%')->where('status', 'active')->orderBy('surname')->orderBy('forename'))
-            ->getOptionLabelFromRecordUsing(fn(Model $record) => "{$record->surname}, {$record->forename} ");
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getPersonnelCode(): TextInput
-    {
-        return TextInput::make('personnel_id')
-            ->label('Personnel ID')
-            ->required()
-            ->numeric()
-            ->placeholder('type in English');
-    }
-
-    /**
-     * @return Select
-     */
-    public static function getEmploymentType(): Select
-    {
-        return Select::make('employment_type')
-            ->label('Employment Type')
-            ->required()
-            ->options([
-                'fulltime' => 'Full-time',
-                'parttime' => 'Part-time',
-                'contract' => 'Contract',
-            ]);
-    }
-
-    /**
-     * @return Select
-     */
-    public static function getEmploymentStatus(): Select
-    {
-        return Select::make('employment_status')
-            ->label('Employment Status')
-            ->required()
-            ->options([
-                'probational' => 'Probational',
-                'working' => 'Working',
-                'terminated' => 'Terminated',
-            ]);
-    }
-
-    /**
-     * @return Select
-     */
-    public static function getDepartment(): Select
-    {
-        return Select::make('department')
-            ->required()
-            ->options([
-                'MG' => 'MG - 🚫 deprecated',
-                'HR' => 'HR - Human Resources',
-                'MA' => 'MA - Management',
-                'AS' => 'AS - Administration & Support',
-                'CM' => 'CM - Commercial Import Operation',
-                'CP' => 'CP - Celluloid Products',
-                'AC' => 'AC - Accounting',
-                'PS' => 'PS - Planning & System',
-                'WP' => 'WP - Wood Products',
-                'MK' => 'MK - Marketing',
-                'CH' => 'CH - Chemical & Polymer Products',
-                'SP' => 'SP - Sales Platform',
-                'CX' => 'CX - Commercial Export Operation',
-                'BD' => 'BD - Business Development',
-                'HC' => 'HC - Human Capital',
-                'SO' => 'SO - Solar Panel',
-                'PERSORE' => 'PERSORE - Mining Department'
-            ]);
-    }
-
-    /**
-     * @return Select
-     */
-    public static function getPosition(): Select
-    {
-        return Select::make('position')
-            ->required()
-            ->options([
-                'manager' => 'Manager',
-                'supervisor' => 'Supervisor',
-                'senior' => 'Senior',
-                'expert' => 'Expert',
-                'employee' => 'Employee',
-            ]);
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getInsurance(): TextInput
-    {
-        return TextInput::make('insurance')
-            ->numeric()
-            ->placeholder('# of years');
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getWorkExperience(): TextInput
-    {
-        return TextInput::make('work_experience')
-            ->label('Work Experience')
-            ->placeholder('# of years');
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getIdCardNum(): TextInput
-    {
-        return TextInput::make('id_card_number')
-            ->label('ID Card Number')
-            ->autofocus()
-            ->numeric()
-            ->placeholder('شماره کارت ملی');
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getIdBookletNum(): TextInput
-    {
-        return TextInput::make('id_booklet_number')
-            ->label('ID Booklet Number')
-            ->numeric()
-            ->placeholder('شماره شناسنامه');
-    }
-
-    /**
-     * @return Select
-     */
-    public static function getGender(): Select
-    {
-        return Select::make('gender')
-            ->options([
-                'female' => 'Female',
-                'male' => 'Male'
-            ]);
-    }
-
-    /**
-     * @return Select
-     */
-    public static function getMaritalStatus(): Select
-    {
-        return Select::make('marital_status')
-            ->label('Marital Status')
-            ->options([
-                'single' => 'Single',
-                'married' => 'Married',
-            ]);
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getNumOfChildren(): TextInput
-    {
-        return TextInput::make('number_of_children')
-            ->numeric()
-            ->placeholder('#');
-    }
-
-    /**
-     * @return Select
-     */
-    public static function getDegree(): Select
-    {
-        return Select::make('degree')
-            ->options([
-                'undergraduate' => 'Undergraduate',
-                'graduate' => 'Graduate',
-                'postgraduate' => 'Postgraduate',
-            ]);
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getField(): TextInput
-    {
-        return TextInput::make('field')
-            ->placeholder('of study');
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getLandline(): TextInput
-    {
-        return TextInput::make('landline')
-            ->autofocus()
-            ->tel()
-            ->placeholder('#');
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getCellphone(): TextInput
-    {
-        return TextInput::make('cellphone')
-            ->tel()
-            ->placeholder('#');
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getEmergencyPhone(): TextInput
-    {
-        return TextInput::make('emergency_phone')
-            ->tel()
-            ->placeholder('#');
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getEmergencyRel(): TextInput
-    {
-        return TextInput::make('emergency_relationship');
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getLicensePlate(): TextInput
-    {
-        return TextInput::make('license_plate');
-    }
-
-    /**
-     * @return TextInput
-     */
-    public static function getZipCode(): TextInput
-    {
-        return TextInput::make('zip_code')
-            ->placeholder('#');
+        return MarkdownEditor::make('accessibility')
+            ->disableAllToolbarButtons();
     }
 
     /**
@@ -359,15 +67,6 @@ class Admin
     public static function getAddress(): MarkdownEditor
     {
         return MarkdownEditor::make('address')
-            ->disableAllToolbarButtons();
-    }
-
-    /**
-     * @return MarkdownEditor
-     */
-    public static function getAccessibility(): MarkdownEditor
-    {
-        return MarkdownEditor::make('accessibility')
             ->disableAllToolbarButtons();
     }
 
@@ -403,6 +102,322 @@ class Admin
         return Select::make('birthYear')
             ->label('Birth Year')
             ->options($birthYear);
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getCellphone(): TextInput
+    {
+        return TextInput::make('cellphone')
+            ->tel()
+            ->placeholder('#');
+    }
+
+    /**
+     * @return array[]
+     */
+    public static function getDaysMonthsYears(): array
+    {
+        $currentYear = Jalalian::now()->getYear();
+        $birthYear = [];
+        $years = [];
+        $months = [];
+        $days = [];
+
+
+        for ($day = 1; $day <= 31; $day++) {
+            $days[$day] = (string)$day;
+        }
+
+        for ($month = 1; $month <= 12; $month++) {
+            $months[$month] = (string)$month;
+        }
+
+        for ($year = 1330; $year <= $currentYear; $year++) {
+            $birthYear[$year] = (string)$year;
+        }
+
+        for ($year = 1375; $year <= $currentYear; $year++) {
+            $years[$year] = (string)$year;
+        }
+        return array($birthYear, $years, $months, $days);
+    }
+
+    /**
+     * @return Select
+     */
+    public static function getDegree(): Select
+    {
+        return Select::make('degree')
+            ->options([
+                'undergraduate' => 'Undergraduate',
+                'graduate' => 'Graduate',
+                'postgraduate' => 'Postgraduate',
+            ]);
+    }
+
+    /**
+     * @return Select
+     */
+    public static function getDepartment(): Select
+    {
+        return Select::make('department')
+            ->required()
+            ->options(
+                collect(DepartmentDetails::$departments)
+                    ->map(function ($details, $code) {
+                        $name = $details['name'];
+
+                        if (str_contains(strtolower($name), 'deprecated')) {
+                            return $code . ' - 🚫 deprecated';
+                        }
+                        return $code . ' - ' . $name;
+                    })
+                    ->all()
+            );
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getEmergencyPhone(): TextInput
+    {
+        return TextInput::make('emergency_phone')
+            ->tel()
+            ->placeholder('#');
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getEmergencyRel(): TextInput
+    {
+        return TextInput::make('emergency_relationship');
+    }
+
+    /**
+     * @return Select
+     */
+    public static function getEmploymentStatus(): Select
+    {
+        return Select::make('employment_status')
+            ->label('Employment Status')
+            ->required()
+            ->options([
+                'probational' => 'Probational',
+                'working' => 'Working',
+                'terminated' => 'Terminated',
+            ]);
+    }
+
+    /**
+     * @return Select
+     */
+    public static function getEmploymentType(): Select
+    {
+        return Select::make('employment_type')
+            ->label('Employment Type')
+            ->required()
+            ->options([
+                'fulltime' => 'Full-time',
+                'parttime' => 'Part-time',
+                'contract' => 'Contract',
+            ]);
+    }
+
+    /**
+     * @param array $days
+     * @return Select
+     */
+    public static function getEndDay(array $days): Select
+    {
+        return Select::make('endDay')
+            ->label('End Day')
+            ->options($days);
+    }
+
+    /**
+     * @param array $months
+     * @return Select
+     */
+    public static function getEndMonth(array $months): Select
+    {
+        return Select::make('endMonth')
+            ->label('End Month')
+            ->options($months);
+    }
+
+    /**
+     * @param array $years
+     * @return Select
+     */
+    public static function getEndYear(array $years): Select
+    {
+        return Select::make('endYear')
+            ->label('End Year')
+            ->options($years);
+    }
+
+    /**
+     * @return MarkdownEditor
+     */
+    public static function getFavColors(): MarkdownEditor
+    {
+        return MarkdownEditor::make('favorite_colors')
+            ->label('Fav Colors')
+            ->disableAllToolbarButtons();
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getField(): TextInput
+    {
+        return TextInput::make('field')
+            ->placeholder('of study');
+    }
+
+    /**
+     * @return Select
+     */
+    public static function getGender(): Select
+    {
+        return Select::make('gender')
+            ->options([
+                'female' => 'Female',
+                'male' => 'Male'
+            ]);
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getIdBookletNum(): TextInput
+    {
+        return TextInput::make('id_booklet_number')
+            ->label('ID Booklet Number')
+            ->numeric()
+            ->placeholder('شماره شناسنامه');
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getIdCardNum(): TextInput
+    {
+        return TextInput::make('id_card_number')
+            ->label('ID Card Number')
+            ->autofocus()
+            ->numeric()
+            ->placeholder('شماره کارت ملی');
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getInsurance(): TextInput
+    {
+        return TextInput::make('insurance')
+            ->numeric()
+            ->placeholder('# of years');
+    }
+
+    /**
+     * @return MarkdownEditor
+     */
+    public static function getInterests(): MarkdownEditor
+    {
+        return MarkdownEditor::make('interests')
+            ->disableAllToolbarButtons();
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getLandline(): TextInput
+    {
+        return TextInput::make('landline')
+            ->autofocus()
+            ->tel()
+            ->placeholder('#');
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getLicensePlate(): TextInput
+    {
+        return TextInput::make('license_plate');
+    }
+
+    /**
+     * @return Select
+     */
+    public static function getMaritalStatus(): Select
+    {
+        return Select::make('marital_status')
+            ->label('Marital Status')
+            ->options([
+                'single' => 'Single',
+                'married' => 'Married',
+            ]);
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getNumOfChildren(): TextInput
+    {
+        return TextInput::make('number_of_children')
+            ->numeric()
+            ->placeholder('#');
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getPersonnelCode(): TextInput
+    {
+        return TextInput::make('personnel_id')
+            ->label('Personnel ID')
+            ->required()
+            ->numeric()
+            ->placeholder('type in English');
+    }
+
+    /**
+     * @return Select
+     */
+    public static function getPosition(): Select
+    {
+        return Select::make('position')
+            ->required()
+            ->options([
+                'manager' => 'Manager',
+                'supervisor' => 'Supervisor',
+                'senior' => 'Senior',
+                'expert' => 'Expert',
+                'employee' => 'Employee',
+            ]);
+    }
+
+    /**
+     * @return FileUpload
+     */
+    public static function getProfileImage(): FileUpload
+    {
+        return FileUpload::make('image')
+            ->image()
+            ->disk('filament')
+            ->directory('/img/user/profiles/')
+            ->maxSize(1024)
+            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'])
+            ->enableOpen()
+            ->enableDownload()
+            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                return (string)Str::of($file->getClientOriginalName())->prepend('HR-profile-image-');
+            });
     }
 
     /**
@@ -442,76 +457,6 @@ class Admin
     }
 
     /**
-     * @param array $days
-     * @return Select
-     */
-    public static function getEndDay(array $days): Select
-    {
-        return Select::make('endDay')
-            ->label('End Day')
-            ->options($days);
-    }
-
-    /**
-     * @param array $months
-     * @return Select
-     */
-    public static function getEndMonth(array $months): Select
-    {
-        return Select::make('endMonth')
-            ->label('End Month')
-            ->options($months);
-    }
-
-    /**
-     * @param array $years
-     * @return Select
-     */
-    public static function getEndYear(array $years): Select
-    {
-        return Select::make('endYear')
-            ->label('End Year')
-            ->options($years);
-    }
-
-    /**
-     * @return MarkdownEditor
-     */
-    public static function getInterests(): MarkdownEditor
-    {
-        return MarkdownEditor::make('interests')
-            ->disableAllToolbarButtons();
-    }
-
-    /**
-     * @return MarkdownEditor
-     */
-    public static function getFavColors(): MarkdownEditor
-    {
-        return MarkdownEditor::make('favorite_colors')
-            ->label('Fav Colors')
-            ->disableAllToolbarButtons();
-    }
-
-    /**
-     * @return FileUpload
-     */
-    public static function getProfileImage(): FileUpload
-    {
-        return FileUpload::make('image')
-            ->image()
-            ->disk('filament')
-            ->directory('/img/user/profiles/')
-            ->maxSize(1024 )
-            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'])
-            ->enableOpen()
-            ->enableDownload()
-            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                return (string)Str::of($file->getClientOriginalName())->prepend('HR-profile-image-');
-            });
-    }
-
-    /**
      * @return FileUpload
      */
     public static function getUploadingFiles(): FileUpload
@@ -541,18 +486,208 @@ class Admin
             });
     }
 
+    /**
+     * @return Select
+     */
+    public static function getUser(): Select
+    {
+        return Select::make('user_id')
+            ->label('User')
+            ->required()
+            ->autofocus()
+            ->relationship('user', 'id', fn(Builder $query) => $query->where('forename', 'not like', 'Guest%')->where('status', 'active')->orderBy('surname')->orderBy('forename'))
+            ->getOptionLabelFromRecordUsing(fn(Model $record) => "{$record->surname}, {$record->forename} ");
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getWorkExperience(): TextInput
+    {
+        return TextInput::make('work_experience')
+            ->label('Work Experience')
+            ->placeholder('# of years');
+    }
+
+    /**
+     * @return TextInput
+     */
+    public static function getZipCode(): TextInput
+    {
+        return TextInput::make('zip_code')
+            ->placeholder('#');
+    }
+
+    /**
+     * @return TextColumn
+     */
+    public static function showAccessibility(): TextColumn
+    {
+        return TextColumn::make('accessibility')
+            ->toggleable()
+            ->searchable();
+    }
+
+    /**
+     * @return TextColumn
+     */
+    public static function showAddress(): TextColumn
+    {
+        return TextColumn::make('address')
+            ->toggleable();
+    }
 
     /**
      * @return BadgeColumn
      */
-    public static function showPersonnelCode(): BadgeColumn
+    public static function showBirthDate(): BadgeColumn
     {
-        return BadgeColumn::make('personnel_id')
+        return BadgeColumn::make('birthdate')
             ->sortable()
-            ->label('Personnel #')
-            ->color('primary')
+            ->searchable()
+            ->getStateUsing(fn(Model $record) => !is_null($record->birthdate) ? Date::convertToFarsiWithoutTime($record->birthdate) : '')
+            ->tooltip(fn(Model $record) => !is_null($record->birthdate) ? Carbon::parse($record->birthdate)->format('Y-m-d') : '');
+    }
+
+    /**
+     * @return BadgeColumn
+     */
+    public static function showCellphoneNum(): BadgeColumn
+    {
+        return BadgeColumn::make('cellphone')
+            ->label('Cellphone #')
+            ->color('text-gray-500')
             ->searchable()
             ->size('sm');
+    }
+
+    /**
+     * @return BadgeColumn
+     */
+    public static function showDegree(): BadgeColumn
+    {
+        return BadgeColumn::make('degree')
+            ->sortable()
+            ->enum([
+                'undergraduate' => 'Under-graduate',
+                'graduate' => 'Graduate',
+                'postgraduat    e' => 'Post-graduate',
+            ])
+            ->color('secondary')
+            ->searchable()
+            ->size('sm');
+    }
+
+    /**
+     * @return BadgeColumn
+     */
+    public static function showDepartment(): BadgeColumn
+    {
+        return BadgeColumn::make('department')
+            ->sortable()
+            ->color('secondary')
+            ->searchable()
+            ->size('sm');
+    }
+
+    /**
+     * @return BadgeColumn
+     */
+    public static function showEmergencyNum(): BadgeColumn
+    {
+        return BadgeColumn::make('emergency_phone')
+            ->label('Emergency phone #')
+            ->color('text-gray-500')
+            ->searchable()
+            ->size('sm');
+    }
+
+    /**
+     * @return TextColumn
+     */
+    public static function showEmergencyRelationship(): TextColumn
+    {
+        return TextColumn::make('emergency_relationship')
+            ->toggleable()
+            ->searchable();
+    }
+
+    /**
+     * @return BadgeColumn
+     */
+    public static function showEmploymentStatus(): BadgeColumn
+    {
+        return BadgeColumn::make('employment_status')
+            ->label('Employment Status')
+            ->sortable()
+            ->enum([
+                'probational' => 'Probationary',
+                'working' => 'Working',
+                'terminated' => 'Terminated',
+            ])
+            ->colors([
+                'warning' => 'probational',
+                'success' => 'working',
+                'danger' => 'terminated'
+            ])
+            ->searchable()
+            ->size('sm');
+    }
+
+    /**
+     * @return BadgeColumn
+     */
+    public static function showEmploymentType(): BadgeColumn
+    {
+        return BadgeColumn::make('employment_type')
+            ->label('Employment Type')
+            ->sortable()
+            ->enum([
+                'parttime' => 'Part-time',
+                'fulltime' => 'Full-time',
+                'contract' => 'Contract',
+            ])
+            ->colors([
+                'warning' => 'parttime',
+                'success' => 'fulltime',
+                'danger' => 'contract',
+            ])
+            ->searchable()
+            ->size('sm');
+    }
+
+    /**
+     * @return BadgeColumn
+     */
+    public static function showEndDate(): BadgeColumn
+    {
+        return BadgeColumn::make('end_date')
+            ->sortable()
+            ->label('End Date')
+            ->date()
+            ->toggleable()
+            ->searchable()
+            ->formatStateUsing(fn(Model $record) => !is_null($record->end_date) ? Date::convertToFarsiWithoutTime($record->end_date) : '')
+            ->tooltip(fn(Model $record) => Carbon::parse($record->end_date)->diffInDays() . " days ago");
+    }
+
+    /**
+     * @return TextColumn
+     */
+    public static function showFavColors(): TextColumn
+    {
+        return TextColumn::make('favorite_colors')
+            ->toggleable()
+            ->searchable();
+    }
+
+    /**
+     * @return TextColumn
+     */
+    public static function showFieldOfStudy(): TextColumn
+    {
+        return TextColumn::make('field')
+            ->searchable();
     }
 
     /**
@@ -586,6 +721,32 @@ class Admin
     }
 
     /**
+     * @return BadgeColumn
+     */
+    public static function showIdBookletNum(): BadgeColumn
+    {
+        return BadgeColumn::make('id_booklet_number')
+            ->label('ID Booklet #')
+            ->color('text-gray-500')
+            ->searchable()
+            ->size('sm')
+            ->tooltip(fn(Model $record): string => "شناسنامه");
+    }
+
+    /**
+     * @return BadgeColumn
+     */
+    public static function showIdCardNum(): BadgeColumn
+    {
+        return BadgeColumn::make('id_card_number')
+            ->label('ID Card #')
+            ->color('text-gray-500')
+            ->searchable()
+            ->size('sm')
+            ->tooltip(fn(Model $record): string => "کارت ملی");
+    }
+
+    /**
      * @return ImageColumn
      */
     public static function showImage(): ImageColumn
@@ -605,125 +766,6 @@ class Admin
     }
 
     /**
-     * @return BadgeColumn
-     */
-    public static function showIdCardNum(): BadgeColumn
-    {
-        return BadgeColumn::make('id_card_number')
-            ->label('ID Card #')
-            ->color('text-gray-500')
-            ->searchable()
-            ->size('sm')
-            ->tooltip(fn(Model $record): string => "کارت ملی");
-    }
-
-    /**
-     * @return BadgeColumn
-     */
-    public static function showIdBookletNum(): BadgeColumn
-    {
-        return BadgeColumn::make('id_booklet_number')
-            ->label('ID Booklet #')
-            ->color('text-gray-500')
-            ->searchable()
-            ->size('sm')
-            ->tooltip(fn(Model $record): string => "شناسنامه");
-    }
-
-    /**
-     * @return BadgeColumn
-     */
-    public static function showBirthDate(): BadgeColumn
-    {
-        return BadgeColumn::make('birthdate')
-            ->sortable()
-            ->searchable()
-            ->getStateUsing(fn(Model $record) => !is_null($record->birthdate) ? Date::convertToFarsiWithoutTime($record->birthdate) : '')
-            ->tooltip(fn(Model $record) => !is_null($record->birthdate) ? Carbon::parse($record->birthdate)->format('Y-m-d') : '');
-    }
-
-    /**
-     * @return BadgeColumn
-     */
-    public static function showEmploymentStatus(): BadgeColumn
-    {
-        return BadgeColumn::make('employment_status')
-            ->label('Employment Status')
-            ->sortable()
-            ->enum([
-                'probational' => 'Probationary',
-                'working' => 'Working',
-                'terminated' => 'Terminated',
-            ])
-            ->colors([
-                'warning' => 'probational',
-                'success' => 'working',
-                'danger' => 'terminated'
-            ])
-            ->searchable()
-            ->size('sm');
-    }
-
-    /**
-     * @return BadgeColumn
-     */
-    public static function showStartDate(): BadgeColumn
-    {
-        return BadgeColumn::make('start_date')
-            ->sortable()
-            ->label('Start Date')
-            ->searchable()
-            ->getStateUsing(fn(Model $record) => Date::convertToFarsiWithoutTime($record->start_date))
-            ->tooltip(fn(Model $record) => Carbon::parse($record->start_date)->diffInDays() . " days ago");
-    }
-
-    /**
-     * @return BadgeColumn
-     */
-    public static function showEmploymentType(): BadgeColumn
-    {
-        return BadgeColumn::make('employment_type')
-            ->label('Employment Type')
-            ->sortable()
-            ->enum([
-                'parttime' => 'Part-time',
-                'fulltime' => 'Full-time',
-                'contract' => 'Contract',
-            ])
-            ->colors([
-                'warning' => 'parttime',
-                'success' => 'fulltime',
-                'danger' => 'contract',
-            ])
-            ->searchable()
-            ->size('sm');
-    }
-
-    /**
-     * @return BadgeColumn
-     */
-    public static function showDepartment(): BadgeColumn
-    {
-        return BadgeColumn::make('department')
-            ->sortable()
-            ->color('secondary')
-            ->searchable()
-            ->size('sm');
-    }
-
-    /**
-     * @return BadgeColumn
-     */
-    public static function showPosition(): BadgeColumn
-    {
-        return BadgeColumn::make('position')
-            ->sortable()
-            ->color('secondary')
-            ->searchable()
-            ->size('sm');
-    }
-
-    /**
      * @return TextColumn
      */
     public static function showInsurance(): TextColumn
@@ -736,10 +778,9 @@ class Admin
     /**
      * @return TextColumn
      */
-    public static function showWorkExperience(): TextColumn
+    public static function showInterest(): TextColumn
     {
-        return TextColumn::make('work_experience')
-            ->sortable()
+        return TextColumn::make('interests')
             ->toggleable()
             ->searchable();
     }
@@ -747,27 +788,24 @@ class Admin
     /**
      * @return BadgeColumn
      */
-    public static function showDegree(): BadgeColumn
+    public static function showLandlineNum(): BadgeColumn
     {
-        return BadgeColumn::make('degree')
-            ->sortable()
-            ->enum([
-                'undergraduate' => 'Under-graduate',
-                'graduate' => 'Graduate',
-                'postgraduat    e' => 'Post-graduate',
-            ])
-            ->color('secondary')
+        return BadgeColumn::make('landline')
+            ->label('Landline #')
+            ->color('text-gray-500')
             ->searchable()
             ->size('sm');
     }
 
     /**
-     * @return TextColumn
+     * @return BadgeColumn
      */
-    public static function showFieldOfStudy(): TextColumn
+    public static function showLicensePlate(): BadgeColumn
     {
-        return TextColumn::make('field')
-            ->searchable();
+        return BadgeColumn::make('license_plate')
+            ->color('text-gray-500')
+            ->searchable()
+            ->size('sm');
     }
 
     /**
@@ -803,11 +841,12 @@ class Admin
     /**
      * @return BadgeColumn
      */
-    public static function showLandlineNum(): BadgeColumn
+    public static function showPersonnelCode(): BadgeColumn
     {
-        return BadgeColumn::make('landline')
-            ->label('Landline #')
-            ->color('text-gray-500')
+        return BadgeColumn::make('personnel_id')
+            ->sortable()
+            ->label('Personnel #')
+            ->color('primary')
             ->searchable()
             ->size('sm');
     }
@@ -815,11 +854,11 @@ class Admin
     /**
      * @return BadgeColumn
      */
-    public static function showCellphoneNum(): BadgeColumn
+    public static function showPosition(): BadgeColumn
     {
-        return BadgeColumn::make('cellphone')
-            ->label('Cellphone #')
-            ->color('text-gray-500')
+        return BadgeColumn::make('position')
+            ->sortable()
+            ->color('secondary')
             ->searchable()
             ->size('sm');
     }
@@ -827,34 +866,25 @@ class Admin
     /**
      * @return BadgeColumn
      */
-    public static function showEmergencyNum(): BadgeColumn
+    public static function showStartDate(): BadgeColumn
     {
-        return BadgeColumn::make('emergency_phone')
-            ->label('Emergency phone #')
-            ->color('text-gray-500')
+        return BadgeColumn::make('start_date')
+            ->sortable()
+            ->label('Start Date')
             ->searchable()
-            ->size('sm');
+            ->getStateUsing(fn(Model $record) => Date::convertToFarsiWithoutTime($record->start_date))
+            ->tooltip(fn(Model $record) => Carbon::parse($record->start_date)->diffInDays() . " days ago");
     }
 
     /**
      * @return TextColumn
      */
-    public static function showEmergencyRelationship(): TextColumn
+    public static function showWorkExperience(): TextColumn
     {
-        return TextColumn::make('emergency_relationship')
+        return TextColumn::make('work_experience')
+            ->sortable()
             ->toggleable()
             ->searchable();
-    }
-
-    /**
-     * @return BadgeColumn
-     */
-    public static function showLicensePlate(): BadgeColumn
-    {
-        return BadgeColumn::make('license_plate')
-            ->color('text-gray-500')
-            ->searchable()
-            ->size('sm');
     }
 
     /**
@@ -865,59 +895,5 @@ class Admin
         return TextColumn::make('zip_code')
             ->sortable()
             ->searchable();
-    }
-
-    /**
-     * @return TextColumn
-     */
-    public static function showAddress(): TextColumn
-    {
-        return TextColumn::make('address')
-            ->toggleable();
-    }
-
-    /**
-     * @return TextColumn
-     */
-    public static function showAccessibility(): TextColumn
-    {
-        return TextColumn::make('accessibility')
-            ->toggleable()
-            ->searchable();
-    }
-
-    /**
-     * @return TextColumn
-     */
-    public static function showInterest(): TextColumn
-    {
-        return TextColumn::make('interests')
-            ->toggleable()
-            ->searchable();
-    }
-
-    /**
-     * @return TextColumn
-     */
-    public static function showFavColors(): TextColumn
-    {
-        return TextColumn::make('favorite_colors')
-            ->toggleable()
-            ->searchable();
-    }
-
-    /**
-     * @return BadgeColumn
-     */
-    public static function showEndDate(): BadgeColumn
-    {
-        return BadgeColumn::make('end_date')
-            ->sortable()
-            ->label('End Date')
-            ->date()
-            ->toggleable()
-            ->searchable()
-            ->formatStateUsing(fn(Model $record) => !is_null($record->end_date) ? Date::convertToFarsiWithoutTime($record->end_date) : '')
-            ->tooltip(fn(Model $record) => Carbon::parse($record->end_date)->diffInDays() . " days ago");
     }
 }

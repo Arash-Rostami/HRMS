@@ -15,17 +15,17 @@
         <div>
             {{--                 Radio Nudge/Section --}}
             <x-user.music.radio/>
+            {{--  Calculator --}}
+
+            <x-user.calculator/>
+
             {{-- Main Dashboard Components --}}
             @if ( showMainDashboardComponents() )
-                {{--   Icon and Slogan Positioned on the Right Corner --}}
-                <x-user.navbar.nav></x-user.navbar.nav>
                 {{--                 CEO Monthly Question Section --}}
                 <x-user.question.main :questions="$questions"></x-user.question.main>
 
 
                 <div id="sortMe">
-                    {{-- NEW: Feed Section --}}
-                    <x-user.feed.main/>
                     {{--                Calendar Section--}}
                     <x-user.calendar.main></x-user.calendar.main>
 
@@ -65,6 +65,13 @@
                 @endif
             @endif
 
+
+            {{-- Feed Component Section --}}
+            @if ( hasChosenFeed() )
+                <x-user.feed.main/>
+            @endif
+
+
             {{-- Energy Component Section --}}
             @if ( hasChosenEnergy() )
                 <x-user.energy.main></x-user.energy.main>
@@ -86,10 +93,6 @@
                 <x-user.analytics.main></x-user.analytics.main>
             @endif
 
-            {{-- Surveys component Section --}}
-            @if( showSurvey())
-                <x-user.survey.surveys></x-user.survey.surveys>
-            @endif
 
             {{-- Suggestion component Section --}}
             @if( hasChosenSuggestion() )

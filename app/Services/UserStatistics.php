@@ -12,133 +12,45 @@ use Illuminate\Support\Facades\DB;
 class UserStatistics
 {
     static $departmentNames = [
-        'HR' => 'Human Resources',
-        'MA' => 'Management',
+        'AC' => 'Accounting',
         'AS' => 'Administration & Support',
+        'BD' => 'Business Development',
+        'BS' => 'Business Systems',
+        'CH' => 'Chemical & Polymer Products',
         'CM' => 'Commercial Import Operation',
         'CP' => 'Celluloid Products',
-        'AC' => 'Accounting',
-        'PS' => 'Planning & System',
-        'WP' => 'Wood Products',
-        'MK' => 'Marketing',
-        'CH' => 'Chemical & Polymer Products',
-        'SP' => 'Sales Platform',
         'CX' => 'Commercial Export Operation',
-        'BD' => 'Business Development',
-        'SO' => 'Solar Panels',
+        'HC' => 'Human Capital',
+        'HR' => 'Human Resources',
+        'MA' => 'Management',
+        'MK' => 'Marketing',
         'PERSORE' => 'PERSORE',
+        'PS' => 'Planning & System',
+        'SO' => 'Solar Panels',
+        'SP' => 'Sales Platform',
+        'WP' => 'Wood Products',
     ];
 
 
     static $departmentPersianNames = [
+        'AC' => 'مالی',
+        'AS' => 'اداری و پشتیبانی',
+        'BD' => 'توسعه کسب‌ وکار',
+        'BS' => ' سیستم های کسب وکار',
+        'CH' => 'فروش فراورده‌های  شیمیایی و پلیمری',
+        'CM' => 'واردات',
+        'CP' => 'فروش کاغذ و فراورده‌های سلولزی',
+        'CX' => 'بازرگانی صادرات',
+        'HC' => 'سرمایه انسانی',
         'HR' => 'منابع انسانی',
         'MA' => 'مدیریت',
-        'AS' => 'اداری و پشتیبانی',
-        'CM' => ' واردات ',
-        'CP' => 'فروش کاغذ و فراورده‌های سلولزی',
-        'AC' => 'مالی',
-        'PS' => 'برنامه‌ریزی و بهبود سیستم‌ها',
-        'WP' => 'فروش چوب',
         'MK' => 'بازاریابی',
-        'CH' => 'فروش فراورده‌های  شیمیایی و پلیمری',
-        'SP' => 'پلتفرم فروش',
-        'CX' => 'بازرگانی صادرات',
-        'BD' => 'توسعه کسب‌ وکار',
-        'SO' => 'پنل خورشیدی',
         'PERSORE' => 'پرسور',
+        'PS' => 'برنامه‌ریزی و بهبود سیستم‌ها',
+        'SO' => 'پنل خورشیدی',
+        'SP' => 'پلتفرم فروش',
+        'WP' => 'فروش چوب',
     ];
-
-
-    public static function getGenderAndMaritalStatus()
-    {
-        return Cache::remember('genderAndMaritalStatus', now()->addHours(8), function () {
-            $count = Profile::selectRaw(
-                "SUM(gender = 'male' AND marital_status = 'married') as marriedMale,
-                 SUM(gender = 'male' AND marital_status != 'married') as singleMale,
-                 SUM(gender = 'female' AND marital_status = 'married') as marriedFemale,
-                 SUM(gender = 'female' AND marital_status != 'married') as singleFemale"
-            )->first();
-
-            return [
-                'label' => ['Married ♂', 'Single ♂', 'Married ♀', 'Single ♀'],
-                'chartData' => [$count->marriedMale, $count->singleMale, $count->marriedFemale, $count->singleFemale]
-            ];
-        });
-    }
-
-
-    public static function getGenderAndPositions()
-    {
-        return Cache::remember('genderAndPositions', now()->addHours(8), function () {
-            $counts = Profile::whereIn('position', Profile::$positions)
-                ->selectRaw('position, gender, COUNT(*) as count')
-                ->groupBy('position', 'gender')
-                ->get()
-                ->groupBy('position');
-
-            $chartData = [
-                'label' => ['Male', 'Female'],
-                'positions' => Profile::$positions,
-                'data' => [],
-            ];
-
-            foreach (Profile::$positions as $position) {
-                $positionCounts = $counts->get($position) ?? collect();
-
-                $chartData['data'][$position] = [
-                    $positionCounts->where('gender', 'male')->pluck('count')->first() ?? 0,
-                    $positionCounts->where('gender', 'female')->pluck('count')->first() ?? 0,
-                ];
-            }
-
-            return $chartData;
-        });
-    }
-
-    public static function getEmploymentType()
-    {
-        return Cache::remember('employmentType', now()->addHours(8), function () {
-            $employmentData = Profile::selectRaw('employment_type, COUNT(*) as count')
-                ->groupBy('employment_type')
-                ->get();
-
-            $employmentCounts = [];
-            foreach ($employmentData as $data) {
-                $employmentCounts[$data->employment_type] = $data->count ?? 0;
-            }
-            return [
-                'label' => ['Full-time', 'Part-time', 'Contract'],
-                'chartData' => [
-                    $employmentCounts['fulltime'],
-                    $employmentCounts['parttime'],
-                    $employmentCounts['contract']
-                ]
-            ];
-        });
-    }
-
-    public static function getDepartmentDistribution()
-    {
-        return Cache::remember('departmentDistribution', now()->addHours(8), function () {
-            $departmentCodes = array_keys(static::$departmentNames);
-
-            $counts = Profile::whereIn('department', $departmentCodes)
-                ->selectRaw('department, COUNT(*) as count')
-                ->groupBy('department')
-                ->pluck('count', 'department');
-
-            $chartData = [];
-            foreach (static::$departmentNames as $code => $name) {
-                $chartData[] = $counts->get($code, 0);
-            }
-
-            return [
-                'label' => array_values(static::$departmentNames),
-                'chartData' => $chartData,
-            ];
-        });
-    }
-
 
     public static function getAgeDistribution()
     {
@@ -170,47 +82,6 @@ class UserStatistics
             return [
                 'labels' => array_keys($data['both']),
                 'data' => $data,
-            ];
-        });
-    }
-
-
-    public static function getEducationAndExperience()
-    {
-        return Cache::remember('educationAndExperience', now()->addHours(8), function () {
-            $degrees = ['undergraduate', 'graduate', 'postgraduate'];
-
-            $data = [];
-            $profiles = Profile::selectRaw(
-                "degree,
-                        CASE
-                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 0 AND 2 THEN '0-2'
-                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 3 AND 5 THEN '3-5'
-                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 6 AND 10 THEN '6-10'
-                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 11 AND 15 THEN '11-15'
-                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) >= 16 THEN '16+'
-                        END as experience_range,
-                        COUNT(*) as count")
-                ->whereNotNull('work_experience')
-                ->whereNotNull('degree')
-                ->whereIn('degree', $degrees)
-                ->groupBy('degree', 'experience_range')
-                ->get();
-
-            foreach (['0-2', '3-5', '6-10', '11-15'] as $range) {
-                foreach ($degrees as $degree) {
-                    $data[$range][$degree] = 0;
-                }
-            }
-
-            foreach ($profiles as $profile) {
-                $data[$profile->experience_range][$profile->degree] = $profile->count;
-            }
-
-            return [
-                'experienceRanges' => array_keys($data),
-                'degreeTypes' => $degrees,
-                'chartData' => $data,
             ];
         });
     }
@@ -262,6 +133,135 @@ class UserStatistics
                 'labels' => $totalDepartments,
                 'chartData' => $departmentAverages,
             ];
+        });
+    }
+
+    public static function getDepartmentDistribution()
+    {
+        return Cache::remember('departmentDistribution', now()->addHours(8), function () {
+            $departmentCodes = array_keys(static::$departmentNames);
+
+            $counts = Profile::whereIn('department', $departmentCodes)
+                ->selectRaw('department, COUNT(*) as count')
+                ->groupBy('department')
+                ->pluck('count', 'department');
+
+            $chartData = [];
+            foreach (static::$departmentNames as $code => $name) {
+                $chartData[] = $counts->get($code, 0);
+            }
+
+            return [
+                'label' => array_values(static::$departmentNames),
+                'chartData' => $chartData,
+            ];
+        });
+    }
+
+    public static function getEducationAndExperience()
+    {
+        return Cache::remember('educationAndExperience', now()->addHours(8), function () {
+            $degrees = ['undergraduate', 'graduate', 'postgraduate'];
+
+            $data = [];
+            $profiles = Profile::selectRaw(
+                "degree,
+                        CASE
+                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 0 AND 2 THEN '0-2'
+                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 3 AND 5 THEN '3-5'
+                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 6 AND 10 THEN '6-10'
+                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 11 AND 15 THEN '11-15'
+                            WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) >= 16 THEN '16+'
+                        END as experience_range,
+                        COUNT(*) as count")
+                ->whereNotNull('work_experience')
+                ->whereNotNull('degree')
+                ->whereIn('degree', $degrees)
+                ->groupBy('degree', 'experience_range')
+                ->get();
+
+            foreach (['0-2', '3-5', '6-10', '11-15'] as $range) {
+                foreach ($degrees as $degree) {
+                    $data[$range][$degree] = 0;
+                }
+            }
+
+            foreach ($profiles as $profile) {
+                $data[$profile->experience_range][$profile->degree] = $profile->count;
+            }
+
+            return [
+                'experienceRanges' => array_keys($data),
+                'degreeTypes' => $degrees,
+                'chartData' => $data,
+            ];
+        });
+    }
+
+    public static function getEmploymentType()
+    {
+        return Cache::remember('employmentType', now()->addHours(8), function () {
+            $employmentData = Profile::selectRaw('employment_type, COUNT(*) as count')
+                ->groupBy('employment_type')
+                ->get();
+
+            $employmentCounts = [];
+            foreach ($employmentData as $data) {
+                $employmentCounts[$data->employment_type] = $data->count ?? 0;
+            }
+            return [
+                'label' => ['Full-time', 'Part-time', 'Contract'],
+                'chartData' => [
+                    $employmentCounts['fulltime'],
+                    $employmentCounts['parttime'],
+                    $employmentCounts['contract']
+                ]
+            ];
+        });
+    }
+
+    public static function getGenderAndMaritalStatus()
+    {
+        return Cache::remember('genderAndMaritalStatus', now()->addHours(8), function () {
+            $count = Profile::selectRaw(
+                "SUM(gender = 'male' AND marital_status = 'married') as marriedMale,
+                 SUM(gender = 'male' AND marital_status != 'married') as singleMale,
+                 SUM(gender = 'female' AND marital_status = 'married') as marriedFemale,
+                 SUM(gender = 'female' AND marital_status != 'married') as singleFemale"
+            )->first();
+
+            return [
+                'label' => ['Married ♂', 'Single ♂', 'Married ♀', 'Single ♀'],
+                'chartData' => [$count->marriedMale, $count->singleMale, $count->marriedFemale, $count->singleFemale]
+            ];
+        });
+    }
+
+    public static function getGenderAndPositions()
+    {
+        return Cache::remember('genderAndPositions', now()->addHours(8), function () {
+            $counts = Profile::whereIn('position', Profile::$positions)
+                ->selectRaw('position, gender, COUNT(*) as count')
+                ->groupBy('position', 'gender')
+                ->get()
+                ->groupBy('position');
+
+            $chartData = [
+                'label' => ['Male', 'Female'],
+                'positions' => Profile::$positions,
+                'data' => [],
+            ];
+
+            foreach (Profile::$positions as $position) {
+                $positionCounts = $counts->get($position) ?? collect();
+
+                $chartData['data'][$position] = [
+                    $positionCounts->where('gender', 'male')->pluck('count')->first() ?? 0,
+                    $positionCounts->where('gender', 'female')->pluck('count')->first() ?? 0,
+                ];
+            }
+
+            return $chartData;
         });
     }
 

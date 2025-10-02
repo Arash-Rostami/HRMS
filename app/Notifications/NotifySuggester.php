@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Http\Livewire\suggestion\SuggestionNotifier;
+use App\Http\Livewire\Suggestion\SuggestionNotifier;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;

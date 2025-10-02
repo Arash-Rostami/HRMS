@@ -2,11 +2,11 @@
 
 namespace App\Http\Livewire;
 
-use App\Http\Livewire\suggestion\ReviewSubmission;
-use App\Http\Livewire\suggestion\SuggestionData;
-use App\Http\Livewire\suggestion\SuggestionNotifier;
-use App\Http\Livewire\suggestion\SuggestionSubmission;
-use App\Http\Livewire\suggestion\SuggestionValidation;
+use App\Http\Livewire\Suggestion\ReviewSubmission;
+use App\Http\Livewire\Suggestion\SuggestionData;
+use App\Http\Livewire\Suggestion\SuggestionNotifier;
+use App\Http\Livewire\Suggestion\SuggestionSubmission;
+use App\Http\Livewire\Suggestion\SuggestionValidation;
 use App\Models\Review;
 use App\Models\Suggestion;
 use Livewire\Component;

@@ -1,7 +1,8 @@
 <nav>
     <div
+        id="header"
         @class([
-           'text-gray-900 mb-12 opacity-100 bg-transparent persol-farsi-font rtl-direction',
+           'text-gray-900 mb-12 opacity-100 bg-transparent persol-farsi-font rtl-direction z-[100]',
            'text-gray-300 ' => isDarkMode(),
          ])
         dir="rtl"
@@ -23,6 +24,7 @@
                     }
                 }
             }"
+        x-cloak
         x-init="
             $watch('version', () => handleNavVisibility());
             $watch('presence', () => handleNavVisibility());
@@ -93,7 +95,7 @@
 
                     <!-- Reservation Section -->
                     <div @class([
-                                'flex items-center justify-center py-2.5 px-5 rounded-lg mx-auto min-w-0',
+                                'flex lg:hidden items-center justify-center py-2.5 px-5 rounded-lg mx-auto min-w-0',
                                 'bg-gray-800/50' => isDarkMode(),
                                 'bg-gray-200/30' => !isDarkMode(),
                             ])>
@@ -240,7 +242,7 @@
                             </button>
                         </x-slot>
 
-                        <x-slot name="content" class="hover:border-none focus:border-none">
+                        <x-slot name="content" class="hover:border-none focus:border-none z-[10000000]">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <x-dropdown-link
@@ -275,6 +277,8 @@
                 </div>
             </div>
         </div>
+        <!-- Modules NAV BAR -->
+        <x-user.navbar.nav :hasActiveModule="$hasActiveModule"/>
 
         <!-- Overlay -->
         <div x-ref="myNav"

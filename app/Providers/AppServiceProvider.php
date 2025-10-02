@@ -10,9 +10,7 @@ use App\Filament\Resources\DMSResource;
 use App\Filament\Resources\EnergyTestResource;
 use App\Filament\Resources\EventResource;
 use App\Filament\Resources\FAQResource;
-use App\Filament\Resources\FeedbackResource;
 use App\Filament\Resources\FeedResource;
-use App\Filament\Resources\InstantMessageResource;
 use App\Filament\Resources\JobResource;
 use App\Filament\Resources\LinkResource;
 use App\Filament\Resources\ParkResource;
@@ -25,7 +23,6 @@ use App\Filament\Resources\ReportResource;
 use App\Filament\Resources\SeatResource;
 use App\Filament\Resources\SpotResource;
 use App\Filament\Resources\SuggestionProcessResource;
-use App\Filament\Resources\SurveyResource;
 use App\Filament\Resources\TicketResource;
 use App\Filament\Resources\UserResource;
 use Filament\Facades\Filament;
@@ -67,34 +64,30 @@ class AppServiceProvider extends ServiceProvider
             $builder->groups([
                 NavigationGroup::make('Reservation Panel')
                     ->items([
-                        ...ParkResource::getNavigationItems(),
-                        ...DeskResource::getNavigationItems(),
                         ...CancellationResource::getNavigationItems(),
+                        ...DeskResource::getNavigationItems(),
+                        ...ParkResource::getNavigationItems(),
                     ]),
                 NavigationGroup::make('User Panel')
                     ->items([
                         ...AppResource::getNavigationItems(),
-                        ...EnergyTestResource::getNavigationItems(),
-                        ...PhotoResource::getNavigationItems(),
-                        ...FeedResource::getNavigationItems(),
                         ...DelegationResource::getNavigationItems(),
                         ...DMSResource::getNavigationItems(),
-                        ...QuestionResource::getNavigationItems(),
-//                        ...ResponseResource::getNavigationItems(),
-                        ...FAQResource::getNavigationItems(),
-                        ...UserResource::getNavigationItems(),
-                        ...ProfileResource::getNavigationItems(),
-                        ...PostResource::getNavigationItems(),
-                        ...LinkResource::getNavigationItems(),
-                        ...JobResource::getNavigationItems(),
-                        ...InstantMessageResource::getNavigationItems(),
-//                        ...SuggestionResource::getNavigationItems(),
-                        ...SuggestionProcessResource::getNavigationItems(),
-                        ...FeedbackResource::getNavigationItems(),
-                        ...SurveyResource::getNavigationItems(),
-                        ...TicketResource::getNavigationItems(),
-                        ...ReportResource::getNavigationItems(),
+                        ...EnergyTestResource::getNavigationItems(),
                         ...EventResource::getNavigationItems(),
+                        ...FAQResource::getNavigationItems(),
+                        ...FeedResource::getNavigationItems(),
+                        ...JobResource::getNavigationItems(),
+                        ...LinkResource::getNavigationItems(),
+                        ...PhotoResource::getNavigationItems(),
+                        ...PostResource::getNavigationItems(),
+                        ...ProfileResource::getNavigationItems(),
+                        ...QuestionResource::getNavigationItems(),
+                        //...ResponseResource::getNavigationItems(),
+                        ...ReportResource::getNavigationItems(),
+                        ...SuggestionProcessResource::getNavigationItems(),
+                        ...TicketResource::getNavigationItems(),
+                        ...UserResource::getNavigationItems(),
                     ]),
                 NavigationGroup::make('Raw Data')
                     ->items([
@@ -115,7 +108,5 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function register()
-    {
-        //
-    }
+    {}
 }

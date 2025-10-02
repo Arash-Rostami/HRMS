@@ -91,7 +91,7 @@
         <label class="block mb-2" for="number_of_children">
             <i class="fa fa-child ml-2"></i>تعداد فرزند
         </label>
-        <input wire:model="numberOfChildren" type="number" id="number_of_children" required
+        <input wire:model.defer="numberOfChildren" type="number" id="number_of_children"  value="0" required
                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
         @error('numberOfChildren') <p class="text-red-500 text-xs italic">{{ $message }}</p> @enderror
     </div>

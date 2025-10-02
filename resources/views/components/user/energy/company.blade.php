@@ -1,10 +1,10 @@
 @php
     $scoreConfig = [
-        'physique' => ['label' => 'جسم',   'color' => 'blue'],
-        'emotion'  => ['label' => 'احساس',  'color' => 'red'],
-        'mind'     => ['label' => 'ذهن',    'color' => 'green'],
-        'soul'     => ['label' => 'روح',    'color' => 'yellow'],
-        'overall'  => ['label' => 'کل',     'color' => 'purple'],
+        'physique' => ['label' => 'جسم',   'style' => 'background: #3e2f24;'],
+        'emotion'  => ['label' => 'احساس', 'style' => 'background: #52585b;'],
+        'mind'     => ['label' => 'ذهن',    'style' => 'background: #1f2933;'],
+        'soul'     => ['label' => 'روح',    'style' => 'background: #7a5a48;'],
+        'overall'  => ['label' => 'کل',     'style' => 'background: #000000;'],
     ];
 
     $cards = [['scores' => $companyAverages, 'name' => 'میانگین شرکت']];
@@ -26,16 +26,16 @@
                 <div class="grid grid-cols-5 gap-4 text-center">
                     @foreach(array_reverse($scoreConfig, true) as $key => $config)
                         <div class="flex flex-col items-center">
-                            <div class="w-8 h-24 bg-{{ $config['color'] }}-500 rounded relative mb-2"
-                                 style="height: calc({{ $card['scores'][$key] ?? 0 }} * 6px + 24px);">
-                                <span class=" text-xs font-bold text-black">
+                            <div
+                                class="w-8 rounded relative mb-2 overflow-hidden shadow-lg transform transition-all duration-300"
+                                style="height: calc({{ $card['scores'][$key] ?? 0 }} * 6px + 24px); {{ $config['style'] }}">
+                                <span class="text-xs font-bold text-white absolute left-1/2 -translate-x-1/2 bottom-1">
                                     {{ round($card['scores'][$key] ?? 0, 1) }}
                                 </span>
                             </div>
                             <span class="text-xs">{{ $config['label'] }}</span>
                         </div>
                     @endforeach
-
                 </div>
             </div>
         @endforeach

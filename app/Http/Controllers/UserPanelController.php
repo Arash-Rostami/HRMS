@@ -23,18 +23,6 @@ use Illuminate\Support\Facades\Cache;
 class UserPanelController extends Controller
 {
 
-    public static function isPaginationInvoked($page)
-    {
-        if (isset($page)) {
-            // Clear the cache for the current page of posts
-            Cache::forget('posts' . $page);
-            // Clear the cache for the current page of pins
-            Cache::forget('pins' . $page);
-            // Clear the cache for the current page of reports
-            Cache::forget('reports' . $page);
-        }
-    }
-
     public function changePresence($status)
     {
         $user = auth()->user();
@@ -61,26 +49,21 @@ class UserPanelController extends Controller
         return back()->with('success', 'وضعیت با موفقیت به‌روزرسانی شد 🙂');
     }
 
+    public function dismissEnergy(Request $request)
+    {
+        $request->session()->put('dismissed_questionnaire', true);
+
+        Cache::forget('profile_initiate_energy_' . auth()->id());
+
+        return redirect()->route('user.panel');
+    }
+
     public function edit()
     {
         // Cache the text for a specific duration, for example, 1 month (31 days )
         Cache::put('profile_edit_user_' . auth()->user()->id, true, now()->addDays(31));
 
         return redirect()->route('user.panel');
-    }
-
-
-    public function index(Request $request)
-    {
-        $data = $this->fetchData($request);
-
-
-        if ($request->ajax()) {
-            $view = ViewPagination::create($request->input('table'), $data);
-            return $view->render();
-        }
-
-        return view('user', $data);
     }
 
     public function fetchData($request): array
@@ -99,16 +82,74 @@ class UserPanelController extends Controller
             'reports' => CachedDashBoardData::getReports($page),
             'themes' => Theme::getTheme() ?? ' ',
             'users' => CachedDashBoardData::getUsers(),
+            'hasActiveModule' => $this->hasActiveModule(),
         ];
     }
 
-    public function dismissEnergy(Request $request)
+    public function handleOtp(Request $request)
     {
-        $request->session()->put('dismissed_questionnaire', true);
+        if ($request->isMethod('post')) {
+            if ($request->has('phone')) {
+                return $this->sendOtp($request->phone);
+            }
 
-        Cache::forget('profile_initiate_energy_' . auth()->id());
+            if ($request->has('code')) {
+                return $this->verifyOtp();
+            }
+        }
+        return view('auth.otp');
+    }
 
-        return redirect()->route('user.panel');
+    public function index(Request $request)
+    {
+        $data = $this->fetchData($request);
+
+
+        if ($request->ajax()) {
+            $view = ViewPagination::create($request->input('table'), $data);
+            return $view->render();
+        }
+
+        return view('user', $data);
+    }
+
+    public static function isPaginationInvoked($page)
+    {
+        if (isset($page)) {
+            // Clear the cache for the current page of posts
+            Cache::forget('posts' . $page);
+            // Clear the cache for the current page of pins
+            Cache::forget('pins' . $page);
+            // Clear the cache for the current page of reports
+            Cache::forget('reports' . $page);
+        }
+    }
+
+    public function toggleModule(Request $request, string $module)
+    {
+        $validModules = [
+            'music', 'analytics', 'dms', 'ths', 'delegation', 'feed',
+            'energy', 'onboarding', 'surveys', 'suggestion'
+        ];
+
+        if (!in_array($module, $validModules)) abort(404, 'Invalid module specified.');
+
+        $userId = auth()->id();
+        $cacheKey = "profile_initiate_{$module}_{$userId}";
+
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        } else {
+            foreach ($validModules as $m) {
+                if ($m === $module) continue;
+                $otherKey = "profile_initiate_{$m}_{$userId}";
+                if (Cache::has($otherKey)) Cache::forget($otherKey);
+            }
+
+            Cache::put($cacheKey, true, 3600);
+        }
+
+        return back();
     }
 
     public function updatePresence($user, $isp, $presence)
@@ -147,20 +188,6 @@ class UserPanelController extends Controller
         ]);
     }
 
-    public function handleOtp(Request $request)
-    {
-        if ($request->isMethod('post')) {
-            if ($request->has('phone')) {
-                return $this->sendOtp($request->phone);
-            }
-
-            if ($request->has('code')) {
-                return $this->verifyOtp();
-            }
-        }
-        return view('auth.otp');
-    }
-
     protected function sendOtp($phone)
     {
         $response = app(Pipeline::class)
@@ -197,23 +224,20 @@ class UserPanelController extends Controller
         return $response ?: redirect()->route('user.panel');
     }
 
-    public function toggleModule(Request $request, string $module)
+    private function hasActiveModule(): bool
     {
+        $userId = auth()->id();
         $validModules = [
-            'music', 'analytics', 'dms', 'ths', 'delegation',
+            'music', 'analytics', 'dms', 'ths', 'delegation', 'feed',
             'energy', 'onboarding', 'surveys', 'suggestion'
         ];
 
-        if (!in_array($module, $validModules)) abort(404, 'Invalid module specified.');
-
-        $cacheKey = 'profile_initiate_' . $module . '_' . auth()->id();
-
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        } else {
-            Cache::put($cacheKey, true, 3600);
+        foreach ($validModules as $module) {
+            if (Cache::has("profile_initiate_{$module}_{$userId}")) {
+                return true;
+            }
         }
 
-        return back();
+        return false;
     }
 }

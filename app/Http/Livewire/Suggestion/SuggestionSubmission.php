@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\suggestion;
+namespace App\Http\Livewire\Suggestion;
 
 use App\Models\Suggestion;
 use App\Models\User;

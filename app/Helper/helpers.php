@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Livewire\suggestion\ReviewSubmission;
-use App\Http\Livewire\suggestion\SuggestionData;
-use App\Http\Livewire\suggestion\SuggestionSubmission;
+use App\Http\Livewire\Suggestion\ReviewSubmission;
+use App\Http\Livewire\Suggestion\SuggestionData;
+use App\Http\Livewire\Suggestion\SuggestionSubmission;
 use App\Models\DMS;
+use App\Models\Feed;
 use App\Models\Park;
 use App\Models\Profile;
 use App\Models\Survey;
@@ -73,37 +74,62 @@ function convertTimeStamp($date)
     return Date::convertTimeStamp($date);
 }
 
+
 function countNumberOfDaysPassed()
 {
-    $startDate = auth()->user()?->profile?->start_date;
-    if (!$startDate) {
-        return ' ';
+    static $daysPassed = null;
+
+    if ($daysPassed === null) {
+        $startDate = auth()->user()?->profile?->start_date;
+        $daysPassed = $startDate ? auth()->user()->profile->countDaysPassedSince($startDate) : ' ';
     }
-    return auth()->user()->profile->countDaysPassedSince($startDate);
+
+    return $daysPassed;
 }
 
 function countNumberOfDaysToBirthday()
 {
-    $birthdate = auth()->user()?->profile?->birthdate;
-    if (!$birthdate) {
-        return ' ';
+    static $daysToBirthday = null;
+
+    if ($daysToBirthday === null) {
+        $birthdate = auth()->user()?->profile?->birthdate;
+        $daysToBirthday = $birthdate ? auth()->user()->profile->countNumberOfDaysTo($birthdate) : ' ';
     }
-    return auth()->user()->profile->countNumberOfDaysTo($birthdate);
+
+    return $daysToBirthday;
 }
 
 function countOffSiteUsers()
 {
-    return User::countOffSite();
+    static $count = null;
+
+    if ($count === null) {
+        $count = User::countOffSite();
+    }
+
+    return $count;
 }
 
 function countOnLeaveUsers()
 {
-    return User::countOnLeave();
+    static $count = null;
+
+    if ($count === null) {
+        $count = User::countOnLeave();
+    }
+
+    return $count;
 }
 
 function countOnSiteUsers()
 {
-    return User::countOnSite();
+    static $count = null;
+
+    if ($count === null) {
+        $count = User::countOnSite();
+    }
+
+    return $count;
 }
 
 function getDashboardModel()
@@ -149,27 +175,67 @@ function getFarsiNameOfDepartment($department)
 
 function getPersonnelCode()
 {
-    return auth()->user()?->profile?->personnel_id ?: '';
+    static $code = null;
+
+    if ($code === null) {
+        $code = auth()->user()?->profile?->personnel_id ?: '';
+    }
+
+    return $code;
 }
 
 function getOpenTicketCount()
 {
-    return Ticket::getOpenTicketCount();
+    static $count = null;
+
+    if ($count === null) {
+        $count = Ticket::getOpenTicketCount();
+    }
+
+    return $count;
 }
 
 function getInProgressTicketCount()
 {
-    return Ticket::getInProgressTicketCount();
+    static $count = null;
+
+    if ($count === null) {
+        $count = Ticket::getInProgressTicketCount();
+    }
+
+    return $count;
 }
 
 function getUnsignedDocCount()
 {
-    return DMS::getUnsignedDocumentsCount();
+    static $count = null;
+
+    if ($count === null) {
+        $count = DMS::getUnsignedDocumentsCount();
+    }
+
+    return $count;
 }
 
 function getUnreadDocCount()
 {
-    return DMS::getNotReadDocumentsCount();
+    static $count = null;
+
+    if ($count === null) {
+        $count = DMS::getNotReadDocumentsCount();
+    }
+
+    return $count;
+}
+
+function getTodayFeedCount(): int
+{
+    $cacheKey = 'today_feed_count';
+    $cacheDuration = now()->addMinutes(10);
+
+    return Cache::remember($cacheKey, $cacheDuration, function () {
+        return Feed::getTodayCount();
+    });
 }
 
 function hasCancelledMore($user)
@@ -190,6 +256,11 @@ function hasChosenMusic()
 function hasChosenEnergy()
 {
     return Cache::has('profile_initiate_energy_' . auth()->user()->id);
+}
+
+function hasChosenFeed()
+{
+    return Cache::has('profile_initiate_feed_' . auth()->user()->id);
 }
 
 function hasChosenDMS()
@@ -229,9 +300,14 @@ function hasGivenFeedback($id)
 
 function hasNoEmptyFields()
 {
-    $profile = optional(auth()->user())->profile;
+    static $result = null;
 
-    return optional($profile)->hasNoEmptyFields();
+    if ($result === null) {
+        $profile = optional(auth()->user())->profile;
+        $result = optional($profile)->hasNoEmptyFields();
+    }
+
+    return $result;
 }
 
 function hasUserReserved(): bool
@@ -318,14 +394,20 @@ function isLightMode(): bool
 
 function isDepartmentManager()
 {
-    $profile = auth()->user()->profile;
-    list($managerPresent, $supervisorPresent) = SuggestionData::getNumberOfManagerSupervisor($profile->department);
+    static $isManager = null;
 
-    if (($managerPresent && $profile->position == 'manager') or (!$managerPresent && $supervisorPresent && $profile->position == 'supervisor')) {
-        return true;
+    if ($isManager === null) {
+        $profile = auth()->user()->profile;
+        list($managerPresent, $supervisorPresent) = SuggestionData::getNumberOfManagerSupervisor($profile->department);
+
+        if (($managerPresent && $profile->position == 'manager') or (!$managerPresent && $supervisorPresent && $profile->position == 'supervisor')) {
+            $isManager = true;
+        } else {
+            $isManager = false;
+        }
     }
 
-    return false;
+    return $isManager;
 }
 
 function isFarsi($content): bool
@@ -340,7 +422,13 @@ function isFinalCountDown()
 
 function isInternalISP()
 {
-    return ISPservice::isISPinternal(request()->ip());
+    static $isInternal = null;
+
+    if ($isInternal === null) {
+        $isInternal = ISPservice::isISPinternal(request()->ip());
+    }
+
+    return $isInternal;
 }
 
 function isManager()
@@ -375,10 +463,18 @@ function isNotInEditingMode()
 
 function isNotMobileDevice()
 {
-    return !preg_match(
-        '/(android|webos|iphone|ipad|ipod|blackberry|windows phone)/',
-        strtolower(Request::header('user-agent')));
+    static $isNotMobile = null;
+
+    if ($isNotMobile === null) {
+        $isNotMobile = !preg_match(
+            '/(android|webos|iphone|ipad|ipod|blackberry|windows phone)/',
+            strtolower(Request::header('user-agent'))
+        );
+    }
+
+    return $isNotMobile;
 }
+
 
 function isOneDay(): bool
 {
@@ -564,17 +660,11 @@ function showFlash($type, $message)
     Utility::showFlash($type, $message);
 }
 
-function showHourMin($date)
-{
-    return Utility::showHourMin($date);
-}
-
-
 function showMainDashboardComponents()
 {
     return isNotInEditingMode() && hasNoEmptyFields() && !hasChosenMusic() && !hasChosenSuggestion() &&
         !hasChosenOnboarding() && !hasChosenAnalytics() && !hasChosenSurveys() && !hasChosenDelegation()
-        && !hasChosenDMS() && !hasChosenTHS() && !hasChosenEnergy();
+        && !hasChosenDMS() && !hasChosenTHS() && !hasChosenEnergy() && !hasChosenFeed();
     //        && !showToOnboardedUser()
 }
 
@@ -593,16 +683,24 @@ function showObjects(): string
     return DashboardDesign::showObjects();
 }
 
+function getOfficeData()
+{
+    static $data = null;
+
+    if ($data === null) {
+        $data = Utility::hasOffice();
+    }
+    return $data;
+}
+
 function showOfficeCss()
 {
-    $data = Utility::hasOffice();
-    return $data['css'];
+    return getOfficeData()['css'];
 }
 
 function showOfficeTitle()
 {
-    $data = Utility::hasOffice();
-    return $data['title'];
+    return getOfficeData()['title'];
 }
 
 function showOnlyNumber($spot)
@@ -615,18 +713,26 @@ function showOtherDashboard()
     return Utility::showOtherDashboard();
 }
 
+function getParkingData()
+{
+    static $data = null;
+
+    if ($data === null) {
+        $data = Utility::hasParking();
+    }
+    return $data;
+}
 
 function showParkingCss()
 {
-    $data = Utility::hasParking();
-    return $data['css'];
+    return getParkingData()['css'];
 }
 
 function showParkingTitle()
 {
-    $data = Utility::hasParking();
-    return $data['title'];
+    return getParkingData()['title'];
 }
+
 
 function showPresence()
 {
@@ -637,7 +743,7 @@ function showProfile()
 {
     return !hasChosenMusic() && !hasChosenOnboarding() && !hasChosenAnalytics() && !hasChosenTHS() &&
         !hasChosenSurveys() && !hasChosenSuggestion() && !hasChosenDelegation() && !hasChosenDMS() &&
-        !hasChosenEnergy();
+        !hasChosenEnergy() && !hasChosenFeed();
     //        && !showToOnboardedUser()
 }
 
@@ -672,11 +778,6 @@ function showReserveArea($number)
 }
 
 
-function showSeats()
-{
-    return Reservation::showSeats();
-}
-
 function showSpotNumber()
 {
     return ltrim(strstr(URL::current(), "map/"), "map/");
@@ -697,20 +798,34 @@ function showSuggestionBadge()
     return (SuggestionData::getMissingReviewsCount() > 0);
 }
 
-function showSuggestionBadgeNumber()
-{
-    return SuggestionData::getMissingReviewsCount();
-}
 
 function showSuggestionCEOBadge()
 {
     return (SuggestionSubmission::countCompletedSuggestion() > 0);
 }
 
+function showSuggestionBadgeNumber()
+{
+    static $count = null;
+
+    if ($count === null) {
+        $count = SuggestionData::getMissingReviewsCount();
+    }
+
+    return $count;
+}
+
 function showSuggestionCEOBadgeNumber()
 {
-    return SuggestionSubmission::countCompletedSuggestion();
+    static $count = null;
+
+    if ($count === null) {
+        $count = SuggestionSubmission::countCompletedSuggestion();
+    }
+
+    return $count;
 }
+
 
 function showSurvey()
 {
@@ -718,11 +833,27 @@ function showSurvey()
         ;
 }
 
+function getWeatherData()
+{
+    static $weatherData = null;
+
+    if ($weatherData === null) {
+        $weatherData = WeatherAPI::getWeather();
+    }
+
+    return $weatherData;
+}
+
 function showTemperature()
 {
-    $api = WeatherAPI::getWeather();
-    return $api['temperature'];
+    return getWeatherData()['temperature'] ?? 'N/A';
 }
+
+function showWeather()
+{
+    return getWeatherData()['weather'] ?? 'N/A';
+}
+
 
 function showToOnboardedUser()
 {
@@ -746,13 +877,6 @@ function showUserProfile($user)
     $image = optional($user->profile)->image;
 
     return $image && file_exists(public_path($image)) ? asset($image) : asset('img/user/profiles/user.png');
-}
-
-
-function showWeather()
-{
-    $api = WeatherAPI::getWeather();
-    return $api['weather'];
 }
 
 function toJalali($date, string $format = 'Y, m, d')

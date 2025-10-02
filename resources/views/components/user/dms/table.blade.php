@@ -230,12 +230,17 @@
             </table>
         </div>
     </div>
-    <div class="rounded-xl px-3">
+    <div class="rounded-xl px-3" dir="ltr">
         <div class="mt-4"
-             x-data="{ applyMainTheme() { $el.querySelectorAll('button, span span').forEach(button => button.classList.add('bg-main-mode', 'text-main-theme')) } }"
-             x-init="applyMainTheme()"
-             x-effect="applyMainTheme()">
-            {{ $docs->links() }}
+             x-data="{
+                 applyTheme() {
+                   this.$el.querySelectorAll('button, span span')
+                     .forEach(el => el.classList.add('bg-main-mode', 'text-main-theme'));
+                 }
+               }"
+             x-init="applyTheme()"
+             x-effect="applyTheme()">
+            {{ $docs->links('vendor.livewire.simple-tailwind') }}
         </div>
     </div>
 </div>

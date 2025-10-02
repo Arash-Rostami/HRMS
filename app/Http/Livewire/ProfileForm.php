@@ -2,25 +2,22 @@
 
 namespace App\Http\Livewire;
 
+use App\Http\Livewire\Profile\WithValidation;
 use App\Models\Profile;
 use App\Services\DepartmentDetails;
 use App\Services\StepChecker;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Validator;
 use Morilog\Jalali\Jalalian;
-use Illuminate\Database\QueryException;
 
 
 class ProfileForm extends Component
 {
-
     use WithFileUploads;
     use StepChecker;
-
+    use WithValidation;
 
     public $personnelId;
     public $email;
@@ -63,78 +60,6 @@ class ProfileForm extends Component
     public $departmentsList;
 
 
-    protected $rules = [
-        'personnelId' => 'nullable|string|max:255|englishChar',
-        'gender' => 'required|in:female,male',
-        'employmentType' => 'nullable|in:fulltime,parttime,contract',
-        'maritalStatus' => 'required|in:married,single',
-        'numberOfChildren' => 'required|integer',
-        'employmentStatus' => 'nullable|in:probational,working,terminated',
-        'idCardNumber' => 'nullable|string|max:255|englishChar',
-        'idBookletNumber' => 'required|string|max:255|englishChar',
-        'degree' => 'required|in:undergraduate,graduate,postgraduate',
-        'field' => 'required|string|max:255|englishChar',
-        'birthYear' => 'required|integer|required_with:birthMonth,birthDay',
-        'birthMonth' => 'required|integer|min:1|max:12|required_with:birthYear,birthDay',
-        'birthDay' => 'required|integer|min:1|max:31|required_with:birthYear,birthMonth',
-        'landline' => 'nullable|string|max:255|englishChar|regex:/^(?!00)[^+].*$/',
-        'cellphone' => 'required|string|max:255|englishChar|regex:/^(?!00)[^+].*$/',
-        'licensePlate' => 'nullable|string',
-        'zipCode' => 'required|string|max:255|englishChar',
-        'address' => 'required|string',
-        'accessibility' => 'nullable|string',
-        'department' => 'nullable|in:HR,AS,PR,VC,FP,CM,CP,AC,PS,WP,SA,MK,PO,CH,SP,CX,BD,MG,MA,HC,SO,PERSORE',
-        'position' => 'nullable|in:manager,supervisor,senior,expert,employee',
-        'insurance' => 'required|string|max:255|englishChar',
-        'emergencyPhone' => 'required|string|max:255|englishChar',
-        'emergencyRelationship' => 'required|string|max:255|englishChar',
-        'startYear' => 'nullable|integer',
-        'startMonth' => 'nullable|integer|min:1|max:12',
-        'startDay' => 'nullable|integer|min:1|max:31',
-        'workExperience' => 'required|string|englishChar',
-        'interests' => 'nullable|string|englishChar',
-        'favoriteColors' => 'nullable|string|max:255|englishChar',
-    ];
-
-
-    public function mount()
-    {
-        $this->email = auth()->user()->email;
-
-        $this->showDeleteConfirmation = false;
-
-        $this->profile = auth()->user()->profile;
-
-        if ($this->profile) {
-            // If the profile exists, populate the form fields with the data
-            $this->mountProfileData($this->profile);
-        }
-
-        $this->departmentsList = DepartmentDetails::getDepartmentsArray();
-        $this->thisYear = Jalalian::now()->getYear();
-
-        $this->checkStepCompletionStatus();
-    }
-
-
-    public function showDeleteConfirmation()
-    {
-        $this->showDeleteConfirmation = true;
-    }
-
-
-    public function hideDeleteConfirmation()
-    {
-        $this->showDeleteConfirmation = false;
-    }
-
-
-    public function updated()
-    {
-        $this->checkStepCompletionStatus();
-    }
-
-
     public function cancelProfile()
     {
 
@@ -162,6 +87,34 @@ class ProfileForm extends Component
         }
     }
 
+    public function hideDeleteConfirmation()
+    {
+        $this->showDeleteConfirmation = false;
+    }
+
+    public function mount()
+    {
+        $this->email = auth()->user()->email;
+
+        $this->showDeleteConfirmation = false;
+
+        $this->profile = auth()->user()->profile;
+
+        if ($this->profile) {
+            // If the profile exists, populate the form fields with the data
+            $this->mountProfileData($this->profile);
+        }
+
+        $this->departmentsList = DepartmentDetails::getDepartmentsArray();
+        $this->thisYear = Jalalian::now()->getYear();
+
+        $this->checkStepCompletionStatus();
+    }
+
+    public function render()
+    {
+        return view('components.user.profile.form');
+    }
 
     public function saveProfile()
     {
@@ -181,17 +134,44 @@ class ProfileForm extends Component
 
         $this->unCache();
 
-        session()->flash('success', 'Your profile info saved successfully :)');
+        session()->flash('success', 'اطلاعات شما بدرستی ثبت شد :)');
 
         return redirect()->to('/main');
     }
 
-
-    public function render()
+    public function showDeleteConfirmation()
     {
-        return view('components.user.profile.form');
+        $this->showDeleteConfirmation = true;
     }
 
+    /**
+     * @return void
+     */
+    public function unCache(): void
+    {
+        Cache::forget('profile_edit_user_' . auth()->user()->id);
+    }
+
+    public function updated()
+    {
+        $this->checkStepCompletionStatus();
+    }
+
+    /**
+     * @return void
+     */
+    private function concatenateDates(): void
+    {
+        if ($this->startYear && $this->startMonth && $this->startDay) {
+            $this->startDate = Jalalian::fromFormat('Y/n/j',
+                implode('/', [$this->startYear, $this->startMonth, $this->startDay]))->toCarbon();
+        }
+
+        if ($this->birthYear && $this->birthMonth && $this->birthDay) {
+            $this->birthdate = Jalalian::fromFormat('Y/n/j',
+                implode('/', [$this->birthYear, $this->birthMonth, $this->birthDay]))->toCarbon();
+        }
+    }
 
     private function getProfileData($path): array
     {
@@ -219,6 +199,15 @@ class ProfileForm extends Component
             'favorite_colors' => $this->favoriteColors,
             'accessibility' => $this->accessibility,
         ];
+    }
+
+    /**
+     * @return array|string|string[]
+     */
+    private function getUserName(): string|array
+    {
+        return str_replace(' ', '', strtolower(auth()->user()->fullname))
+            . '_' . time() . '.' . $this->image->getClientOriginalExtension();
     }
 
     /**
@@ -254,42 +243,6 @@ class ProfileForm extends Component
         }
     }
 
-    /**
-     * @return array|string|string[]
-     */
-    private function getUserName(): string|array
-    {
-        return str_replace(' ', '', strtolower(auth()->user()->fullname))
-            . '_' . time() . '.' . $this->image->getClientOriginalExtension();
-    }
-
-    /**
-     * @return void
-     */
-    private function concatenateDates(): void
-    {
-        if ($this->startYear && $this->startMonth && $this->startDay) {
-            $this->startDate = Jalalian::fromFormat('Y/n/j',
-                implode('/', [$this->startYear, $this->startMonth, $this->startDay]))->toCarbon();
-        }
-
-        if ($this->birthYear && $this->birthMonth && $this->birthDay) {
-            $this->birthdate = Jalalian::fromFormat('Y/n/j',
-                implode('/', [$this->birthYear, $this->birthMonth, $this->birthDay]))->toCarbon();
-        }
-    }
-
-    private function updateDatabaseAndDeleteImage($imagePath)
-    {
-        // Update the database to set 'image' column to null
-        auth()->user()->profile->update([
-            'image' => null
-        ]);
-
-        $this->hideDeleteConfirmation();
-    }
-
-
     private function saveImage()
     {
         if ($this->image instanceof \Illuminate\Http\UploadedFile) {
@@ -312,6 +265,15 @@ class ProfileForm extends Component
         return $this->profile->image;
     }
 
+    private function updateDatabaseAndDeleteImage($imagePath)
+    {
+        // Update the database to set 'image' column to null
+        auth()->user()->profile->update([
+            'image' => null
+        ]);
+
+        $this->hideDeleteConfirmation();
+    }
 
     private function updateProfile($path)
     {
@@ -324,13 +286,5 @@ class ProfileForm extends Component
         }
 
         $this->profile->update($profileData);
-    }
-
-    /**
-     * @return void
-     */
-    public function unCache(): void
-    {
-        Cache::forget('profile_edit_user_' . auth()->user()->id);
     }
 }
