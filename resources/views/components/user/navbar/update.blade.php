@@ -1,4 +1,4 @@
-<div class="w-1/2 space-y-8 mx-auto py-6" dir="ltr">
+<div x-show="version" class="w-1/2 space-y-8 mx-auto py-6" dir="ltr">
     <div
         class="border rounded-lg shadow-md overflow-hidden @if(isDarkMode()) bg-gray-800 border-gray-700 @else bg-white border-gray-200 @endif">
         <div class="p-4 border-b @if(isDarkMode()) bg-gray-700 border-gray-600 @else bg-weekend border-gray-200 @endif">

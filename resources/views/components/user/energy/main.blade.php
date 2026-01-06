@@ -2,12 +2,13 @@
     id="energy-test"
     dir="rtl"
     @class([
-      'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
-       bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel
-       persol-farsi-font',
-      'bg-[#1F2937]' => isDarkMode(),
+        'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
+         bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel
+         persol-farsi-font',
+        'bg-[#1F2937]' => isDarkMode(),
     ])
     x-data="{
+        open: true,
         currentFontSizeIndex: 0,
         fontSizes : ['text-base', 'text-lg', 'text-xl'],
         currentFontSizeClass() {
@@ -21,46 +22,59 @@
         }
     }"
     x-cloak>
-    {{--rubric--}}
-    <div class="mb-5 w-1/2 md:w-1/4">
-        <h2
-            @class([
-                 'accordion-header rounded-lg px-4 py-2 cursor-pointer
-                  hover:bg-gray-100 focus:ring focus:ring-offset-2
-                  focus:ring-blue-500 transition duration-300',
-                 'bg-gray-700 text-gray-200 hover:bg-gray-900' => isDarkMode(),
-               ])
-            title=" پرسش نامه انرژی"
-            data-te-collapse-init
-            data-te-target="#flush-collapseEnergyTest"
+
+    <div class="relative w-full">
+        <div
+            x-show="open"
+            x-transition
+            class="absolute top-0 right-0 h-full w-1 border-r-4 rounded-r-full bg-blue-500 border-blue-500">
+        </div>
+
+        <button
+            id="flush-headingEnergyTest"
             type="button"
-            data-te-toggle="collapse"
-            data-bs-target="#flush-collapseEnergyTest"
-            aria-expanded="false"
-            aria-controls="flush-collapseEnergyTest">
-              <span class="flex items-center justify-between">
-                <span> پرسش نامه انرژی</span>
-                <i class="fas fa-battery-full text-gray-400"></i>
-              </span>
-        </h2>
+            title="پرسش نامه انرژی"
+            @click="open = !open"
+            aria-controls="flush-collapseEnergyTest"
+            :aria-expanded="open"
+            class="flex items-center justify-between w-full py-2 pr-4 text-left transition-colors duration-200">
+            <span class="flex items-center">
+                <i @class([
+                    'fas fa-battery-full text-md md:text-xl ml-3 md:ml-4',
+                    'text-gray-500' => !isDarkMode(),
+                    'text-gray-400' => isDarkMode(),
+                ])></i>
+                <span @class([
+                    'font-medium text-md md:text-xl',
+                    'text-gray-800' => !isDarkMode(),
+                    'text-white' => isDarkMode(),
+                ])>
+                    پرسش نامه انرژی
+                </span>
+            </span>
+            <i
+                class="fa fa-chevron-down text-gray-500 transform transition-transform duration-300"
+                :class="{ '-rotate-180': open }">
+            </i>
+        </button>
     </div>
-    {{-- main body content--}}
-    <div id="flush-collapseEnergyTest"
-         @class([
-               'accordion-collapse collapse show border-0 ',
-               'text-gray-300 ' => isDarkMode(),
-             ])
-         data-te-collapse-item
-         data-te-collapse-show
-         aria-labelledby="flush-headingOne"
-         data-te-parent="#energy-test">
+
+    <div
+        id="flush-collapseEnergyTest"
+        aria-labelledby="flush-headingEnergyTest"
+        x-show="open"
+        x-collapse
+        @class([
+            'accordion-collapse border-0 animate-[fade-in_1s_ease-in-out] mt-3 pr-4',
+            'text-gray-300' => isDarkMode(),
+        ])>
         @if (!isForcedQuestionnairePeriod(auth()->user()))
-            <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'energy']) "/>
+            <x-user.font-size :return-url="route('user.toggleModule', ['module' => 'energy'])" />
         @endif
         @if (isOptionalQuestionnairePeriod(auth()->user()))
             <div class="mb-4 text-right animate-pulse">
                 <a class="inline-block px-6 py-2 bg-green-500 rounded-lg hover:bg-gray-300 focus:outline-none
-                 focus:ring-2 focus:ring-green-400" href="{{ route('user.panel.energy.dismiss') }}">
+                   focus:ring-2 focus:ring-green-400" href="{{ route('user.panel.energy.dismiss') }}">
                     <i class="fas fa-redo"></i> بعدا انجام می‌دهم
                 </a>
             </div>
@@ -68,7 +82,6 @@
         <div :class="currentFontSizeClass">
             @livewire('energy-test')
         </div>
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
     </div>
+    <x-user.bg-shapes/>
 </div>

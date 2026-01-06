@@ -52,10 +52,15 @@ class UserStatistics
         'WP' => 'فروش چوب',
     ];
 
+    private static $activeUserIds;
+
     public static function getAgeDistribution()
     {
         return Cache::remember('ageDistribution', now()->addHours(8), function () {
-            $query = Profile::selectRaw("
+            $activeIds = self::activeUserIds();
+
+            $query = Profile::whereIn('user_id', $activeIds)
+                ->selectRaw("
                         CASE
                             WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 18 AND 25 THEN '18-25'
                             WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 26 AND 35 THEN '26-35'
@@ -139,9 +144,11 @@ class UserStatistics
     public static function getDepartmentDistribution()
     {
         return Cache::remember('departmentDistribution', now()->addHours(8), function () {
+            $activeIds = self::activeUserIds();
             $departmentCodes = array_keys(static::$departmentNames);
 
-            $counts = Profile::whereIn('department', $departmentCodes)
+            $counts = Profile::whereIn('user_id', $activeIds)
+                ->whereIn('department', $departmentCodes)
                 ->selectRaw('department, COUNT(*) as count')
                 ->groupBy('department')
                 ->pluck('count', 'department');
@@ -161,11 +168,13 @@ class UserStatistics
     public static function getEducationAndExperience()
     {
         return Cache::remember('educationAndExperience', now()->addHours(8), function () {
+            $activeIds = self::activeUserIds();
             $degrees = ['undergraduate', 'graduate', 'postgraduate'];
 
             $data = [];
-            $profiles = Profile::selectRaw(
-                "degree,
+            $profiles = Profile::whereIn('user_id', $activeIds)
+                ->selectRaw(
+                    "degree,
                         CASE
                             WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 0 AND 2 THEN '0-2'
                             WHEN CAST(REGEXP_REPLACE(work_experience, '[^0-9]', '') AS SIGNED) BETWEEN 3 AND 5 THEN '3-5'
@@ -180,14 +189,16 @@ class UserStatistics
                 ->groupBy('degree', 'experience_range')
                 ->get();
 
-            foreach (['0-2', '3-5', '6-10', '11-15'] as $range) {
+            foreach (['0-2', '3-5', '6-10', '11-15', '16+'] as $range) {
                 foreach ($degrees as $degree) {
                     $data[$range][$degree] = 0;
                 }
             }
 
             foreach ($profiles as $profile) {
-                $data[$profile->experience_range][$profile->degree] = $profile->count;
+                if ($profile->experience_range) {
+                    $data[$profile->experience_range][$profile->degree] = $profile->count;
+                }
             }
 
             return [
@@ -201,7 +212,10 @@ class UserStatistics
     public static function getEmploymentType()
     {
         return Cache::remember('employmentType', now()->addHours(8), function () {
-            $employmentData = Profile::selectRaw('employment_type, COUNT(*) as count')
+            $activeIds = self::activeUserIds();
+
+            $employmentData = Profile::whereIn('user_id', $activeIds)
+                ->selectRaw('employment_type, COUNT(*) as count')
                 ->groupBy('employment_type')
                 ->get();
 
@@ -223,12 +237,15 @@ class UserStatistics
     public static function getGenderAndMaritalStatus()
     {
         return Cache::remember('genderAndMaritalStatus', now()->addHours(8), function () {
-            $count = Profile::selectRaw(
-                "SUM(gender = 'male' AND marital_status = 'married') as marriedMale,
+            $activeIds = self::activeUserIds();
+
+            $count = Profile::whereIn('user_id', $activeIds)
+                ->selectRaw(
+                    "SUM(gender = 'male' AND marital_status = 'married') as marriedMale,
                  SUM(gender = 'male' AND marital_status != 'married') as singleMale,
                  SUM(gender = 'female' AND marital_status = 'married') as marriedFemale,
                  SUM(gender = 'female' AND marital_status != 'married') as singleFemale"
-            )->first();
+                )->first();
 
             return [
                 'label' => ['Married ♂', 'Single ♂', 'Married ♀', 'Single ♀'],
@@ -240,7 +257,10 @@ class UserStatistics
     public static function getGenderAndPositions()
     {
         return Cache::remember('genderAndPositions', now()->addHours(8), function () {
-            $counts = Profile::whereIn('position', Profile::$positions)
+            $activeIds = self::activeUserIds();
+
+            $counts = Profile::whereIn('user_id', $activeIds)
+                ->whereIn('position', Profile::$positions)
                 ->selectRaw('position, gender, COUNT(*) as count')
                 ->groupBy('position', 'gender')
                 ->get()
@@ -271,13 +291,17 @@ class UserStatistics
         $currentYear = Date::getFarsiYear();
 
         return Cache::remember("hourlyDailyLeaves_{$currentYear}", now()->addHours(8), function () use ($currentYear) {
-            $monthlyData = Leave::select(
-                DB::raw('SUBSTRING(begin_date, 6, 2) as month'), // Extract MM from YYYY/MM/DD
-                DB::raw('SUM(CASE WHEN leave_type = "روزانه" THEN 1 ELSE 0 END) as daily_leaves'),
-                DB::raw('SUM(CASE WHEN leave_type = "ساعتی" THEN 1 ELSE 0 END) as hourly_leaves'),
-                DB::raw('SUM(CASE WHEN leave_type = "روزانه" THEN duration ELSE 0 END) as daily_duration'),
-                DB::raw('SUM(CASE WHEN leave_type = "ساعتی" THEN duration ELSE 0 END) as hourly_duration')
-            )
+            $activePersonnelIds = Profile::whereIn('user_id', self::activeUserIds())->pluck('personnel_id');
+
+            $monthlyData = Leave::whereIn('employee_code', $activePersonnelIds)
+                ->select(
+
+                    DB::raw('SUBSTRING(begin_date, 6, 2) as month'), // Extract MM from YYYY/MM/DD
+                    DB::raw('SUM(CASE WHEN leave_type = "روزانه" THEN 1 ELSE 0 END) as daily_leaves'),
+                    DB::raw('SUM(CASE WHEN leave_type = "ساعتی" THEN 1 ELSE 0 END) as hourly_leaves'),
+                    DB::raw('SUM(CASE WHEN leave_type = "روزانه" THEN duration ELSE 0 END) as daily_duration'),
+                    DB::raw('SUM(CASE WHEN leave_type = "ساعتی" THEN duration ELSE 0 END) as hourly_duration')
+                )
                 ->where('begin_date', 'LIKE', $currentYear . '/%') // Filter current year
                 ->groupBy('month')
                 ->orderBy('month', 'asc')
@@ -310,6 +334,8 @@ class UserStatistics
     public static function getLeaveTypeByAgeRange()
     {
         return Cache::remember('leaveTypeByAgeRange', now()->addHours(8), function () {
+            $activePersonnelIds = Profile::whereIn('user_id', self::activeUserIds())->pluck('personnel_id');
+
             $ageRanges = [
                 ['label' => '18-24', 'min' => 18, 'max' => 24],
                 ['label' => '25-34', 'min' => 25, 'max' => 34],
@@ -333,6 +359,7 @@ class UserStatistics
             $casesSql = implode(', ', $caseStatements);
 
             $results = Leave::join('profiles', 'leaves.employee_code', '=', 'profiles.personnel_id')
+                ->whereIn('leaves.employee_code', $activePersonnelIds)
                 ->whereIn('leave_type', ['ساعتی', 'روزانه'])
                 ->selectRaw("leave_type, $casesSql", $bindings)
                 ->groupBy('leave_type')
@@ -355,5 +382,12 @@ class UserStatistics
 
             return $leaveTypeCounts;
         });
+    }
+
+    private static function activeUserIds()
+    {
+        return self::$activeUserIds
+            ??= Cache::remember('active_user_ids', now()->addHours(8), fn() => User::where('status', 'active')->pluck('id')
+        );
     }
 }

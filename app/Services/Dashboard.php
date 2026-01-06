@@ -6,44 +6,41 @@ namespace App\Services;
 
 use App\Models\Desk;
 use App\Models\Park;
-use App\Models\User;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\HtmlString;
 
 
 class Dashboard
 {
 
-    protected static $model = [
-        'parking' => Park::class,
-        'office' => Desk::class,
-    ];
-
-    protected static $table = [
-        'parking' => 'parks',
-        'office' => 'desks',
-    ];
-
     public static $total = [
         'parking' => 25,
         'office' => 86,
     ];
-
-
-    /**
-     * @return string
-     */
-    public static function getDashboardModel()
-    {
-        return self::$model[getDashboardType()];
-    }
+    protected static $model = [
+        'parking' => Park::class,
+        'office' => Desk::class,
+    ];
+    protected static $table = [
+        'parking' => 'parks',
+        'office' => 'desks',
+    ];
 
     /**
      * @return string
      */
     public static function getCurrentDashboardType(): string
     {
-        return ltrim(strstr(url()->full(), '='), '=');
+        $type = ltrim(strstr(url()->full(), '='), '=');
+        return $type ?: 'parking';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getDashboardModel()
+    {
+        $type = self::getDashboardType();
+        return self::$model[$type] ?? self::$model['parking'];
     }
 
     /**
@@ -51,7 +48,8 @@ class Dashboard
      */
     public static function getDashboardType(): string
     {
-        return ltrim(strstr(url()->previous(), '='), '=');
+        $type = ltrim(strstr(url()->previous(), '='), '=');
+        return $type ?: 'parking';
     }
 
     /**
@@ -79,18 +77,6 @@ class Dashboard
     }
 
     /**
-     * @param $img
-     * @param $des
-     * @return string
-     */
-    private static function formatResult($img, $des): string
-    {
-        return sprintf('<span title="click to view the map" data-lity data-lity-target="%s"
-               @click="setTimeout(()=>showModal = false, 10)" class="cursor-pointer">  <i class="fa fa-eye"></i>
-                   </span><br>%s', $img, $des);
-    }
-
-    /**
      * @param $date
      * @return mixed
      */
@@ -106,28 +92,6 @@ class Dashboard
     public static function showExtension($place): string
     {
         return self::formatResult(self::getImagePath($place), self::getDescription($place));
-    }
-
-    /**
-     * @param $date
-     * @return int
-     */
-    public static function showRemaining($reservations)
-    {
-        return self::$total[getDashboardType()] - self::showReserved($reservations);
-    }
-
-    /**
-     * @param $date
-     * @return mixed
-     */
-    public static function showReserved($reservations)
-    {
-        $cacheKey = 'show_reserved_' . getDashboardType();
-
-        return Cache::remember($cacheKey, now()->addSeconds(2), function () use ($reservations) {
-            return $reservations->unique('number')->count();
-        });
     }
 
     /**
@@ -149,12 +113,34 @@ class Dashboard
     }
 
     /**
+     * @param $date
+     * @return int
+     */
+    public static function showRemaining($reservations)
+    {
+        return self::$total[getDashboardType()] - self::showReserved($reservations);
+    }
+
+    /**
      * @param $number
      * @return int
      */
     public static function showRemainingReservations($number)
     {
         return Dashboard::showRemaining($number);
+    }
+
+    /**
+     * @param $date
+     * @return mixed
+     */
+    public static function showReserved($reservations)
+    {
+        $cacheKey = 'show_reserved_' . getDashboardType();
+
+        return Cache::remember($cacheKey, now()->addSeconds(2), function () use ($reservations) {
+            return $reservations->unique('number')->count();
+        });
     }
 
     /**
@@ -172,5 +158,17 @@ class Dashboard
     public static function showTotalReservations($number)
     {
         return Dashboard::showReserved($number);
+    }
+
+    /**
+     * @param $img
+     * @param $des
+     * @return string
+     */
+    private static function formatResult($img, $des): string
+    {
+        return sprintf('<span title="click to view the map" data-lity data-lity-target="%s"
+               @click="setTimeout(()=>showModal = false, 10)" class="cursor-pointer">  <i class="fa fa-eye"></i>
+                   </span><br>%s', $img, $des);
     }
 }

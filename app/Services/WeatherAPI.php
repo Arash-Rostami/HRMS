@@ -15,21 +15,15 @@ class WeatherAPI
 
     public static function getWeather()
     {
-        return Cache::remember('weather.tehran', 30, function () {
+        return Cache::remember('weather.tehran', now()->addMinutes(60), function () {
             $apiKey = self::$apiKeys[array_rand(self::$apiKeys)];
             $url = "http://api.openweathermap.org/data/2.5/weather?q=Tehran&appid=$apiKey&units=metric";
             $defaultWeather = ['weather' => '', 'temperature' => 'Weather Off'];
 
             try {
-                $client = new Client([
-                    'timeout' => 5, // Response timeout
-                    'connect_timeout' => 3,  // Connection timeout
-                ]);
-
+                $client = new Client(['timeout' => 5, 'connect_timeout' => 3]);
                 $response = $client->get($url);
-                $statusCode = $response->getStatusCode();
-
-                if ($statusCode === 200) {
+                if ($response->getStatusCode() === 200) {
                     $data = json_decode($response->getBody(), true);
 
                     if (isset($data['weather'][0]['main']) && isset($data['main']['temp'])) {

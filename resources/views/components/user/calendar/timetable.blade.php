@@ -145,13 +145,13 @@
         <div class="bg-white  @if ( isDarkMode()) bg-[#1F2937] @endif shadow-2xl w-1/2 rounded-md p-4">
             <p class="text-center text-gray-400">آیا از ارسال پیامک تبریک اطمینان دارید؟</p>
             <div class="mt-4 flex justify-center space-x-4">
-                <button
-                    class="bg-red-500 text-white px-2 py-1 rounded-md" @click="openModal = false">No :(
+                <button class="bg-red-500 text-white px-2 py-1 rounded-md mx-2" @click="openModal = false">
+                    خیر
                 </button>
-                <button
-                    class="bg-green-500 text-white px-2 py-1 rounded-md"
-                    @click="openModal = false; $wire.sendSMS()"
-                    @open-toast.window="openToast = true; setTimeout(() => openToast = false, 5000)">Yes :)
+                <button class="bg-green-500 text-white px-2 py-1 rounded-md mx-2"
+                        @click="openModal = false; $wire.sendSMS()"
+                        @open-toast.window="openToast = true; setTimeout(() => openToast = false, 5000)">
+                    بلی
                 </button>
             </div>
         </div>

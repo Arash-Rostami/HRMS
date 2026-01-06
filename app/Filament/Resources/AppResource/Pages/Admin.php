@@ -171,7 +171,7 @@ class Admin
         return TextColumn::make('user.fullname')
             ->label('Name')
             ->sortable(['forename'])
-//            ->searchable(['forename', 'surname'])
+            ->searchable(['forename', 'surname'])
             ->size('sm');
     }
 

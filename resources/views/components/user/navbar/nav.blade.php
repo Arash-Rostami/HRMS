@@ -22,7 +22,7 @@
                     ? `(${count}) اقلام جدید در انتظار بررسی`
                     : this.baseTitle;
                 show = !show;
-            }, 2000);
+            }, 5000);
         },
         stopTitleAnimation() {
             if (this.titleInterval) {
@@ -132,7 +132,7 @@
                 </div>
                 {{--  Desktop NavBar --}}
                 <x-user.navbar.desktop/>
-                <x-user.navbar.badges/>
+{{--                <x-user.navbar.badges/>--}}
             </div>
             {{--  Responsive NavBar --}}
             <x-user.navbar.mobile/>

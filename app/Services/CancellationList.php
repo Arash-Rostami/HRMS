@@ -30,6 +30,20 @@ class CancellationList
         $this->originalKeys = [];
     }
 
+    /**
+     * @return void
+     * this is to get the ID of the place and of those users who have reserved in place of cancellation
+     */
+    public function getIds()
+    {
+        $this->valueDiff = $this->getValueDifference();
+        $this->keyDiff = $this->getKeyDifference();
+
+        foreach ($this->valueDiff as $value) {
+            $found = array_search($value, $this->filteredNumbers);
+            $this->originalKeys[] = $found;
+        }
+    }
 
     /**
      * @return int[]|string[]
@@ -41,26 +55,13 @@ class CancellationList
 
     /**
      * @return void
-     * this is to get the ID of the place and of those users who have reserved in place of cancellation
-     */
-    public function getIds()
-    {
-        $this->valueDiff = $this->getValueDifference();
-
-        $this->keyDiff = $this->getKeyDifference();
-
-        foreach ($this->valueDiff as $value) {
-            $this->originalKeys[] = array_search($value, $this->filteredNumbers);
-        };
-    }
-
-    /**
-     * @return void
      * this is to make a list of all places which were taken for comparison purposes
      */
     public function getNumbers()
     {
         foreach ($this->users as $user) {
+            if (!is_array($user) || !array_key_exists('number', $user)) continue;
+
             $this->unfilteredNumbers[] = $user['number'];
 
             if (!in_array($user['number'], $this->filteredNumbers)) {
@@ -74,27 +75,10 @@ class CancellationList
      */
     public function getValueDifference(): array
     {
-        return array_values(array_diff_key($this->unfilteredNumbers, $this->filteredNumbers));
-    }
+        $a = is_array($this->unfilteredNumbers) ? $this->unfilteredNumbers : [];
+        $b = is_array($this->filteredNumbers) ? $this->filteredNumbers : [];
 
-
-    /**
-     * @return Collection
-     * this is to see which user has a longer period of reservation for the sake of priorities
-     */
-    public function showCollection(): Collection
-    {
-        for ($i = 0; $i < count($this->originalKeys); $i++) {
-
-            if (intval($this->users[$this->originalKeys[$i]]['end_date']) > intval($this->users[$this->keyDiff[$i]]['end_date'])) {
-                unset($this->users[$this->keyDiff[$i]]);
-            } else {
-                unset($this->users[$this->originalKeys[$i]]);
-            }
-        }
-        return collect($this->users)
-            ->sortBy('fullName')
-            ->pluck('fullName', 'id');
+        return array_values(array_diff_key($a, $b));
     }
 
     /**
@@ -108,5 +92,35 @@ class CancellationList
         $this->getIds();
 
         return $this->showCollection();
+    }
+
+    /**
+     * @return Collection
+     * this is to see which user has a longer period of reservation for the sake of priorities
+     */
+    public function showCollection(): Collection
+    {
+        for ($i = 0; $i < count($this->originalKeys); $i++) {
+
+            $orig = $this->originalKeys[$i] ?? null;
+            $key = $this->keyDiff[$i] ?? null;
+
+            if (
+                $orig === null || $key === null || !isset($this->users[$orig], $this->users[$key]) ||
+                !isset($this->users[$orig]['end_date'], $this->users[$key]['end_date'])
+            ) {
+                continue;
+            }
+
+            if (intval($this->users[$orig]['end_date']) > intval($this->users[$key]['end_date'])) {
+                unset($this->users[$key]);
+            } else {
+                unset($this->users[$orig]);
+            }
+        }
+
+        return collect($this->users)
+            ->sortBy('fullName')
+            ->pluck('fullName', 'id');
     }
 }

@@ -7,47 +7,57 @@
              bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel
              persol-farsi-font',
             'bg-[#1F2937]' => isDarkMode(),
-          ])
-        x-data x-cloak>
-        {{--rubric--}}
-        <div class="mb-5 w-1/2 md:w-1/4">
-            <h2
-                @class([
-                      'accordion-header rounded-lg px-4 py-2 cursor-pointer
-                       hover:bg-gray-100 focus:ring focus:ring-offset-2
-                       focus:ring-blue-500 transition duration-300',
-                      'bg-gray-700 text-gray-200 hover:bg-gray-900' => isDarkMode(),
-                    ])
-                title="سوال ماه مدیریت"
-                data-te-collapse-init
-                data-bs-toggle="collapse"
-                data-te-target="#flush-collapseQuestionOfMonth"
-                type="button"
-                data-bs-target="#flush-collapseQuestionOfMonth"
-                aria-expanded="true"
-                aria-controls="flush-collapseQuestionOfMonth">
-                <span class="flex items-center justify-between">
-                    <span>سوال ماه</span>
-                      <i class="fas fa-question-circle text-gray-400"></i>
-                     </span>
-            </h2>
-            <!-- Background Shapes -->
-            <x-user.bg-shapes/>
-        </div>
-        {{-- main body content--}}
-        <div id="flush-collapseQuestionOfMonth"
-             @class([
-                  'accordion-collapse collapse show border-0',
-                  'text-gray-300 ' => isDarkMode(),
-                ])
-             data-te-collapse-item
-             data-te-collapse-show
-             aria-labelledby="flush-headingQuestionOfMonth"
-             data-te-parent="#question">
-            @livewire('question-of-month')
+        ])
+        x-data="{ open: true }"
+        x-cloak>
 
-            <!-- Background Shapes -->
-            <x-user.bg-shapes/>
+        <div class="relative w-full">
+            <div
+                x-show="open"
+                x-transition
+                class="absolute top-0 right-0 h-full w-1 border-r-4 rounded-r-full bg-blue-500 border-blue-500">
+            </div>
+
+            <button
+                id="flush-headingQuestion"
+                type="button"
+                title="سوال ماه مدیریت"
+                @click="open = !open"
+                aria-controls="flush-collapseQuestion"
+                :aria-expanded="open"
+                class="flex items-center justify-between w-full py-2 pr-4 text-left transition-colors duration-200">
+                <span class="flex items-center">
+                    <i @class([
+                        'fas fa-question-circle text-md md:text-xl ml-3 md:ml-4',
+                        'text-gray-500' => !isDarkMode(),
+                        'text-gray-400' => isDarkMode(),
+                    ])></i>
+                    <span @class([
+                        'font-medium text-md md:text-xl',
+                        'text-gray-800' => !isDarkMode(),
+                        'text-white' => isDarkMode(),
+                    ])>
+                        سوال ماه
+                    </span>
+                </span>
+                <i
+                    class="fa fa-chevron-down text-gray-500 transform transition-transform duration-300"
+                    :class="{ '-rotate-180': open }">
+                </i>
+            </button>
         </div>
+
+        <div
+            id="flush-collapseQuestion"
+            aria-labelledby="flush-headingQuestion"
+            x-show="open"
+            x-collapse
+            @class([
+                'accordion-collapse border-0 animate-[fade-in_1s_ease-in-out] mt-3 pr-4',
+                'text-gray-300' => isDarkMode(),
+            ])>
+            @livewire('question-of-month')
+        </div>
+        <x-user.bg-shapes/>
     </div>
 @endif

@@ -1,6 +1,6 @@
 <div
     x-data="{ tooltipVisible: false, tooltipText: '' }"
-    class="fixed top-3/4 left-0 w-8 h-8 md:w-10 md:h-10 bg-main-mode text-white flex group persol-farsi-font
+    class="fixed top-1/4 left-0 w-8 h-8 md:w-10 md:h-10 bg-main-mode text-white flex group persol-farsi-font
            justify-center items-center rounded hover:w-40 cursor-pointer transition-all duration-300 z-10"
 >
     <i class="fa fa-briefcase transition duration-300 ease-in-out transform text-xl group-hover:hidden"></i>

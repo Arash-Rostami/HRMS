@@ -126,12 +126,29 @@ class THS extends Component
 
     public function submitTicket()
     {
-        $data = $this->validateTicket();
-        $paths = $this->storeAttachment();
-        $this->persistTicket($data['ticket'], $paths);
+        $this->files = collect($this->files)
+            ->map(fn($file) => is_array($file) ? reset($file) : $file)
+            ->filter()
+            ->toArray();
 
-        showFlash('success', 'درخواست با موفقیت ثبت شد.');
-        return redirect()->route('user.panel');
+        $data = $this->validateTicket();
+
+        try {
+            $paths = $this->storeAttachment();
+            $this->persistTicket($data['ticket'], $paths);
+            showFlash('success', 'درخواست با موفقیت ثبت شد.');
+            return redirect()->route('user.panel');
+
+        } catch (\Exception $e) {
+            showFlash('error', 'خطایی رخ داده است. لطفا دوباره تلاش کنید.');
+        }
+    }
+
+    public function updated($propertyName)
+    {
+        if (str_starts_with($propertyName, 'files.')) {
+            $this->resetErrorBag($propertyName);
+        }
     }
 
     public function updatedTicketRequestType($value)

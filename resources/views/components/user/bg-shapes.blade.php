@@ -8,6 +8,7 @@
 
 <div
     class="absolute inset-0 -z-10 overflow-hidden"
+    x-show="open"
     x-data="{
         shapes: [],
         isDark: @js($isDark),

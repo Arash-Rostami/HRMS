@@ -29,6 +29,7 @@ use Filament\Facades\Filament;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -43,6 +44,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+
+        Route::middleware('web')
+            ->group(base_path('routes/cache.php'));
 
 
         Filament::registerScripts([
@@ -108,5 +112,6 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function register()
-    {}
+    {
+    }
 }

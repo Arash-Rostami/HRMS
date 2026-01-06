@@ -1,4 +1,4 @@
-<div class="overflow-auto" x-show="showModal"
+<div class="overflow-auto" x-show="showModal" x-cloak
      :class="{ 'fixed main-background right-1 w-full h-full z-10 justify-center mx-auto': showModal }">
 
     <div :class="{ 'fixed mx-auto w-full md:right-0 md:left-0 md:w-1/2 z-20 flex-grow justify-center': showModal }">

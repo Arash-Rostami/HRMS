@@ -13,19 +13,23 @@
          }"
          x-cloak>
         <div>
-            {{--                 Radio Nudge/Section --}}
+            {{--   AI WIDGET --}}
+            <x-user.chatbot></x-user.chatbot>
+            {{--   Radio Nudge/Section --}}
             <x-user.music.radio/>
             {{--  Calculator --}}
-
             <x-user.calculator/>
-
             {{-- Main Dashboard Components --}}
             @if ( showMainDashboardComponents() )
                 {{--                 CEO Monthly Question Section --}}
                 <x-user.question.main :questions="$questions"></x-user.question.main>
 
-
                 <div id="sortMe">
+                    {{--                Feed Section--}}
+                    <x-user.feed.main></x-user.feed.main>
+                    {{--                Taskboard Section--}}
+                    <x-user.tasks.main></x-user.tasks.main>
+
                     {{--                Calendar Section--}}
                     <x-user.calendar.main></x-user.calendar.main>
 
@@ -64,13 +68,6 @@
                     <x-user.profile.main :users="$users"></x-user.profile.main>
                 @endif
             @endif
-
-
-            {{-- Feed Component Section --}}
-            @if ( hasChosenFeed() )
-                <x-user.feed.main/>
-            @endif
-
 
             {{-- Energy Component Section --}}
             @if ( hasChosenEnergy() )

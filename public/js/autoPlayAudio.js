@@ -47,7 +47,7 @@ class AudioPlayer {
             return shouldRetry ? this.getUserInputTime() : null;
         }
 
-        return { hour: userHour, minute: userMinute };
+        return {hour: userHour, minute: userMinute};
     }
 
     calculateTimeDifference(targetTime) {
@@ -60,8 +60,21 @@ class AudioPlayer {
 
         if (timeDiff <= 0 && timeDiff > -900000) {
             console.log('Playing audio at target time...');
-            if (!this.audio) this.audio = new Audio(this.audioPath);
+            if (!this.audio) {
+                this.audio = new Audio(this.audioPath);
+            }
+            this.audio.loop = true;
             this.audio.play();
+            this.showStopModal();
+
+            this.stopTimeout = setTimeout(() => {
+                if (this.audio) {
+                    this.audio.pause();
+                    this.audio.currentTime = 0;
+                    this.audio.loop = false;
+                }
+            }, 60000);
+
             this.stopAudioTimer();
             this.updateUI(false);
             localStorage.removeItem('targetTime');
@@ -71,6 +84,33 @@ class AudioPlayer {
             this.updateUI(false);
             localStorage.removeItem('targetTime');
         }
+    }
+
+    showStopModal() {
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;transition:opacity 0.3s ease-in-out';
+        const content = document.createElement('div');
+        content.style.cssText = 'padding:2.5rem;border-radius:16px;text-align:center;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);transform:scale(0.9);transition:transform 0.3s ease-in-out';
+        content.innerHTML = '<h2 style="color:#fff;margin:0 0 1.5rem;font-family:persol-farsi-font,sans-serif;font-size:1.8rem;font-weight:600">تایمر</h2><button id="stopAlarmBtn" style="border:none;border-radius:10px;padding:0.75rem 2.5rem;cursor:pointer;font-family:persol-farsi-font,sans-serif;font-size:1rem;font-weight:500;color:#fff;box-shadow:0 4px 15px #717171;transition:transform 0.2s ease,box-shadow 0.2s ease">توقف</button>';
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            content.style.transform = 'scale(1)';
+        }, 10);
+        document.getElementById('stopAlarmBtn').addEventListener('click', (e) => {
+            e.target.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                if (this.audio) {
+                    this.audio.pause();
+                    this.audio.currentTime = 0;
+                    this.audio.loop = false;
+                }
+                if (this.stopTimeout) clearTimeout(this.stopTimeout);
+                modal.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(modal), 300);
+            }, 150);
+        });
     }
 
     startAudioTimer(targetTime) {
@@ -109,7 +149,7 @@ class AudioPlayer {
             const input = this.getUserInputTime();
             if (!input) return;
 
-            const { hour, minute } = input;
+            const {hour, minute} = input;
             const targetTime = new Date();
             targetTime.setHours(hour, minute, 0, 0);
 
@@ -129,4 +169,4 @@ class AudioPlayer {
     }
 }
 
-const audioPlayer = new AudioPlayer('/audio/rema.mp3', 'playAudioButton', 'clockIcon');
+const audioPlayer = new AudioPlayer('/audio/alarm.mp3', 'playAudioButton', 'clockIcon');

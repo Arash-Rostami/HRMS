@@ -16,14 +16,26 @@
             'label' => 'روزمرگی',
             'position' => 'left-0',
             'items' => [
+                ['scroll' => '#feed', 'icon' => 'fas fa-rss',  'color' => 'text-orange-500','label' => 'اخبار',
+                    'badges' => [
+                        ['condition' => getTodayFeedCount() > 0, 'count' => getTodayFeedCount(), 'color' => 'bg-green-500', 'animate' => false]
+                    ]
+                ],
                 ['scroll' => '#calendar', 'icon' => 'fas fa-calendar-alt', 'color' => 'text-green-600', 'label' => 'تقویم'],
-                ['scroll' => '#bulletin', 'icon' => 'fa fa-newspaper-o', 'color' => 'text-orange-600', 'label' => 'اعلانات'],
-                ['scroll' => '#personnel', 'icon' => 'fas fa-users', 'color' => 'text-blue-600', 'label' => 'پرسنل'],
-                ['scroll' => '#gallery', 'icon' => 'fas fa-images', 'color' => 'text-yellow-600', 'label' => 'گالری'],
-                ['scroll' => '#report', 'icon' => 'fas fa-chart-line', 'color' => 'text-indigo-600', 'label' => 'گزارشات'],
-                ['scroll' => '#tools', 'icon' => 'fas fa-external-link-alt', 'color' => 'text-teal-600', 'label' => 'ابزار خارجی'],
-                ['scroll' => '#links', 'icon' => 'fas fa-link', 'color' => 'text-cyan-600', 'label' => 'لینک های داخلی'],
-                ['scroll' => '#faq', 'icon' => 'fas fa-question-circle', 'color' => 'text-pink-600', 'label' => 'سوالات متداول']
+                ['scroll' => '#bulletin', 'icon' => 'fa fa-newspaper-o', 'color' => 'text-red-600', 'label' => 'اعلانات'],
+                ['scroll' => '#task-board', 'icon' => 'fas fa-clipboard-list', 'color' => 'text-indigo-600', 'label' => 'برد وظایف',
+                     'badges' => [
+                        ['condition' => getTodoCount() > 0, 'count' => getTodoCount(), 'color' => 'bg-red-500', 'animate' => true],
+                        ['condition' => getInProgressCount() > 0, 'count' => getInProgressCount(), 'color' => 'bg-orange-500', 'animate' => false, 'ref' => 'taskBadge']
+                     ]
+                ],
+                ['scroll' => '#personnel', 'icon' => 'fas fa-users', 'color' => 'text-purple-600', 'label' => 'پرسنل'],
+                ['scroll' => '#gallery', 'icon' => 'fas fa-images', 'color' => 'text-amber-600', 'label' => 'گالری'],
+                ['divider' => true],
+                ['id' => 'radioWidget', 'action' => "window.dispatchEvent(new Event('openJazzRadio'))", 'icon' => 'fas fa-music', 'color' => 'text-indigo-600', 'label' => 'رادیو'],
+                ['route' => route('user.toggleModule', ['module' => 'music']), 'icon' => 'fa fa-headphones', 'color' => 'text-purple-600', 'label' => 'موسیقی', 'blank' => true],
+                ['id' => 'openCalculator', 'icon' => 'fas fa-calculator', 'color' => 'text-teal-600', 'label' => 'ماشین حساب'],
+                ['id' => 'playAudioButton', 'icon' => 'fas fa-clock', 'color' => 'text-cyan-600', 'label' => 'تایمر', 'icon-id'=> 'clockIcon'],
             ]
         ],
         [
@@ -32,16 +44,46 @@
             'label' => 'جعبه ابزار',
             'position' => 'left-0',
             'items' => [
-                ['route' => route('user.panel.edit'), 'icon' => 'fas fa-portrait', 'color' => 'text-blue-600', 'label' => 'پروفایل', 'blank' => true],
-                ['route' => route('user.toggleModule', ['module' => 'onboarding']), 'icon' => 'fa fa-road', 'color' => 'text-orange-600', 'label' => 'آنبوردینگ', 'blank' => true],
-                ['route' => route('user.toggleModule', ['module' => 'energy']), 'icon' => 'fas fa-battery-full', 'color' => 'text-green-600', 'label' => 'انرژی فردی', 'blank' => true],
-                ['route' => route('user.toggleModule', ['module' => 'analytics']), 'icon' => 'fas fa-chart-bar', 'color' => 'text-indigo-600', 'label' => 'آنالیتیک', 'blank' => true],
+                ['route' => route('user.toggleModule', ['module' => 'energy']), 'icon' => 'fas fa-battery-full', 'color' => 'text-green-600', 'label' => 'پرسشنامه انرژی', 'blank' => true],
+                [
+                    'route' => route('user.toggleModule', ['module' => 'suggestion']),
+                    'icon' => 'fa fa-bullhorn',
+                    'color' => 'text-pink-500',
+                    'label' => 'پیشنهادات',
+                    'blank' => true,
+                    'badges' => [
+                        ['condition' => showSuggestionBadge(), 'count' => showSuggestionBadgeNumber(), 'color' => 'bg-red-500', 'animate' => true, 'ref' => 'suggestionBadge'],
+                        ['condition' => showSuggestionCEOBadge(), 'count' => showSuggestionCEOBadgeNumber(), 'color' => 'bg-orange-500', 'animate' => false, 'ref' => 'suggestionBadge']
+                    ]
+                ],
+                [
+                    'route' => route('user.toggleModule', ['module' => 'ths']),
+                    'icon' => 'fas fa-ticket-alt',
+                    'color' => 'text-amber-500',
+                    'label' => 'تیکت',
+                    'blank' => true,
+                    'badges' => [
+                        ['condition' => getOpenTicketCount() > 0, 'count' => getOpenTicketCount(), 'color' => 'bg-red-500', 'animate' => true, 'ref' => 'thsBadge'],
+                        ['condition' => getInProgressTicketCount() > 0, 'count' => getInProgressTicketCount(), 'color' => 'bg-orange-500', 'animate' => false, 'ref' => 'thsBadge']
+                    ]
+                ],
+                [
+                    'route' => route('user.toggleModule', ['module' => 'dms']),
+                    'icon' => 'fa fa-archive',
+                    'color' => 'text-cyan-500',
+                    'label' => 'اسناد',
+                    'blank' => true,
+                    'badges' => [
+                        ['condition' => getUnsignedDocCount() > 0, 'count' => getUnsignedDocCount(), 'color' => 'bg-red-500', 'animate' => true, 'ref' => 'dmsBadge'],
+                        ['condition' => getUnreadDocCount() > 0, 'count' => getUnreadDocCount(), 'color' => 'bg-orange-500', 'animate' => false, 'ref' => 'dmsBadge']
+                    ]
+                ],
                 ['divider' => true],
-                ['id' => 'radioWidget', 'action' => "window.dispatchEvent(new Event('openJazzRadio'))", 'icon' => 'fas fa-music', 'color' => 'text-indigo-600', 'label' => 'رادیو'],
-                ['route' => route('user.toggleModule', ['module' => 'music']), 'icon' => 'fa fa-headphones', 'color' => 'text-purple-600', 'label' => 'موسیقی', 'blank' => true],
-                ['id' => 'openCalculator', 'icon' => 'fas fa-calculator', 'color' => 'text-teal-600', 'label' => 'ماشین حساب'],
-                ['id' => 'playAudioButton', 'icon' => 'fas fa-clock', 'color' => 'text-cyan-600', 'label' => 'تایمر'],
-                ['id' => 'sloganLink', 'icon' => 'fas fa-lightbulb', 'color' => 'text-yellow-600', 'label' => 'اصول سازمانی'],
+                ['scroll' => '#faq', 'icon' => 'fas fa-question-circle', 'color' => 'text-pink-600', 'label' => 'سوالات پرتکرار'],
+                ['scroll' => '#report', 'icon' => 'fas fa-chart-line', 'color' => 'text-indigo-600', 'label' => 'گزارشات'],
+                ['scroll' => '#links', 'icon' => 'fas fa-link', 'color' => 'text-cyan-600', 'label' => 'لینک های داخلی'],
+                ['scroll' => '#tools', 'icon' => 'fas fa-external-link-alt', 'color' => 'text-teal-600', 'label' => 'لینک های خارجی'],
+                ['route' => route('user.toggleModule', ['module' => 'onboarding']), 'icon' => 'fa fa-road', 'color' => 'text-orange-600', 'label' => 'آنبوردینگ', 'blank' => true],
             ]
         ],
         [
@@ -51,12 +93,11 @@
             'position' => 'left-0',
             'items' => [
                 ['route' => '/main/admin', 'icon' => 'fas fa-cogs', 'color' => 'text-emerald-500', 'label' => 'ادمین', 'blank' => true],
-                ['route' => route('user.toggleModule', ['module' => 'feed']), 'icon' => 'fas fa-rss', 'color' => 'text-orange-500', 'label' => 'اخبار', 'blank' => true],
-                ['route' => route('user.toggleModule', ['module' => 'suggestion']), 'icon' => 'fa fa-bullhorn', 'color' => 'text-pink-500', 'label' => 'پیشنهادات', 'blank' => true],
-                ['route' => route('user.toggleModule', ['module' => 'dms']), 'icon' => 'fa fa-archive', 'color' => 'text-cyan-500', 'label' => 'اسناد', 'blank' => true],
-                ['route' => route('user.toggleModule', ['module' => 'ths']), 'icon' => 'fas fa-ticket-alt', 'color' => 'text-amber-500', 'label' => 'تیکت', 'blank' => true],
-                ['divider' => true],
+                ['route' => route('user.panel.edit'), 'icon' => 'fas fa-portrait', 'color' => 'text-blue-600', 'label' => 'پروفایل', 'blank' => true],
+                ['route' => route('user.toggleModule', ['module' => 'analytics']), 'icon' => 'fas fa-chart-bar', 'color' => 'text-indigo-600', 'label' => 'آنالیتیکس', 'blank' => true],
                 ['route' => route('user.toggleModule', ['module' => 'delegation']), 'icon' => 'fas fa-tasks', 'color' => 'text-lime-500', 'label' => 'اختیارات', 'blank' => true],
+                ['divider' => true],
+                ['id' => 'sloganLink', 'icon' => 'fas fa-lightbulb', 'color' => 'text-yellow-600', 'label' => 'اصول سازمانی'],
                 ['route' => route('crm'), 'icon' => 'fas fa-database', 'color' => 'text-red-500', 'label' => 'سی آر ام', 'blank' => true]
             ]
         ]
@@ -77,6 +118,7 @@
 
 <div class="hidden lg:flex items-center gap-3 cursor-pointer">
     @foreach($dropdownMenus as $menu)
+        @php($hasBadge = collect($menu['items'])->contains(fn($item) =>isset($item['badges']) && collect($item['badges'])->contains('condition', true)))
         <div class="relative">
             <button @click="toggleMenu('{{ $menu['id'] }}')"
                     aria-haspopup="true"
@@ -88,6 +130,9 @@
                 <span class="hidden md:inline">{{ $menu['label'] }}</span>
                 <i class="fas fa-chevron-down text-xs transition-transform duration-200"
                    :class="{'rotate-180': openMenu === '{{ $menu['id'] }}'}"></i>
+                @if($hasBadge)
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                @endif
             </button>
 
             <div x-show="openMenu === '{{ $menu['id'] }}'"
@@ -101,9 +146,32 @@
                         <div class="border-t my-2 {{ $dividerClasses }}"></div>
                     @elseif(isset($item['scroll']))
                         <a @click.prevent="scrollToSection('{{ $item['scroll'] }}')"
-                           class="flex items-center gap-3 px-4 py-3 transition-colors duration-150 cursor-pointer {{ $itemClasses }}">
+                           class="relative flex items-center gap-3 px-4 py-3 transition-colors duration-150 cursor-pointer {{ $itemClasses }}">
                             <i class="{{ $item['icon'] }} w-5 text-center {{ $item['color'] }}"></i>
                             <span class="font-medium">{{ $item['label'] }}</span>
+
+                            @if(isset($item['badges']))
+                                @foreach($item['badges'] as $badge)
+                                    @if($badge['condition'])
+                                        <span x-ref="{{ $badge['ref'] ?? 'badge' }}"
+                                              class="absolute top-3 left-3 min-w-[20px] h-5 px-1.5 {{ $badge['color'] }} text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg {{ $badge['animate'] ? 'animate-pulse' : '' }}">
+                                            {{ $badge['count'] }}
+                                        </span>
+                                        @break
+                                    @endif
+                                @endforeach
+                            @endif
+                            @if(isset($item['badges']))
+                                @foreach($item['badges'] as $badge)
+                                    @if($badge['condition'])
+                                        <span x-ref="{{ $badge['ref'] ?? 'badge' }}"
+                                              class="absolute top-3 left-3 min-w-[20px] h-5 px-1.5 {{ $badge['color'] }} text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg {{ $badge['animate'] ? 'animate-pulse' : '' }}">
+                                            {{ $badge['count'] }}
+                                        </span>
+                                        @break
+                                    @endif
+                                @endforeach
+                            @endif
                         </a>
                     @elseif(isset($item['action']))
                         <button type="button" @click="{{ $item['action'] }}"
@@ -114,15 +182,28 @@
                     @elseif(isset($item['id']))
                         <a id="{{ $item['id'] }}"
                            class="flex items-center gap-3 px-4 py-3 transition-colors duration-150 cursor-pointer {{ $itemClasses }}">
-                            <i class="{{ $item['icon'] }} w-5 text-center {{ $item['color'] }}"></i>
+                            <i class="{{ $item['icon'] }} w-5 text-center {{ $item['color'] }}"
+                               id="{{  $item['icon-id'] ??  '' }}"></i>
                             <span class="font-medium">{{ $item['label'] }}</span>
                         </a>
                     @else
                         <a @click.prevent="window.open('{{ $item['route'] }}', '_blank')"
                            @if(isset($item['blank']) && $item['blank']) target="_blank" rel="noopener noreferrer" @endif
-                           class="flex items-center gap-3 px-4 py-3 transition-colors duration-150 {{ $itemClasses }}">
+                           class="relative flex items-center gap-3 px-4 py-3 transition-colors duration-150 {{ $itemClasses }}">
                             <i class="{{ $item['icon'] }} w-5 text-center {{ $item['color'] }}"></i>
                             <span class="font-medium">{{ $item['label'] }}</span>
+
+                            @if(isset($item['badges']))
+                                @foreach($item['badges'] as $badge)
+                                    @if($badge['condition'])
+                                        <span x-ref="{{ $badge['ref'] ?? 'badge' }}"
+                                              class="absolute top-3 left-3 min-w-[20px] h-5 px-1.5 {{ $badge['color'] }} text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg {{ $badge['animate'] ? 'animate-pulse' : '' }}">
+                                            {{ $badge['count'] }}
+                                        </span>
+                                        @break
+                                    @endif
+                                @endforeach
+                            @endif
                         </a>
                     @endif
                 @endforeach

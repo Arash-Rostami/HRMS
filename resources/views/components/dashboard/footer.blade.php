@@ -1,4 +1,4 @@
-<div id="footer" class="p-4 text-center flex flex-row mb-6 ignore-elements" x-data>
+<div id="footer" class="p-2 text-center flex flex-row mb-6 ignore-elements" x-data>
     @includeWhen(Str::contains(url()->current(), 'dashboard'), 'components.dashboard.audio')
     <x-dashboard.search/>
 

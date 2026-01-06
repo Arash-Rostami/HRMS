@@ -77,6 +77,7 @@ class EnergyChart extends Component
         }
 
         $query = User::query()
+            ->with(['profile:user_id,department,position', 'latestEnergyTest'])
             ->where('id', '!=', $this->user->id)
             ->where('status', 'active')
             ->whereHas('latestEnergyTest');
@@ -84,7 +85,6 @@ class EnergyChart extends Component
         resolve(TeamData::class)->applyRules($query, $this->user);
 
         return $query
-            ->with(['profile:user_id,department,position', 'latestEnergyTest'])
             ->get()
             ->map(function (User $member) {
                 return [

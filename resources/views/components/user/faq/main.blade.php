@@ -1,53 +1,65 @@
-@if(count($faqs) > 0)
+@if (count($faqs) > 0)
     <div
         id="faq"
-        data-id="9"
+        data-id="10"
         title="move me ↑ ↓"
         dir="rtl"
+        x-data="{ open: false }"
+        x-cloak
         @class([
-          'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
-           bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel
-           persol-farsi-font',
-          'bg-[#1F2937]' => isDarkMode(),
-        ])
-        x-data
-        x-cloak>
-        {{--rubric--}}
-        <div class="mb-5 w-1/2 md:w-1/4">
-            <h2
-                @class([
-                     'accordion-header rounded-lg px-4 py-2 cursor-pointer
-                      hover:bg-gray-100 focus:ring focus:ring-offset-2
-                      focus:ring-blue-500 transition duration-300',
-                     'bg-gray-700 text-gray-200 hover:bg-gray-900' => isDarkMode(),
-                   ])
-                title=" فهرست سوالات و پاسخهای پرتکرار"
-                data-te-collapse-init
-                data-te-target="#flush-collapseFAQ"
+            'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
+             bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel
+             persol-farsi-font',
+            'bg-[#1F2937]' => isDarkMode(),
+        ])>
+
+        <div class="relative w-full">
+            <div
+                x-show="open"
+                x-transition
+                class="absolute top-0 right-0 h-full w-1 border-r-4 rounded-r-full bg-blue-500 border-blue-500">
+            </div>
+
+            <button
+                id="flush-headingFAQ"
                 type="button"
-                data-te-toggle="collapse"
-                data-bs-target="#flush-collapseTwo"
-                aria-expanded="false"
-                aria-controls="flush-collapseTwo">
-              <span class="flex items-center justify-between">
-                <span>سوالات پر تکرار</span>
-                <i class="fas fa-question-circle text-gray-400"></i>
-              </span>
-            </h2>
+                title="فهرست سوالات و پاسخهای پرتکرار"
+                @click="open = !open"
+                aria-controls="flush-collapseFAQ"
+                :aria-expanded="open"
+                class="flex items-center justify-between w-full py-2 pr-4 text-left transition-colors duration-200">
+                <span class="flex items-center">
+                    <i @class([
+                        'fas fa-question-circle text-md md:text-xl ml-3 md:ml-4',
+                        'text-gray-500' => !isDarkMode(),
+                        'text-gray-400' => isDarkMode(),
+                    ])></i>
+                    <span @class([
+                        'font-medium text-md md:text-xl',
+                        'text-gray-800' => !isDarkMode(),
+                        'text-white' => isDarkMode(),
+                    ])>
+                        سوالات پر تکرار
+                    </span>
+                </span>
+                <i
+                    class="fa fa-chevron-down text-gray-500 transform transition-transform duration-300"
+                    :class="{ '-rotate-180': open }">
+                </i>
+            </button>
         </div>
-        {{-- main body content--}}
-        <div id="flush-collapseFAQ"
-             @class([
-                   'accordion-collapse collapse show border-0',
-                   'text-gray-300 ' => isDarkMode(),
-                 ])
-             data-te-collapse-item
-             data-te-collapse-show
-             aria-labelledby="flush-headingOne"
-             data-te-parent="#faq">
+
+        <div
+            id="flush-collapseFAQ"
+            aria-labelledby="flush-headingFAQ"
+            x-show="open"
+            x-collapse
+            @class([
+                'accordion-collapse border-0 animate-[fade-in_1s_ease-in-out] mt-3 pr-4',
+                'text-gray-300' => isDarkMode(),
+            ])>
             <x-user.faq.table :faqs="$faqs"/>
-            <!-- Background Shapes -->
-            <x-user.bg-shapes/>
         </div>
+        <x-user.bg-shapes/>
     </div>
 @endif

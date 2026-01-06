@@ -1,54 +1,62 @@
 <div
     id="gallery"
-    data-id="4"
+    data-id="5"
     title="Move me ↑ ↓"
     dir="rtl"
-    @class([
-    'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
-     bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel persol-farsi-font',
-    'bg-[#1F2937]' => isDarkMode(),
-  ])
-    x-data x-cloak
+    x-data="{ open: false }"
+    x-cloak
     x-intersect:enter.once="initFancybox()"
->
-                <span
-                        class="absolute top-0 -left-4 -rotate-12 bg-green-500 text-white text-xs px-1 py-1 rounded-full animate-pulse">جدید</span>
-    {{-- Rubric / Header --}}
-    <div class="mb-5 w-full md:w-1/4">
-        <h2
-                @class([
-                  'accordion-header rounded-lg px-4 py-2 cursor-pointer
-                   hover:bg-gray-100 focus:ring focus:ring-offset-2
-                   focus:ring-blue-500 transition duration-300',
-                  'bg-gray-700 text-gray-200 hover:bg-gray-900' => isDarkMode(),
-                ])
-                type="button"
-                data-te-collapse-init
-                data-te-target="#flush-collapseGallery"
-                aria-expanded="true"
-                aria-controls="flush-collapseGallery"
-        >
-          <span class="flex items-center justify-between">
-            <span>گالری </span>
-            <i class="far fa-images text-gray-400"></i>
-          </span>
-        </h2>
-    </div>
-    {{-- Main Body Content --}}
-    <div
-            id="flush-collapseGallery"
-            @class([
-             'accordion-collapse collapse show border-0',
-             'text-gray-300 ' => isDarkMode(),
-           ])
-            data-te-collapse-item
-            data-te-collapse-show
-            data-te-parent="#gallery"
-            aria-labelledby="flush-collapseGallery"
-    >
-        @livewire('gallery-timeline')
+    @class([
+        'flex flex-col sm:flex-col flex-grow fade-in-fwd p-4 md:p-8 m-4 md:m-8
+         bg-white border-1 shadow-lg rounded-xl main-user-accordion-panel persol-farsi-font',
+        'bg-[#1F2937]' => isDarkMode(),
+    ])>
+    <div class="relative w-full">
+        <div
+            x-show="open"
+            x-transition
+            class="absolute top-0 right-0 h-full w-1 border-r-4 rounded-r-full bg-blue-500 border-blue-500">
+        </div>
 
-        <!-- Background Shapes -->
-        <x-user.bg-shapes/>
+        <button
+            id="flush-headingGallery"
+            type="button"
+            title="گالری تصاویر رویدادها و مناسبت ها"
+            @click="open = !open"
+            aria-controls="flush-collapseGallery"
+            :aria-expanded="open"
+            class="flex items-center justify-between w-full py-2 pr-4 text-left transition-colors duration-200">
+            <span class="flex items-center">
+                <i @class([
+                    'far fa-images text-md md:text-xl ml-3 md:ml-4',
+                    'text-gray-500' => !isDarkMode(),
+                    'text-gray-400' => isDarkMode(),
+                ])></i>
+                <span @class([
+                    'font-medium text-md md:text-xl',
+                    'text-gray-800' => !isDarkMode(),
+                    'text-white' => isDarkMode(),
+                ])>
+                    گالری
+                </span>
+            </span>
+            <i
+                class="fa fa-chevron-down text-gray-500 transform transition-transform duration-300"
+                :class="{ '-rotate-180': open }">
+            </i>
+        </button>
     </div>
+
+    <div
+        id="flush-collapseGallery"
+        aria-labelledby="flush-headingGallery"
+        x-show="open"
+        x-collapse
+        @class([
+            'accordion-collapse border-0 animate-[fade-in_1s_ease-in-out] mt-3 pr-4',
+            'text-gray-300' => isDarkMode(),
+        ])>
+        @livewire('gallery-timeline')
+    </div>
+    <x-user.bg-shapes/>
 </div>

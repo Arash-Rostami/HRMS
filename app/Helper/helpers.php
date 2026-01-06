@@ -8,6 +8,7 @@ use App\Models\Feed;
 use App\Models\Park;
 use App\Models\Profile;
 use App\Models\Survey;
+use App\Models\Task;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Services\Dashboard;
@@ -238,6 +239,22 @@ function getTodayFeedCount(): int
     });
 }
 
+function getTodoCount(): int
+{
+    $userId = auth()->id();
+    $cacheKey = 'todo_count_' . $userId;
+    $cacheDuration = now()->addMinutes(10);
+    return Cache::remember($cacheKey, $cacheDuration, fn() => Task::getTodoCount($userId));
+}
+
+function getInProgressCount(): int
+{
+    $userId = auth()->id();
+    $cacheKey = 'in_progress_count_' . $userId;
+    $cacheDuration = now()->addMinutes(10);
+    return Cache::remember($cacheKey, $cacheDuration, fn() => Task::getInProgressCount($userId));
+}
+
 function hasCancelledMore($user)
 {
     return Park::countUserCancellation($user);
@@ -256,11 +273,6 @@ function hasChosenMusic()
 function hasChosenEnergy()
 {
     return Cache::has('profile_initiate_energy_' . auth()->user()->id);
-}
-
-function hasChosenFeed()
-{
-    return Cache::has('profile_initiate_feed_' . auth()->user()->id);
 }
 
 function hasChosenDMS()
@@ -375,16 +387,20 @@ function isOptionalQuestionnairePeriod($user = null): bool
 function isForcedQuestionnairePeriod($user = null): bool
 {
     $user = $user ?? auth()->user();
-
     if (!$user) return false;
 
     $dayOfMonth = Jalalian::fromCarbon(now())->getDay();
-
     $isWithinForcedDateRange = ($dayOfMonth >= 25 && $dayOfMonth <= 30);
 
     if (!$isWithinForcedDateRange) return false;
 
-    return !($user->latestEnergyTest && $user->latestEnergyTest->completed_at->isCurrentMonth());
+    if (!$user->latestEnergyTest || !$user->latestEnergyTest->completed_at) return true;
+
+
+    $completedJalali = Jalalian::fromCarbon($user->latestEnergyTest->completed_at);
+    $currentJalali = Jalalian::fromCarbon(now());
+
+    return !($completedJalali->getYear() === $currentJalali->getYear() && $completedJalali->getMonth() === $currentJalali->getMonth());
 }
 
 function isLightMode(): bool
@@ -664,7 +680,7 @@ function showMainDashboardComponents()
 {
     return isNotInEditingMode() && hasNoEmptyFields() && !hasChosenMusic() && !hasChosenSuggestion() &&
         !hasChosenOnboarding() && !hasChosenAnalytics() && !hasChosenSurveys() && !hasChosenDelegation()
-        && !hasChosenDMS() && !hasChosenTHS() && !hasChosenEnergy() && !hasChosenFeed();
+        && !hasChosenDMS() && !hasChosenTHS() && !hasChosenEnergy();
     //        && !showToOnboardedUser()
 }
 
@@ -743,7 +759,7 @@ function showProfile()
 {
     return !hasChosenMusic() && !hasChosenOnboarding() && !hasChosenAnalytics() && !hasChosenTHS() &&
         !hasChosenSurveys() && !hasChosenSuggestion() && !hasChosenDelegation() && !hasChosenDMS() &&
-        !hasChosenEnergy() && !hasChosenFeed();
+        !hasChosenEnergy();
     //        && !showToOnboardedUser()
 }
 

@@ -30,15 +30,6 @@ class Timetable extends Component
     public string $selectedEventType = "";
     public bool $messageAbility;
 
-
-    public function mount()
-    {
-        $now = Jalalian::now();
-        $this->currentYear = $now->getYear();
-        $this->currentMonth = $now->getMonth();
-        $this->createCalendar();
-    }
-
     public function createCalendar()
     {
         $this->resetCalenderData();
@@ -75,100 +66,53 @@ class Timetable extends Component
         }
     }
 
-    private function resetCalenderData(): void
+    public function loadEvents($day = null)
     {
-        $this->emptyDays = [];
-        $this->calendarData = [];
-    }
+        $this->day = $day ?? Jalalian::now()->getDay();
 
-    private function getCachedProfiles()
-    {
-        return Cache::remember('profiles',
-            now()->addMinutes(30), function () {
-                return Profile::with('user')
-                    ->whereHas('user', function ($query) {
-                        $query->where('status', 'active');
-                    })->get();
-            });
-    }
+        // Check if it's the current day and load the message ability
+        $this->messageAbility = $this->isCurrentDay(Jalalian::now(), $this->day);
 
-    private function getCachedEvents()
-    {
-        return Cache::remember("events:{$this->currentYear}-{$this->currentMonth}",
-            now()->addMinutes(30), function () {
-                return Event::all();
-            });
-    }
+        $dayData = $this->calendarData[$this->day - 1];
 
-    private function initializeSmsSentStatus($profiles)
-    {
-        foreach ($profiles as $profile) {
-            $this->smsSentStatus[$profile->cellphone] = false;
-        }
-    }
-
-    private function isCurrentDay(Jalalian $thisDate, mixed $day): bool
-    {
-        return $thisDate->getDay() == $day &&
-            $thisDate->getMonth() == $this->currentMonth &&
-            $thisDate->getYear() == $this->currentYear;
-    }
-
-    private function getBirthAndStartAndOtherDates(\Illuminate\Database\Eloquent\Collection|array $profiles, $events, $day): array
-    {
-        $jalaliDate = \Morilog\Jalali\CalendarUtils::createCarbonFromFormat(
-            'Y-m-d',
-            sprintf('%d-%s-%s', $this->currentYear, makeDoubleDigit($this->currentMonth), makeDoubleDigit($day))
-        );
-
-        return [
-            $this->getBirthDates($profiles, $jalaliDate),
-            $this->getStartDates($profiles, $jalaliDate),
-            $this->getOtherEvents($events, $jalaliDate),
+        $this->selectedDayEvents = [
+            'birthDates' => collect($dayData['birthDates']),
+            'startDates' => collect($dayData['startDates']),
+            'otherEvents' => collect($dayData['otherEvents']),
         ];
     }
 
-    private function getBirthDates(\Illuminate\Database\Eloquent\Collection|array $profiles, \Carbon\Carbon $jalaliDate): \Illuminate\Database\Eloquent\Collection
+    public function mount()
     {
-        return $profiles->filter(function ($profile) use ($jalaliDate) {
-            if ($profile->birthdate === null) return false;
-
-            // Extract the month and day from the timestamp
-            $birthdate = Carbon::parse($profile->birthdate);
-
-            // Compare the extracted month and day with the Jalalian date
-            return $this->compareDayAndMonth($birthdate, $jalaliDate);
-        });
+        $now = Jalalian::now();
+        $this->currentYear = $now->getYear();
+        $this->currentMonth = $now->getMonth();
+        $this->createCalendar();
     }
 
-    private function compareDayAndMonth(Carbon $data, Carbon $jalaliDate): bool
+    public function navigateToNextMonth()
     {
-        return $data->month == $jalaliDate->format("m") && $data->day == $jalaliDate->format("d");
+        $this->currentMonth++;
+        if ($this->currentMonth > 12) {
+            $this->currentMonth = 1;
+            $this->currentYear += 1;
+        }
+        $this->createCalendar();
     }
 
-    private function getStartDates(\Illuminate\Database\Eloquent\Collection|array $profiles, \Carbon\Carbon $jalaliDate): \Illuminate\Database\Eloquent\Collection
+    public function navigateToPreviousMonth()
     {
-        return $profiles->filter(function ($profile) use ($jalaliDate) {
-            if ($profile->start_date === null) return false;
-
-            $startDate = Carbon::parse($profile->start_date);
-            $persianDate = CalendarUtils::toJalali($startDate->year, $startDate->month, $startDate->day);
-
-            // Skip profiles from the current year
-            if ($persianDate[0] == $this->currentYear) return false;
-
-            // Compare the extracted month and day with the Jalalian date
-            return $this->compareDayAndMonth($startDate, $jalaliDate);
-        });
+        $this->currentMonth--;
+        if ($this->currentMonth < 1) {
+            $this->currentMonth = 12;
+            $this->currentYear -= 1;
+        }
+        $this->createCalendar();
     }
 
-    private function getOtherEvents(\Illuminate\Database\Eloquent\Collection|array $events, \Carbon\Carbon $jalaliDate)
+    public function render()
     {
-        return $events->filter(function ($event) use ($jalaliDate) {
-            $date = Carbon::parse($event->date);
-
-            return $this->compareDayAndMonth($date, $jalaliDate);
-        });
+        return view('components.user.calendar.timetable');
     }
 
     public function sendSMS()
@@ -189,45 +133,97 @@ class Timetable extends Component
         }
     }
 
-    public function navigateToPreviousMonth()
+    private function compareDayAndMonth(Carbon $data, Carbon $jalaliDate): bool
     {
-        $this->currentMonth--;
-        if ($this->currentMonth < 1) {
-            $this->currentMonth = 12;
-            $this->currentYear -= 1;
-        }
-        $this->createCalendar();
+        return $data->month == $jalaliDate->format("m") && $data->day == $jalaliDate->format("d");
     }
 
-    public function navigateToNextMonth()
+    private function getBirthAndStartAndOtherDates($profiles, $events, $day): array
     {
-        $this->currentMonth++;
-        if ($this->currentMonth > 12) {
-            $this->currentMonth = 1;
-            $this->currentYear += 1;
-        }
-        $this->createCalendar();
-    }
+        $jalaliDateObj = new Jalalian($this->currentYear, $this->currentMonth, $day);
+        $jalaliDateCarbon = CalendarUtils::createCarbonFromFormat(
+            'Y-m-d',
+            sprintf('%d-%02d-%02d', $this->currentYear, makeDoubleDigit($this->currentMonth), makeDoubleDigit($day))
+        );
 
-    public function loadEvents($day = null)
-    {
-        $this->day = $day ?? Jalalian::now()->getDay();
-
-        // Check if it's the current day and load the message ability
-        $this->messageAbility = $this->isCurrentDay(Jalalian::now(), $this->day);
-
-        $dayData = $this->calendarData[$this->day - 1];
-
-        $this->selectedDayEvents = [
-            'birthDates' => collect($dayData['birthDates']),
-            'startDates' => collect($dayData['startDates']),
-            'otherEvents' => collect($dayData['otherEvents']),
+        return [
+            $this->getBirthDates($profiles, $jalaliDateObj),
+            $this->getStartDates($profiles, $jalaliDateCarbon),
+            $this->getOtherEvents($events, $jalaliDateCarbon),
         ];
     }
 
-    public function render()
+    private function getBirthDates($profiles, \Morilog\Jalali\Jalalian $jalaliDate)
     {
-        return view('components.user.calendar.timetable');
+        return $profiles->filter(function ($profile) use ($jalaliDate) {
+            if (!$profile->birthdate) return false;
+
+            $jalaliBirth = \Morilog\Jalali\Jalalian::fromCarbon(Carbon::parse($profile->birthdate));
+
+            return $jalaliBirth->getMonth() === $jalaliDate->getMonth() && $jalaliBirth->getDay() === $jalaliDate->getDay();
+        });
+    }
+
+    private function getCachedEvents()
+    {
+        return Cache::remember("events:{$this->currentYear}-{$this->currentMonth}",
+            now()->addMinutes(30), function () {
+                return Event::all();
+            });
+    }
+
+    private function getCachedProfiles()
+    {
+        return Cache::remember('profiles',
+            now()->addMinutes(30), function () {
+                return Profile::with('user')
+                    ->whereHas('user', function ($query) {
+                        $query->where('status', 'active');
+                    })->get();
+            });
+    }
+
+    private function getOtherEvents(\Illuminate\Database\Eloquent\Collection|array $events, \Carbon\Carbon $jalaliDate)
+    {
+        return $events->filter(function ($event) use ($jalaliDate) {
+            return $this->compareDayAndMonth(Carbon::parse($event->date), $jalaliDate);
+        });
+    }
+
+    private function getStartDates(\Illuminate\Database\Eloquent\Collection|array $profiles, \Carbon\Carbon $jalaliDate): \Illuminate\Database\Eloquent\Collection
+    {
+        return $profiles->filter(function ($profile) use ($jalaliDate) {
+            if (!$profile->start_date) return false;
+
+            $startDate = Carbon::parse($profile->start_date);
+            $persianDate = CalendarUtils::toJalali($startDate->year, $startDate->month, $startDate->day);
+
+            // Skip profiles from the current year
+            if ($persianDate[0] == $this->currentYear) return false;
+
+            // Compare the extracted month and day with the Jalalian date
+            return $this->compareDayAndMonth($startDate, $jalaliDate);
+        });
+    }
+
+    private function initializeSmsSentStatus($profiles)
+    {
+        foreach ($profiles as $profile) {
+            $this->smsSentStatus[$profile->cellphone] = false;
+        }
+    }
+
+    private function isCurrentDay(Jalalian $thisDate, mixed $day): bool
+    {
+        return $thisDate->getDay() == $day &&
+            $thisDate->getMonth() == $this->currentMonth &&
+            $thisDate->getYear() == $this->currentYear;
+    }
+
+    private function resetCalenderData(): void
+    {
+        $this->emptyDays = [];
+        $this->calendarData = [];
     }
 }
 
