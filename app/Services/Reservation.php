@@ -101,7 +101,10 @@ class Reservation
         if (!$user || !$park) return false;
 
         // ignore limit on that specific day
-        if (now()->timestamp > $park->start_date && now()->timestamp < $park->end_date) {
+        if (
+            now()->isSameDay(\Carbon\Carbon::createFromTimestamp($park->start_date)) ||
+            (now()->timestamp > $park->start_date && now()->timestamp < $park->end_date)
+        ) {
             return false;
         }
 

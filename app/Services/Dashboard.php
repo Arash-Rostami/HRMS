@@ -101,15 +101,11 @@ class Dashboard
     {
         $quota = Park::showMonthlyQouta();
 
-        if ($quota == 0) {
+        if ($quota <= 0) {
             return 'MAX';
         }
 
-        if ($quota == auth()->user()->maximum) {
-            return 'N/A';
-        }
-
-        return $quota;
+        return (string)$quota;
     }
 
     /**
