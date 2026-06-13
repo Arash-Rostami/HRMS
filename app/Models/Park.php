@@ -49,7 +49,7 @@ class Park extends Model
     {
         return self::where('user_id', '=', auth()->user()->id)
             ->where('soft_delete', 'false')
-            ->whereBetween('created_at', [Date::getStartOfMonth(), Date::getEndOfMonth()])
+            ->whereBetween('start_date', [Date::getStartOfPersianMonth(), Date::getStartOfPersianMonth(1)])
             ->count();
     }
 
