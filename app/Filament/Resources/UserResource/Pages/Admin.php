@@ -227,9 +227,11 @@ class Admin
                 'user' => 'User',
                 'admin' => 'Admin',
                 'developer' => 'Developer',
-            ])->columns(3)
+            ])
+            ->columns(3)
             ->default('user')
-            ->hidden(!(auth()->user()->role == 'developer'));
+            ->disabled(auth()->user()->role != 'developer')
+            ->required();
     }
 
     /**

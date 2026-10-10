@@ -11,5 +11,4 @@ class Report extends Model
 
     protected $fillable = ['title', 'description', 'department', 'file_path', 'active'];
 
-
 }

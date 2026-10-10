@@ -44,8 +44,10 @@
                                     <strong class="p-4 ml-4 text-main-mode">حوزه درخواست:</strong>
                                     @if($selectedTicket['request_type'] == 'access')
                                         Access to
-                                    @else
+                                    @elseif($selectedTicket['request_type'] == 'support')
                                         Support for
+                                    @else
+                                        Development for
                                     @endif
                                     {{ $this->getRequestAreaLabel($selectedTicket['request_type'], $selectedTicket['request_area']) }}
                                 </p>

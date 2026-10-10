@@ -6,6 +6,7 @@ use App\Filament\Resources\TicketResource\Pages\Admin;
 use App\Models\Ticket;
 use App\Services\DepartmentDetails;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -154,6 +155,7 @@ class THS extends Component
     public function updatedTicketRequestType($value)
     {
         $this->requestAreas = Ticket::$requestAreaOptions[$value] ?? [];
+        $this->ticket['requestArea'] = '';
     }
 
     public function viewTicket($ticketId)
@@ -238,9 +240,13 @@ class THS extends Component
 
     protected function validateTicket()
     {
+        $requestTypeKeys = array_keys(Ticket::$requestTypeOptions);
+        $requestAreaKeys = array_keys(Ticket::$requestAreaOptions[$this->ticket['requestType']] ?? []);
+        $requestAreaKeys = array_values(array_filter($requestAreaKeys, fn($key) => $key !== ''));
+
         return $this->validate([
-            'ticket.requestType' => 'required|string',
-            'ticket.requestArea' => 'required|string',
+            'ticket.requestType' => ['required', 'string', Rule::in($requestTypeKeys)],
+            'ticket.requestArea' => ['required', 'string', Rule::in($requestAreaKeys)],
             'ticket.priority' => 'required|string',
             'ticket.subject' => 'required|string|max:255',
             'ticket.description' => 'required|string',

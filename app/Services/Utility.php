@@ -328,20 +328,7 @@ class Utility
 
     public static function makePreciseHour($input, $request, $isEndHour = false): string
     {
-        if (self::isHourNotSet($input, $request) && self::isMinuteNotSet($input, $request)) {
-            return $isEndHour ? '23:59:59' : '00:00:00';
-        }
-
-        $date = json_decode($request->$input, true);
-
-        $hour = makeDoubleDigit($date['hour']);
-        $minute = makeDoubleDigit($date['minute']);
-
-        if ($isEndHour) {
-            return sprintf('%s:%s:59', $hour, $minute);
-        }
-
-        return sprintf('%s:%s:00', $hour, $minute);
+        return ($isEndHour) ? '23:59:59' : '00:00:00';
     }
 
     public static function makeString($input, $request)

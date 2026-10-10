@@ -13,7 +13,16 @@ class ValidateDays implements Rule
      */
     public function __construct()
     {
-        //
+    }
+
+    /**
+     * Get the validation error message.
+     *
+     * @return string
+     */
+    public function message()
+    {
+        return 'تاریخ شروع و پایان هر دو نمی توانند در یک روز بوده و یا فاصله دو روزه داشته باشند';
     }
 
     /**
@@ -33,16 +42,6 @@ class ValidateDays implements Rule
         }
         $diff = ($to - $from) / (1000 * 60 * 60 * 24);
 
-        return ($diff <= 1) && ($from != $to);
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return 'End date cannot be either the same as or two days ahead of start date';
+        return ($diff < 2) && ($from != $to);
     }
 }

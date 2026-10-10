@@ -13,8 +13,10 @@
          }"
          x-cloak>
         <div>
+            <x-user.anniversary />
             {{--   AI WIDGET --}}
             <x-user.chatbot></x-user.chatbot>
+{{--            <x-user.apology></x-user.apology>--}}
             {{--   Radio Nudge/Section --}}
             <x-user.music.radio/>
             {{--  Calculator --}}

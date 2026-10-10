@@ -39,7 +39,7 @@ class TaskBoard extends Component
             'status' => 'todo',
             'deadline' => $deadline,
             'user_id' => auth()->id(),
-            'assigned_to' => $this->selectedAssignee,
+            'assigned_to' => $this->selectedAssignee ?: null,
         ]);
 
         $this->reset(['newTitle', 'newDescription', 'deadlineYear', 'deadlineMonth', 'deadlineDay', 'selectedAssignee']);

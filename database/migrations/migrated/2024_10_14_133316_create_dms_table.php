@@ -35,6 +35,6 @@ class CreateDMSTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('d_m_s');
+        Schema::dropIfExists('dms');
     }
 }

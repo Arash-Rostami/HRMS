@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class Ticket extends Model
 {
-    use HasFactory;
 
     protected $dispatchesEvents = [
         'created' => TicketObserver::class,
@@ -52,6 +51,7 @@ class Ticket extends Model
     public static $requestTypeOptions = [
         'support' => 'Support',
         'access' => 'Access',
+        'development' => 'Development',
     ];
 
     public static $requestAreaOptions = [
@@ -79,6 +79,13 @@ class Ticket extends Model
             'bms' => 'BMS',
             'sarv_crm' => 'Sarv CRM',
             'email' => 'Email',
+            'other' => 'Other',
+        ],
+        'development' => [
+            '' => 'انتخاب نمایید',
+            'microservice' => 'Microservice',
+            'application' => 'Application',
+            'automation' => 'Automation',
             'other' => 'Other',
         ],
     ];
@@ -112,8 +119,9 @@ class Ticket extends Model
                            AND completion_date IS NOT NULL
                            AND completion_deadline < completion_date THEN 1 END) AS overdue_count,
                 COUNT(CASE WHEN request_type = 'support' THEN 1 END) AS support_count,
-                COUNT(CASE WHEN request_type = 'access' THEN 1 END) AS access_count
-        ")->first();
+                COUNT(CASE WHEN request_type = 'access' THEN 1 END) AS access_count,
+                COUNT(CASE WHEN request_type = 'development' THEN 1 END) AS development_count
+                        ")->first();
         });
     }
 
@@ -130,7 +138,7 @@ class Ticket extends Model
 
     public function setRequestTypeAttribute($value)
     {
-        $allowedTypes = ['support', 'access'];
+        $allowedTypes = ['support', 'access', 'development'];
         $this->attributes['request_type'] = in_array(strtolower($value), $allowedTypes) ? strtolower($value) : 'support';
     }
 

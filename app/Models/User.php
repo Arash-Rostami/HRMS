@@ -29,6 +29,10 @@ class User extends Authenticatable implements FilamentUser, HasName
         'role', 'status', 'booking', 'details', 'presence', 'last_seen'
     ];
 
+    protected $attributes = [
+        'role' => 'user',
+    ];
+
 
     /**
      * The attributes that should be hidden for serialization.

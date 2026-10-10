@@ -1,10 +1,9 @@
-<div class="overflow-auto" x-show="showModal" x-cloak
+<div class="overflow-auto"
      :class="{ 'fixed main-background right-1 w-full h-full z-10 justify-center mx-auto': showModal }">
-
-    <div :class="{ 'fixed mx-auto w-full md:right-0 md:left-0 md:w-1/2 z-20 flex-grow justify-center': showModal }">
+    <div :class="{ 'fixed m-auto w-full md:right-0 md:left-0 md:w-1/2 z-20 flex-grow justify-center': showModal }">
         <!--Dialog-->
         <div class="main-background  @if(isDarkMode()) bg-[#1B232E] @else bg-[#F1F1F1] @endif
-        border-modal modal w-11/12 mx-auto rounded shadow-lg py-4 text-left px-6"
+        border-modal modal w-11/12 mx-auto rounded shadow-lg py-4 text-left px-6 mt-20"
              x-show="showModal" x-transition:enter="ease-out duration-1000"
              x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100">
             <!--Title-->

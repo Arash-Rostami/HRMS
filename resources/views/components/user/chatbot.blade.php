@@ -115,7 +115,7 @@
 
         <template x-if="chatOpen && !maintenance">
             <iframe
-                src="https://arash-ai.cldv.dev?user={{ auth()->id() }}"
+                src="https://persol-ai.cldv.dev/?user={{ auth()->id() }}"
                 class="w-full h-[calc(100%-52px)] md:h-[calc(100%-44px)] border-0"
                 allow="microphone; camera; clipboard-write; clipboard-read; fullscreen"
                 loading="lazy"

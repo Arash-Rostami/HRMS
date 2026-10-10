@@ -145,3 +145,6 @@
         }
     }
 </style>
+<!-- CONTINGENCY -->
+{{--<link href="/css/contingency/font.css" rel="stylesheet">--}}
+{{--<script src="/js/contingency/font.js" defer></script>--}}

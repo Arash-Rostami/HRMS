@@ -57,6 +57,7 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
+//        return parent::render($request, $exception);
         if ($exception instanceof QueryException || $exception instanceof \PDOException) {
             $errorMessage = $exception->getMessage() . ' ' . $exception->getPrevious()?->getMessage();
 

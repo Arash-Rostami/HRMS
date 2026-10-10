@@ -48,8 +48,8 @@ class StatsOverview extends BaseWidget
                 ->icon('heroicon-s-calendar')
                 ->color('secondary'),
 
-            Card::make('Request Types', ($stats->support_count . ' -- ' . $stats->access_count) ?? 0)
-                ->description('Support | Access')
+            Card::make('Request Types', ($stats->support_count . ' | ' . $stats->access_count . ' | ' . $stats->development_count) ?? 0)
+                ->description('Support | Access | Development')
                 ->icon('heroicon-s-chart-pie')
                 ->color('secondary'),
         ];

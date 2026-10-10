@@ -10,6 +10,7 @@
                     class="w-full border border-gray-300 text-gray-500 rounded-md p-1 md:p-2 text-center font-bold">
                 <option class="font-bold" value="support">پشتیبانی</option>
                 <option class="font-bold" value="access">دسترسی</option>
+                <option class="font-bold" value="development">توسعه</option>
             </select>
             @error('ticket.requestType')
             <span class="text-red-500">{{ $message }}</span>

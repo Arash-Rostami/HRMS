@@ -14,7 +14,7 @@ trait WithValidation
         'idCardNumber' => 'nullable|string|max:255|englishChar',
         'idBookletNumber' => 'required|string|max:255|englishChar',
         'degree' => 'required|in:undergraduate,graduate,postgraduate',
-        'field' => 'required|string|max:255|englishChar',
+        'field' => 'required|string|max:255',
         'birthYear' => 'required|integer|required_with:birthMonth,birthDay',
         'birthMonth' => 'required|integer|min:1|max:12|required_with:birthYear,birthDay',
         'birthDay' => 'required|integer|min:1|max:31|required_with:birthYear,birthMonth',
@@ -28,13 +28,13 @@ trait WithValidation
         'position' => 'nullable|in:manager,supervisor,senior,expert,employee',
         'insurance' => 'required|string|max:255|englishChar',
         'emergencyPhone' => 'required|string|max:255|englishChar',
-        'emergencyRelationship' => 'required|string|max:255|englishChar',
+        'emergencyRelationship' => 'required|string|max:255',
         'startYear' => 'nullable|integer',
         'startMonth' => 'nullable|integer|min:1|max:12',
         'startDay' => 'nullable|integer|min:1|max:31',
-        'workExperience' => 'required|string|englishChar',
-        'interests' => 'nullable|string|englishChar',
-        'favoriteColors' => 'nullable|string|max:255|englishChar',
+        'workExperience' => 'required|string',
+        'interests' => 'nullable|string',
+        'favoriteColors' => 'nullable|string|max:255',
     ];
 
 

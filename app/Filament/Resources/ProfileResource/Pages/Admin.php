@@ -474,6 +474,7 @@ class Admin
                 $profileId = $profile->id;
                 $extension = $file->getClientOriginalExtension();
                 $timestamp = time();
+                $uniqueId = uniqid();
 
                 $sameTsCount = collect($profile->attachments ?? [])
                     ->map(fn($path) => basename($path))
@@ -482,7 +483,7 @@ class Admin
 
                 $keySegment = $sameTsCount > 0 ? "other" . ($sameTsCount + 1) : "other";
 
-                return "HR-profile-doc-{$profileId}-{$keySegment}-{$timestamp}.{$extension}";
+                return "HR-profile-doc-{$profileId}-{$keySegment}-{$timestamp}-{$uniqueId}.{$extension}";
             });
     }
 

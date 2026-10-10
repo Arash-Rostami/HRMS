@@ -227,7 +227,7 @@ return [
         'footer' => [
             'should_show_logo' => true,
         ],
-        'max_content_width' => true,
+        'max_content_width' => 'full',
         'notifications' => [
             'vertical_alignment' => 'top',
             'alignment' => 'right',
@@ -289,7 +289,8 @@ return [
     |
     */
 
-    'google_fonts' => 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap',
+//    'google_fonts' => 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap',
+    'google_fonts' => 'null',
 
     /*
     |--------------------------------------------------------------------------

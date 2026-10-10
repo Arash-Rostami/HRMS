@@ -137,6 +137,7 @@ class DB
         $endOfDay = $queryDate['endOfDay'];
         $dashboardType = getDashboardType();
 
+
         return Cache::remember($cacheKey, now()->addSeconds(3), function () use ($table, $dashboardType, $startOfDay, $endOfDay) {
 
             $sql = "
@@ -144,6 +145,7 @@ class DB
                 FROM {$table} AS t
                 WHERE t.soft_delete = 'false'
                   AND t.state = 'active'
+                  AND t.created_at >= date_sub(CURDATE(), interval 1 year)
                   AND t.start_date <= ?
                   AND t.end_date >= ?
                   AND NOT EXISTS (
@@ -159,6 +161,7 @@ class DB
                             OR (c.start_date <= ? AND c.end_date >= ?)
                         )
                   )";
+
 
             $bindings = [
                 $endOfDay, $startOfDay, // For t.start_date and t.end_date conditions

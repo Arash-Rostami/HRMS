@@ -205,7 +205,8 @@
                             'border-gray-300 bg-white text-gray-900' => !isDarkMode(),
                         ])>
                         <option value=""></option>
-                        @foreach(collect([['id' => '', 'full_name' => 'خودم']])->merge($staffMembers) as $staff)
+                        <option value="">خودم</option>
+                        @foreach($staffMembers as $staff)
                             <option value="{{ $staff['id'] }}">{{ $staff['full_name'] }}</option>
                         @endforeach
 
